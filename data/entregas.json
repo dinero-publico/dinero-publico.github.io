@@ -159,7 +159,327 @@
     }
    ],
    "anio": 2026,
-   "url": "https://www.hacienda.gob.es/es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx"
+   "url": "https://www.hacienda.gob.es/cdi/sist%20financiacion%20y%20deuda/informaci%c3%b3nccaa/entregas-a-cuenta-2026.xlsx"
+  },
+  {
+   "norma": "Real Decreto-Ley 6/2025 de 17 de junio",
+   "filas": [
+    {
+     "comunidad": "Cataluña",
+     "irpf": 16413.72,
+     "iva": 9685.66,
+     "impuestos_especiales": 2796.61,
+     "fondo_suficiencia": 1282.17,
+     "fondo_garantia": -1923.09,
+     "total": 28255.08
+    },
+    {
+     "comunidad": "Galicia",
+     "irpf": 3531.44,
+     "iva": 2797.18,
+     "impuestos_especiales": 881.92,
+     "fondo_suficiencia": 861.93,
+     "fondo_garantia": 2166.57,
+     "total": 10239.03
+    },
+    {
+     "comunidad": "Andalucía",
+     "irpf": 9009.43,
+     "iva": 8358.3,
+     "impuestos_especiales": 2509.73,
+     "fondo_suficiencia": 724.25,
+     "fondo_garantia": 6873.61,
+     "total": 27475.33
+    },
+    {
+     "comunidad": "Asturias",
+     "irpf": 1566.64,
+     "iva": 1074.65,
+     "impuestos_especiales": 331.77,
+     "fondo_suficiencia": 269.08,
+     "fondo_garantia": 512.12,
+     "total": 3754.26
+    },
+    {
+     "comunidad": "Cantabria",
+     "irpf": 798.65,
+     "iva": 658.29,
+     "impuestos_especiales": 206.78,
+     "fondo_suficiencia": 708.79,
+     "fondo_garantia": 111.08,
+     "total": 2483.58
+    },
+    {
+     "comunidad": "La Rioja",
+     "irpf": 472.17,
+     "iva": 338.63,
+     "impuestos_especiales": 103.87,
+     "fondo_suficiencia": 306.93,
+     "fondo_garantia": 136.83,
+     "total": 1358.44
+    },
+    {
+     "comunidad": "Murcia",
+     "irpf": 1571.8,
+     "iva": 1480.18,
+     "impuestos_especiales": 573.68,
+     "fondo_suficiencia": -290.44,
+     "fondo_garantia": 1236.6,
+     "total": 4571.82
+    },
+    {
+     "comunidad": "C. Valenciana",
+     "irpf": 6815.78,
+     "iva": 5603.71,
+     "impuestos_especiales": 1624.84,
+     "fondo_suficiencia": -2086.99,
+     "fondo_garantia": 2055.44,
+     "total": 14012.79
+    },
+    {
+     "comunidad": "Aragón",
+     "irpf": 2143.49,
+     "iva": 1506.18,
+     "impuestos_especiales": 533.38,
+     "fondo_suficiencia": 399.99,
+     "fondo_garantia": 390.66,
+     "total": 4973.69
+    },
+    {
+     "comunidad": "Castilla-La Mancha",
+     "irpf": 2160.36,
+     "iva": 1937.67,
+     "impuestos_especiales": 785.86,
+     "fondo_suficiencia": 114.18,
+     "fondo_garantia": 1954.67,
+     "total": 6952.74
+    },
+    {
+     "comunidad": "Canarias",
+     "irpf": 2253.61,
+     "iva": 0.0,
+     "impuestos_especiales": 77.53,
+     "fondo_suficiencia": 108.49,
+     "fondo_garantia": 4154.43,
+     "total": 6594.06
+    },
+    {
+     "comunidad": "Extremadura",
+     "irpf": 949.09,
+     "iva": 934.85,
+     "impuestos_especiales": 392.13,
+     "fondo_suficiencia": 643.55,
+     "fondo_garantia": 1267.2,
+     "total": 4186.83
+    },
+    {
+     "comunidad": "Illes Balears",
+     "irpf": 2098.89,
+     "iva": 1802.69,
+     "impuestos_especiales": 433.56,
+     "fondo_suficiencia": -1009.1,
+     "fondo_garantia": -331.44,
+     "total": 2994.6
+    },
+    {
+     "comunidad": "Madrid",
+     "irpf": 16518.34,
+     "iva": 10236.06,
+     "impuestos_especiales": 1630.56,
+     "fondo_suficiencia": -1086.7,
+     "fondo_garantia": -6799.15,
+     "total": 20499.12
+    },
+    {
+     "comunidad": "Castilla y León",
+     "irpf": 3249.64,
+     "iva": 2620.24,
+     "impuestos_especiales": 1007.0,
+     "fondo_suficiencia": 625.91,
+     "fondo_garantia": 1465.89,
+     "total": 8968.67
+    },
+    {
+     "comunidad": "Melilla",
+     "irpf": 0.0,
+     "iva": 0.0,
+     "impuestos_especiales": 0.0,
+     "fondo_suficiencia": 40.94,
+     "fondo_garantia": 0.0,
+     "total": 40.94
+    },
+    {
+     "comunidad": "Ceuta",
+     "irpf": 0.0,
+     "iva": 0.0,
+     "impuestos_especiales": 0.0,
+     "fondo_suficiencia": 51.13,
+     "fondo_garantia": 0.0,
+     "total": 51.13
+    }
+   ],
+   "anio": 2025,
+   "url": "https://www.hacienda.gob.es/cdi/sist%20financiacion%20y%20deuda/informaci%c3%b3nccaa/entregas-a-cuenta-2025.xlsx"
+  },
+  {
+   "norma": null,
+   "filas": [
+    {
+     "comunidad": "Cataluña",
+     "irpf": 14983.7,
+     "iva": 8735.26,
+     "impuestos_especiales": 2736.01,
+     "fondo_suficiencia": 1133.92,
+     "fondo_garantia": -1943.84,
+     "total": 25645.04
+    },
+    {
+     "comunidad": "Galicia",
+     "irpf": 3109.96,
+     "iva": 2566.42,
+     "impuestos_especiales": 901.92,
+     "fondo_suficiencia": 762.27,
+     "fondo_garantia": 2033.4,
+     "total": 9373.98
+    },
+    {
+     "comunidad": "Andalucía",
+     "irpf": 8100.79,
+     "iva": 7679.34,
+     "impuestos_especiales": 2461.87,
+     "fondo_suficiencia": 640.51,
+     "fondo_garantia": 6178.27,
+     "total": 25060.78
+    },
+    {
+     "comunidad": "Asturias",
+     "irpf": 1442.12,
+     "iva": 997.22,
+     "impuestos_especiales": 324.47,
+     "fondo_suficiencia": 237.97,
+     "fondo_garantia": 456.55,
+     "total": 3458.34
+    },
+    {
+     "comunidad": "Cantabria",
+     "irpf": 803.62,
+     "iva": 612.42,
+     "impuestos_especiales": 206.12,
+     "fondo_suficiencia": 626.84,
+     "fondo_garantia": 80.15,
+     "total": 2329.14
+    },
+    {
+     "comunidad": "La Rioja",
+     "irpf": 443.43,
+     "iva": 309.08,
+     "impuestos_especiales": 99.5,
+     "fondo_suficiencia": 271.44,
+     "fondo_garantia": 132.06,
+     "total": 1255.5
+    },
+    {
+     "comunidad": "Murcia",
+     "irpf": 1438.05,
+     "iva": 1348.89,
+     "impuestos_especiales": 561.97,
+     "fondo_suficiencia": -256.86,
+     "fondo_garantia": 1073.61,
+     "total": 4165.65
+    },
+    {
+     "comunidad": "C. Valenciana",
+     "irpf": 6082.86,
+     "iva": 5166.65,
+     "impuestos_especiales": 1584.44,
+     "fondo_suficiencia": -1845.68,
+     "fondo_garantia": 1701.52,
+     "total": 12689.79
+    },
+    {
+     "comunidad": "Aragón",
+     "irpf": 1978.57,
+     "iva": 1349.79,
+     "impuestos_especiales": 531.69,
+     "fondo_suficiencia": 353.74,
+     "fondo_garantia": 349.9,
+     "total": 4563.69
+    },
+    {
+     "comunidad": "Castilla-La Mancha",
+     "irpf": 2016.66,
+     "iva": 1778.52,
+     "impuestos_especiales": 782.71,
+     "fondo_suficiencia": 100.98,
+     "fondo_garantia": 1707.06,
+     "total": 6385.93
+    },
+    {
+     "comunidad": "Canarias",
+     "irpf": 2070.83,
+     "iva": 0.0,
+     "impuestos_especiales": 71.35,
+     "fondo_suficiencia": 95.95,
+     "fondo_garantia": 3834.32,
+     "total": 6072.45
+    },
+    {
+     "comunidad": "Extremadura",
+     "irpf": 914.18,
+     "iva": 850.58,
+     "impuestos_especiales": 387.45,
+     "fondo_suficiencia": 569.15,
+     "fondo_garantia": 1155.58,
+     "total": 3876.95
+    },
+    {
+     "comunidad": "Illes Balears",
+     "irpf": 1777.3,
+     "iva": 1798.65,
+     "impuestos_especiales": 415.42,
+     "fondo_suficiencia": -892.43,
+     "fondo_garantia": -329.42,
+     "total": 2769.52
+    },
+    {
+     "comunidad": "Madrid",
+     "irpf": 15146.04,
+     "iva": 8925.68,
+     "impuestos_especiales": 1620.64,
+     "fondo_suficiencia": -961.05,
+     "fondo_garantia": -5989.08,
+     "total": 18742.23
+    },
+    {
+     "comunidad": "Castilla y León",
+     "irpf": 2953.39,
+     "iva": 2397.51,
+     "impuestos_especiales": 986.59,
+     "fondo_suficiencia": 553.54,
+     "fondo_garantia": 1296.86,
+     "total": 8187.89
+    },
+    {
+     "comunidad": "Melilla",
+     "irpf": 0.0,
+     "iva": 0.0,
+     "impuestos_especiales": 0.0,
+     "fondo_suficiencia": 36.21,
+     "fondo_garantia": 0.0,
+     "total": 36.21
+    },
+    {
+     "comunidad": "Ceuta",
+     "irpf": 0.0,
+     "iva": 0.0,
+     "impuestos_especiales": 0.0,
+     "fondo_suficiencia": 45.22,
+     "fondo_garantia": 0.0,
+     "total": 45.22
+    }
+   ],
+   "anio": 2024,
+   "url": "https://www.hacienda.gob.es/cdi/sist%20financiacion%20y%20deuda/informaci%c3%b3nccaa/entregas-a-cuenta-2024-actualizadas.xlsx"
   }
  ]
 }
