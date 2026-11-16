@@ -18,7 +18,7 @@
 </header>
 
 <nav class="toc wrap" aria-label="Secciones">
-  <a href="#estado">Estado</a><a href="#pge">Presupuesto</a><a href="#ccaa">Comunidades</a><a href="#fuentes">Fuentes</a>
+  <a href="#estado">Estado</a><a href="#pge">Presupuesto</a><a href="#funciones">Quién gasta en qué</a><a href="#ccaa">Comunidades</a><a href="#fuentes">Fuentes</a>
 </nav>
 
 <main class="wrap">
@@ -42,13 +42,36 @@
       </div>
     </div>
     <p class="note">Las «transferencias a otras administraciones» son el dinero que el Estado pasa a la Seguridad Social, a las comunidades autónomas y a los ayuntamientos: el Estado recauda y reparte.</p>
+
+    <div id="estado-anual">
+      <h3 id="estado-anual-tit">Año a año</h3>
+      <p class="note">Total de cada año cerrado (enero–diciembre), en millones de euros. Pasa el ratón por un punto para ver su peso sobre el PIB.</p>
+      <div class="legend" id="leg-anual"></div>
+      <div class="chart" id="ch-anual"></div>
+    </div>
   </section>
 
   <section id="pge">
-    <h2>Presupuesto en vigor por política de gasto <span class="muted" id="pge-etq"></span></h2>
+    <h2>Presupuesto por política de gasto <span class="muted" id="pge-etq"></span></h2>
+    <div class="ctrl"><label>Ejercicio <select id="sel-pge"></select></label></div>
     <p class="note" id="pge-nota"></p>
+    <div class="card aviso" id="pge-aviso" hidden></div>
     <div class="chart" id="ch-pge"></div>
     <div id="pge-detalle" class="detalle" hidden></div>
+  </section>
+
+  <section id="funciones">
+    <h2>¿Quién gasta en sanidad, educación y protección social? <span class="muted" id="fun-tit-anio"></span></h2>
+    <p class="note">Gasto ejecutado de cada administración por función (clasificación COFOG de la IGAE, contabilidad nacional). Es la forma de comparar a todas las administraciones con el mismo criterio: los presupuestos del Estado solo muestran su parte.</p>
+    <div class="ctrl"><label>Año <select id="sel-fun-anio"></select></label></div>
+    <div class="kpis" id="fun-kpis"></div>
+    <div class="legend" id="leg-fun"></div>
+    <div class="chart" id="ch-fun"></div>
+    <p class="note">«Transferencias a otras administraciones» es el dinero que una administración pasa a otra (por ejemplo, el Estado a las comunidades o a la Seguridad Social); quien lo recibe lo gasta después en sus propias funciones, por eso se muestra aparte. Las pensiones aparecen en «Protección social», casi todas a cargo de la Seguridad Social.</p>
+
+    <h3>Diez años de gasto en servicios básicos</h3>
+    <div class="legend" id="leg-fun-evol"></div>
+    <div class="chart" id="ch-fun-evol"></div>
   </section>
 
   <section id="ccaa">
@@ -59,6 +82,7 @@
       <span class="total" id="ea-total"></span>
     </div>
     <div class="chart" id="ch-ea"></div>
+    <div class="card aviso" id="ea-destino" hidden></div>
 
     <h3 id="ccaa-tit">¿En qué gasta cada comunidad?</h3>
     <div class="ctrl">
@@ -71,12 +95,18 @@
     </div>
     <div class="chart" id="ch-ccaa"></div>
 
+    <h3 id="ccaa-evol-tit">Lo que recibe y lo que gasta en servicios básicos</h3>
+    <p class="note">Entregas a cuenta del sistema de financiación frente al presupuesto inicial en sanidad, educación y servicios sociales y al gasto ejecutado en sanidad, educación y protección social que publica la IGAE (con unos dos años de retraso).</p>
+    <div class="legend" id="leg-ccaa-evol"></div>
+    <div class="chart" id="ch-ccaa-evol"></div>
+
     <h3>Comparativa entre comunidades</h3>
-    <p class="note">Porcentaje del presupuesto de cada comunidad que va a cada política. «Peso de las entregas»: valor de las entregas a cuenta sobre su presupuesto (buena parte son impuestos cedidos pagados en la propia comunidad). Pulsa una fila para verla arriba.</p>
+    <p class="note">Porcentaje del presupuesto de cada comunidad que va a cada política. «Peso de las entregas»: valor de las entregas a cuenta sobre su presupuesto (buena parte son impuestos cedidos pagados en la propia comunidad). «Entregas / servicios básicos»: entregas a cuenta sobre lo que presupuesta en sanidad, educación y servicios sociales. Pulsa una fila para verla arriba.</p>
     <div class="scroll"><table class="tbl" id="tbl-ccaa">
       <thead><tr>
         <th data-k="comunidad">Comunidad</th><th class="num" data-k="total">Presupuesto (M€)</th>
         <th class="num" data-k="entregas">Entregas (M€)</th><th class="num" data-k="peso">Peso entregas</th>
+        <th class="num" data-k="cob">Entregas / servicios básicos</th>
         <th class="num" data-k="p31">Sanidad</th><th class="num" data-k="p32">Educación</th>
         <th class="num" data-k="p23">Serv. sociales</th><th class="num" data-k="p95">Deuda</th>
       </tr></thead><tbody></tbody>
@@ -94,6 +124,8 @@
         <li>Mientras no se aprueben nuevos Presupuestos, sigue en vigor el último aprobado, prorrogado. La etiqueta «-P» indica presupuesto prorrogado. Las modificaciones de crédito durante el año no aparecen aquí.</li>
         <li>Las entregas a cuenta son anticipos: al cabo de dos años se liquidan con la recaudación real.</li>
         <li>Los presupuestos autonómicos son los iniciales (aprobados o prorrogados) consolidados, no el gasto ejecutado.</li>
+        <li>La financiación autonómica no es finalista: las comunidades deciden en qué la gastan. Las comparaciones con sanidad, educación y servicios sociales indican a qué equivale lo recibido, no que esté reservado por ley para esos servicios.</li>
+        <li>El gasto por función (COFOG) es gasto ejecutado en contabilidad nacional y no coincide con los presupuestos iniciales. Sumar administraciones duplicaría las transferencias entre ellas; por eso se muestran aparte.</li>
       </ul>
     </details>
   </section>

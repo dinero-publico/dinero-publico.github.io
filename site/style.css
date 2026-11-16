@@ -75,6 +75,9 @@ select { font: inherit; padding: 5px 8px; border-radius: 6px; border: 1px solid 
 .tbl tr.tot td { font-weight: 600; }
 .detalle { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 18px; margin-top: 10px; }
 .detalle h4 { margin: 0 0 8px; }
+.aviso { border-left: 4px solid var(--c3); margin: 14px 0; }
+.aviso h4 { margin: 0 0 6px; }
+.aviso p { margin: 6px 0; max-width: 85ch; }
 .tip { position: fixed; z-index: 10; pointer-events: none; max-width: 300px; background: var(--panel); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 4px 18px rgba(0,0,0,.14); padding: 7px 10px; border-radius: 8px; font-size: .84rem; }
 .foot { border-top: 1px solid var(--line); margin-top: 60px; padding-top: 14px; padding-bottom: 40px; font-size: .85rem; color: var(--muted); }
 #lista-fuentes li { margin-bottom: 8px; }

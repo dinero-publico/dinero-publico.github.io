@@ -59,6 +59,40 @@ ENTREGAS_PAGE = (
     "informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx"
 )
 CCAA_BASE = "https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionPresupuestos/aspx/"
+COFOG_BASE = (
+    "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/"
+    "ContabilidadNacional/Publicaciones/Paginas/"
+)
+# Páginas de la IGAE con la clasificación funcional (COFOG) de cada subsector.
+COFOG_PAGES = {
+    "central": "iacofogAC.aspx",
+    "regional": "iacofogCA.aspx",
+    "local": "iacofogCL.aspx",
+    "seguridad_social": "iacofog.aspx",
+}
+COFOG_DIVISIONES = {
+    "01": "Servicios públicos generales",
+    "02": "Defensa",
+    "03": "Orden público y seguridad",
+    "04": "Asuntos económicos",
+    "05": "Protección del medio ambiente",
+    "06": "Vivienda y servicios comunitarios",
+    "07": "Sanidad",
+    "08": "Ocio, cultura y religión",
+    "09": "Educación",
+    "10": "Protección social",
+}
+# Nombres de las hojas COFOG por comunidad -> nombre corto usado en la web.
+COFOG_NOMBRES = {
+    "baleares": "Illes Balears",
+    "castilla - la mancha": "Castilla-La Mancha",
+    "región de murcia": "Murcia",
+    "comunidad foral de navarra": "Navarra",
+    "comunitat valenciana": "C. Valenciana",
+}
+
+# Años de histórico que se guardan de cada fuente.
+YEARS_BACK = 10
 
 # Códigos de comunidad que usa la base de datos de presupuestos autonómicos.
 CCAA = {
@@ -504,7 +538,7 @@ def parse_entregas(content: bytes) -> dict:
     return {"norma": m.group(0).strip() if m else None, "filas": filas}
 
 
-def fetch_entregas(dl: Downloader, max_years: int = 3) -> dict:
+def fetch_entregas(dl: Downloader, max_years: int = YEARS_BACK) -> dict:
     anios = []
     if dl.offline_dir is not None:
         found = []
@@ -516,7 +550,9 @@ def fetch_entregas(dl: Downloader, max_years: int = 3) -> dict:
         page = parse_html(dl.html(ENTREGAS_PAGE))
         found, seen = [], set()
         for href, _ in page.links:
-            m = re.search(r"entregas-a-cuenta-(\d{4})[^/]*\.xlsx$", href, re.I)
+            # Los nombres cambian según el año: entregas-a-cuenta-2026.xlsx,
+            # entrega_a_cuenta_2021.xlsx, financiacion_entregas_a_cuenta_2019.xlsx…
+            m = re.search(r"entregas?[-_]a[-_]cuenta[-_](\d{4})[^/]*\.xlsx$", href, re.I)
             if m and int(m.group(1)) not in seen:
                 seen.add(int(m.group(1)))
                 found.append((int(m.group(1)), f"entregas-a-cuenta-{m.group(1)}.xlsx", urljoin(ENTREGAS_PAGE, href)))
@@ -613,10 +649,21 @@ class CcaaSession:
         return None
 
 
-def fetch_ccaa(dl: Downloader, years: list[int]) -> dict:
+def fetch_ccaa(dl: Downloader, years: list[int], previo: dict | None = None, reuse_before: int | None = None) -> dict:
+    """Presupuestos por política de cada comunidad.
+
+    Los presupuestos iniciales de años cerrados no cambian: los años anteriores a
+    `reuse_before` se toman de `previo` (el JSON ya guardado) si están completos,
+    para no repetir cientos de descargas cada día.
+    """
     sess = CcaaSession(dl)
+    guardados = {a["anio"]: a for a in (previo or {}).get("anios", [])}
     out = []
     for y in years:
+        if reuse_before is not None and y < reuse_before and len(guardados.get(y, {}).get("comunidades", [])) >= len(CCAA):
+            out.append(guardados[y])
+            log.info("  CCAA %s: reutilizado", y)
+            continue
         comunidades = []
         for code, nombre in CCAA.items():
             try:
@@ -637,7 +684,145 @@ def fetch_ccaa(dl: Downloader, years: list[int]) -> dict:
             log.info("  CCAA %s: %d comunidades", y, len(comunidades))
     if not out:
         raise SourceError("No se pudo descargar ningún presupuesto autonómico")
+    out.sort(key=lambda a: a["anio"], reverse=True)
     return {"fuente": CCAA_BASE + "inicio.aspx", "unidad": "millones de euros", "anios": out}
+
+
+# --------------------------------------------------------------------------- #
+# 5. IGAE: gasto ejecutado por función (COFOG), por subsector y por comunidad
+# --------------------------------------------------------------------------- #
+def _cofog_tabla(rows: list[list]) -> dict:
+    """Lee una tabla COFOG: la fila «GASTO TOTAL» repartida por divisiones.
+
+    Sirve para las hojas por comunidad (solo divisiones) y para las series
+    (divisiones con sus grupos: se usan las columnas «Total 01» y el grupo 01.8,
+    «Transferencias de carácter general entre administraciones públicas»).
+    """
+    def es_total(r):
+        return any(clean(cell(r, i)).upper() == "GASTO TOTAL" for i in (0, 1))
+
+    t = next((i for i, r in enumerate(rows) if es_total(r)), None)
+    if t is None:
+        raise SourceError("Tabla COFOG sin fila «GASTO TOTAL»")
+    fila = rows[t]
+    anio, provisional = None, False
+    for r in rows[:t]:
+        m = re.fullmatch(r"(\d{4})\s*(\(P\))?", clean(cell(r, 0)))
+        if m:
+            anio, provisional = int(m.group(1)), bool(m.group(2))
+    divs, total, grupo018 = {}, None, None
+    for r in rows[max(0, t - 3) : t]:
+        for i, v in enumerate(r):
+            s = clean(v)
+            m = re.match(r"(?:Total\s+)?(\d{2})\.?\s*(?:\D|$)", s)
+            if s.upper() == "TOTAL":
+                total = num(cell(fila, i))
+            elif re.fullmatch(r"Total\s+\d{2}", s):
+                divs[s[-2:]] = num(cell(fila, i))
+            elif s.startswith("01.8"):
+                grupo018 = num(cell(fila, i))
+            elif m and not re.match(r"\d{2}\.\d", s) and s[:2] not in divs:
+                divs[m.group(1)] = num(cell(fila, i))
+    divs = {k: r2(v, 1) for k, v in divs.items() if k in COFOG_DIVISIONES and v is not None}
+    if len(divs) < 8:
+        raise SourceError(f"Tabla COFOG con columnas inesperadas: {sorted(divs)}")
+    if total is None:
+        total = sum(divs.values())
+    out = {"anio": anio, "provisional": provisional, "total": r2(total, 1), "divisiones": divs}
+    if grupo018 is not None:
+        out["transferencias_aapp"] = r2(grupo018, 1)
+    return out
+
+
+def parse_cofog_serie(content: bytes, desde: int | None = None) -> list[dict]:
+    """Serie anual de un subsector (una hoja por año)."""
+    wb = load_wb(content)
+    out = []
+    for ws in wb.worksheets:
+        if not re.fullmatch(r"\d{4}", ws.title.strip()):
+            continue
+        if desde is not None and int(ws.title) < desde:
+            continue
+        d = _cofog_tabla([list(r) for r in ws.iter_rows(max_row=12, values_only=True)])
+        d["anio"] = d["anio"] or int(ws.title)
+        out.append(d)
+    if not out:
+        raise SourceError("La serie COFOG no tiene hojas de años")
+    return sorted(out, key=lambda d: d["anio"])
+
+
+def parse_cofog_detalle(content: bytes) -> dict:
+    """Detalle por comunidad de un año (una hoja por comunidad)."""
+    wb = load_wb(content)
+    filas, anio, provisional = [], None, False
+    for ws in wb.worksheets:
+        if not ws.title.lower().startswith("tabla"):
+            continue
+        rows = [list(r) for r in ws.iter_rows(max_row=12, values_only=True)]
+        nombre = clean(cell(rows[0], 0))
+        if nombre.upper().startswith("ADMINISTRACI"):  # tabla del conjunto de comunidades
+            continue
+        d = _cofog_tabla(rows)
+        anio, provisional = d["anio"] or anio, d["provisional"] or provisional
+        corto = COFOG_NOMBRES.get(nombre.lower(), nombre)
+        filas.append({"comunidad": corto, "foral": corto in ("Navarra", "País Vasco"), "total": d["total"], "divisiones": d["divisiones"]})
+    if len(filas) < 17:
+        raise SourceError(f"El detalle COFOG por comunidad solo tiene {len(filas)} comunidades")
+    return {"anio": anio, "provisional": provisional, "filas": filas}
+
+
+def _cofog_links(dl: Downloader, page: str) -> list[tuple[str, str]]:
+    p = parse_html(dl.html(COFOG_BASE + page))
+    return [(urljoin(COFOG_BASE + page, h), t) for h, t in p.links if re.search(r"\.xlsx$", h, re.I)]
+
+
+def fetch_cofog(dl: Downloader, desde: int) -> dict:
+    series = {}
+    for sub, page in COFOG_PAGES.items():
+        raw = f"cofog_serie_{sub}.xlsx"
+        if dl.offline_dir is not None:
+            content = dl.xlsx("", raw, missing_ok=True)
+            url = COFOG_BASE + page
+        else:
+            links = [(u, t) for u, t in _cofog_links(dl, page) if "serie" in t.lower() and "detalle" not in u.lower()]
+            if not links:
+                log.warning("  COFOG %s: no se encontró la serie", sub)
+                continue
+            url = links[0][0]
+            content = dl.xlsx(url, raw)
+        if content is None:
+            continue
+        series[sub] = parse_cofog_serie(content, desde)
+        log.info("  COFOG %s: %d–%d", sub, series[sub][0]["anio"], series[sub][-1]["anio"])
+    if "central" not in series or "regional" not in series:
+        raise SourceError("Faltan las series COFOG de la Administración central o regional")
+
+    detalle = []
+    if dl.offline_dir is not None:
+        found = [(int(m.group(1)), f.name) for f in dl.offline_dir.glob("COFOG_A_Detalle_CCAA_*.xlsx")
+                 for m in [re.search(r"(\d{4})", f.name)] if m]
+        found = [(y, "", n) for y, n in found]
+    else:
+        found = []
+        for u, _ in _cofog_links(dl, COFOG_PAGES["regional"]):
+            m = re.search(r"COFOG_A_Detalle_CCAA_(\d{4})\.xlsx$", u, re.I)
+            if m:
+                found.append((int(m.group(1)), u, f"COFOG_A_Detalle_CCAA_{m.group(1)}.xlsx"))
+    for y, url, raw in sorted(set(found), reverse=True):
+        if y < desde:
+            continue
+        d = parse_cofog_detalle(dl.xlsx(url, raw))
+        d["anio"] = d["anio"] or y
+        detalle.append(d)
+        log.info("  COFOG por comunidad %s: %d comunidades", d["anio"], len(d["filas"]))
+    return {
+        "fuente": COFOG_BASE + COFOG_PAGES["regional"],
+        "fuente_central": COFOG_BASE + COFOG_PAGES["central"],
+        "unidad": "millones de euros, gasto ejecutado (contabilidad nacional)",
+        "divisiones": COFOG_DIVISIONES,
+        "subsectores": series,
+        "comunidades": sorted(detalle, key=lambda d: d["anio"], reverse=True),
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -655,7 +840,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--offline", type=Path, help="carpeta con los Excel ya descargados (no usa la red)")
     ap.add_argument("--year", type=int, default=dt.date.today().year, help="año de referencia (por defecto, el actual)")
-    ap.add_argument("--only", choices=["estado", "pge", "entregas", "ccaa"], action="append", help="procesar solo estas fuentes")
+    ap.add_argument("--only", choices=["estado", "pge", "entregas", "ccaa", "cofog"], action="append", help="procesar solo estas fuentes")
     ap.add_argument("--delay", type=float, default=1.0, help="segundos de espera entre peticiones")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -663,11 +848,18 @@ def main(argv: list[str] | None = None) -> int:
     DATA_DIR.mkdir(exist_ok=True)
     dl = Downloader(args.offline, delay=0 if args.offline else args.delay)
     y = args.year
+    anios = list(range(y, y - YEARS_BACK - 1, -1))  # el año en curso y los diez anteriores
+
+    def previo(fname):
+        p = DATA_DIR / fname
+        return json.loads(p.read_text("utf-8")) if p.exists() else None
+
     jobs = {
-        "estado": ("estado.json", lambda: fetch_estado(dl, [y, y - 1])),
+        "estado": ("estado.json", lambda: fetch_estado(dl, anios)),
         "pge": ("pge.json", lambda: fetch_pge(dl)),
         "entregas": ("entregas.json", lambda: fetch_entregas(dl)),
-        "ccaa": ("ccaa.json", lambda: fetch_ccaa(dl, [y, y - 1])),
+        "ccaa": ("ccaa.json", lambda: fetch_ccaa(dl, anios, previo("ccaa.json"), reuse_before=y - 1)),
+        "cofog": ("cofog.json", lambda: fetch_cofog(dl, desde=y - YEARS_BACK - 2)),
     }
     meta_path = DATA_DIR / "meta.json"
     meta = json.loads(meta_path.read_text("utf-8")) if meta_path.exists() else {}

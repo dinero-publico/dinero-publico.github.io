@@ -62,6 +62,46 @@ def test_entregas_2026():
     assert mad["fondo_garantia"] < 0
 
 
+def test_entregas_2019_formato_antiguo():
+    d = fd.parse_entregas(read("entregas-a-cuenta-2019.xlsx"))
+    assert len(d["filas"]) == 17
+    assert "Real Decreto" in d["norma"]
+    assert sum(f["total"] for f in d["filas"]) == pytest.approx(102800, abs=1)
+    for f in d["filas"]:
+        assert f["irpf"] is not None and f["iva"] is not None
+
+
+def test_enlace_entregas_nombres_antiguos():
+    import re
+    pat = r"entregas?[-_]a[-_]cuenta[-_](\d{4})[^/]*\.xlsx$"
+    for href, y in [("x/entregas-a-cuenta-2026.xlsx", "2026"), ("x/entregas-a-cuenta-2024-actualizadas.xlsx", "2024"),
+                    ("x/entrega-a-cuenta-2022.xlsx", "2022"), ("x/entrega_a_cuenta_2021.xlsx", "2021"),
+                    ("x/financiacion_entregas_a_cuenta_2019.xlsx", "2019")]:
+        assert re.search(pat, href, re.I).group(1) == y
+    assert not re.search(pat, "x/prevision-liquidacion-2023.xlsx", re.I)
+
+
+def test_cofog_detalle_ccaa_2024():
+    d = fd.parse_cofog_detalle(read("COFOG_A_Detalle_CCAA_2024.xlsx"))
+    assert d["anio"] == 2024 and d["provisional"]
+    nombres = {f["comunidad"] for f in d["filas"]}
+    assert nombres == set(fd.CCAA.values())
+    and_ = next(f for f in d["filas"] if f["comunidad"] == "Andalucía")
+    assert and_["divisiones"]["07"] == 14660
+    for f in d["filas"]:
+        assert sum(f["divisiones"].values()) == pytest.approx(f["total"], abs=5)
+
+
+def test_cofog_serie_central():
+    s = fd.parse_cofog_serie(read("cofog_serie_central.xlsx"), desde=2014)
+    assert s[0]["anio"] == 2014 and s[-1]["anio"] >= 2024
+    a = next(x for x in s if x["anio"] == 2024)
+    assert a["total"] == 357732
+    assert a["divisiones"]["07"] == 3585
+    assert a["transferencias_aapp"] == 193390
+    assert sum(a["divisiones"].values()) == pytest.approx(a["total"], abs=5)
+
+
 def test_funcional_madrid_2026():
     d = fd.parse_funcional(read("funcional_12_2026.xlsx"))
     assert d["anio"] == 2026
