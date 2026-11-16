@@ -1,0 +1,165 @@
+{
+ "fuente": "https://www.hacienda.gob.es/es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx",
+ "anios": [
+  {
+   "norma": "Real Decreto-Ley 13/2026 de 2 de junio",
+   "filas": [
+    {
+     "comunidad": "Cataluña",
+     "irpf": 17502.76,
+     "iva": 10219.09,
+     "impuestos_especiales": 3077.01,
+     "fondo_suficiencia": 1364.37,
+     "fondo_garantia": -1935.88,
+     "total": 30227.35
+    },
+    {
+     "comunidad": "Galicia",
+     "irpf": 3844.87,
+     "iva": 2983.8,
+     "impuestos_especiales": 945.65,
+     "fondo_suficiencia": 929.21,
+     "fondo_garantia": 2205.76,
+     "total": 10909.29
+    },
+    {
+     "comunidad": "Andalucía",
+     "irpf": 9706.71,
+     "iva": 8916.31,
+     "impuestos_especiales": 2754.36,
+     "fondo_suficiencia": 752.66,
+     "fondo_garantia": 7212.76,
+     "total": 29342.79
+    },
+    {
+     "comunidad": "Asturias",
+     "irpf": 1655.58,
+     "iva": 1135.02,
+     "impuestos_especiales": 360.61,
+     "fondo_suficiencia": 288.69,
+     "fondo_garantia": 538.83,
+     "total": 3978.73
+    },
+    {
+     "comunidad": "Cantabria",
+     "irpf": 863.4,
+     "iva": 683.46,
+     "impuestos_especiales": 226.36,
+     "fondo_suficiencia": 770.97,
+     "fondo_garantia": 140.83,
+     "total": 2685.01
+    },
+    {
+     "comunidad": "La Rioja",
+     "irpf": 472.96,
+     "iva": 364.14,
+     "impuestos_especiales": 114.12,
+     "fondo_suficiencia": 333.48,
+     "fondo_garantia": 161.57,
+     "total": 1446.27
+    },
+    {
+     "comunidad": "Murcia",
+     "irpf": 1719.99,
+     "iva": 1554.07,
+     "impuestos_especiales": 619.99,
+     "fondo_suficiencia": -323.9,
+     "fondo_garantia": 1332.39,
+     "total": 4902.55
+    },
+    {
+     "comunidad": "C. Valenciana",
+     "irpf": 7164.75,
+     "iva": 5891.97,
+     "impuestos_especiales": 1788.98,
+     "fondo_suficiencia": -2301.43,
+     "fondo_garantia": 2448.86,
+     "total": 14993.11
+    },
+    {
+     "comunidad": "Aragón",
+     "irpf": 2304.79,
+     "iva": 1610.06,
+     "impuestos_especiales": 587.81,
+     "fondo_suficiencia": 429.99,
+     "fondo_garantia": 385.17,
+     "total": 5317.82
+    },
+    {
+     "comunidad": "Castilla-La Mancha",
+     "irpf": 2383.04,
+     "iva": 2017.83,
+     "impuestos_especiales": 869.64,
+     "fondo_suficiencia": 114.87,
+     "fondo_garantia": 2091.84,
+     "total": 7477.21
+    },
+    {
+     "comunidad": "Canarias",
+     "irpf": 2506.93,
+     "iva": 0.0,
+     "impuestos_especiales": 94.33,
+     "fondo_suficiencia": 109.76,
+     "fondo_garantia": 4386.89,
+     "total": 7097.91
+    },
+    {
+     "comunidad": "Extremadura",
+     "irpf": 1028.58,
+     "iva": 1006.04,
+     "impuestos_especiales": 434.44,
+     "fondo_suficiencia": 697.3,
+     "fondo_garantia": 1303.25,
+     "total": 4469.62
+    },
+    {
+     "comunidad": "Illes Balears",
+     "irpf": 2269.31,
+     "iva": 1847.88,
+     "impuestos_especiales": 472.69,
+     "fondo_suficiencia": -1107.15,
+     "fondo_garantia": -313.63,
+     "total": 3169.1
+    },
+    {
+     "comunidad": "Madrid",
+     "irpf": 17612.28,
+     "iva": 10928.97,
+     "impuestos_especiales": 1764.5,
+     "fondo_suficiencia": -1216.04,
+     "fondo_garantia": -7028.45,
+     "total": 22061.27
+    },
+    {
+     "comunidad": "Castilla y León",
+     "irpf": 3462.78,
+     "iva": 2764.2,
+     "impuestos_especiales": 1099.66,
+     "fondo_suficiencia": 671.27,
+     "fondo_garantia": 1554.32,
+     "total": 9552.25
+    },
+    {
+     "comunidad": "Melilla",
+     "irpf": 0.0,
+     "iva": 0.0,
+     "impuestos_especiales": 0.0,
+     "fondo_suficiencia": 44.69,
+     "fondo_garantia": 0.0,
+     "total": 44.69
+    },
+    {
+     "comunidad": "Ceuta",
+     "irpf": 0.0,
+     "iva": 0.0,
+     "impuestos_especiales": 0.0,
+     "fondo_suficiencia": 55.81,
+     "fondo_garantia": 0.0,
+     "total": 55.81
+    }
+   ],
+   "anio": 2026,
+   "url": "https://www.hacienda.gob.es/es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx"
+  }
+ ]
+}

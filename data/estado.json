@@ -1,0 +1,2159 @@
+{
+ "fuente": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/EstadoOperacionesNF.aspx",
+ "anios": [
+  {
+   "anio": 2026,
+   "provisional": false,
+   "actualizado": "2026-10-30",
+   "unidad": "millones de euros, acumulado desde enero",
+   "meses": [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre"
+   ],
+   "pib": 1780669.0,
+   "partidas": [
+    {
+     "codigo": "",
+     "concepto": "Recursos no financieros",
+     "bloque": "recursos",
+     "nivel": 0,
+     "valores": [
+      17740.0,
+      36347.0,
+      73772.0,
+      102264.0,
+      118860.0,
+      161689.0,
+      189483.0,
+      214364.0,
+      247062.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Recursos corrientes",
+     "bloque": "recursos",
+     "nivel": 1,
+     "valores": [
+      17558.0,
+      35682.0,
+      71890.0,
+      99574.0,
+      115113.0,
+      155133.0,
+      177866.0,
+      202197.0,
+      234657.0
+     ]
+    },
+    {
+     "codigo": "P.11",
+     "concepto": "Producción de mercado",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      31.0,
+      69.0,
+      97.0,
+      120.0,
+      197.0,
+      248.0,
+      283.0,
+      312.0,
+      329.0
+     ]
+    },
+    {
+     "codigo": "P.12",
+     "concepto": "Producción para uso final propio",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      15.0,
+      29.0,
+      45.0,
+      60.0,
+      75.0,
+      94.0,
+      109.0,
+      125.0,
+      140.0
+     ]
+    },
+    {
+     "codigo": "P.131",
+     "concepto": "Pagos por otra producción no de mercado",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      109.0,
+      263.0,
+      370.0,
+      491.0,
+      613.0,
+      725.0,
+      843.0,
+      956.0,
+      1094.0
+     ]
+    },
+    {
+     "codigo": "D.211",
+     "concepto": "Impuestos del tipo valor añadido IVA",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      7727.0,
+      15292.0,
+      31884.0,
+      38276.0,
+      44006.0,
+      59739.0,
+      65126.0,
+      69989.0,
+      86209.0
+     ]
+    },
+    {
+     "codigo": "D.212",
+     "concepto": "Impuestos y derechos sobre las importaciones, excluido IVA",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      11.0,
+      22.0,
+      35.0,
+      50.0,
+      62.0,
+      71.0,
+      92.0,
+      106.0,
+      113.0
+     ]
+    },
+    {
+     "codigo": "D.214",
+     "concepto": "Impuestos sobre los productos, excluido IVA e importaciones",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      2245.0,
+      4829.0,
+      7143.0,
+      9518.0,
+      11838.0,
+      14287.0,
+      16546.0,
+      18557.0,
+      21183.0
+     ]
+    },
+    {
+     "codigo": "D.29",
+     "concepto": "Otros impuestos sobre la producción",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      211.0,
+      425.0,
+      636.0,
+      875.0,
+      1100.0,
+      1399.0,
+      2174.0,
+      2359.0,
+      2604.0
+     ]
+    },
+    {
+     "codigo": "D.39",
+     "concepto": "Otras subvenciones a la producción",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "D.41",
+     "concepto": "Intereses",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      545.0,
+      1104.0,
+      1783.0,
+      2389.0,
+      3022.0,
+      3976.0,
+      4754.0,
+      5490.0,
+      6123.0
+     ]
+    },
+    {
+     "codigo": "D.42",
+     "concepto": "Rentas de sociedades",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      1.0,
+      234.0,
+      234.0,
+      399.0,
+      419.0,
+      419.0,
+      419.0,
+      432.0
+     ]
+    },
+    {
+     "codigo": "D.43+..+D.45",
+     "concepto": "Otras rentas de la propiedad",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      15.0,
+      30.0,
+      45.0,
+      391.0,
+      406.0,
+      421.0,
+      435.0,
+      450.0,
+      466.0
+     ]
+    },
+    {
+     "codigo": "D.51",
+     "concepto": "Impuestos sobre la renta",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      4547.0,
+      9460.0,
+      23169.0,
+      38756.0,
+      42443.0,
+      59089.0,
+      67457.0,
+      81945.0,
+      91373.0
+     ]
+    },
+    {
+     "codigo": "D.59",
+     "concepto": "Otros impuestos corrientes",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      1.0,
+      0.0,
+      0.0,
+      3.0,
+      7.0,
+      14.0,
+      78.0,
+      91.0,
+      94.0
+     ]
+    },
+    {
+     "codigo": "D.611",
+     "concepto": "Cotizaciones sociales efectivas a cargo de los empleadores",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "D.613",
+     "concepto": "Cotizaciones sociales efectivas a cargo de los hogares",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      59.0,
+      127.0,
+      169.0,
+      228.0,
+      277.0,
+      341.0,
+      416.0,
+      470.0,
+      516.0
+     ]
+    },
+    {
+     "codigo": "D.612",
+     "concepto": "Cotizaciones sociales imputadas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      396.0,
+      793.0,
+      1190.0,
+      1587.0,
+      1984.0,
+      2964.0,
+      3387.0,
+      3811.0,
+      4237.0
+     ]
+    },
+    {
+     "codigo": "D.71",
+     "concepto": "Primas netas de seguro no vida",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      9.0,
+      19.0,
+      30.0,
+      39.0,
+      50.0,
+      62.0,
+      71.0,
+      82.0,
+      82.0
+     ]
+    },
+    {
+     "codigo": "D.72",
+     "concepto": "Indemnizaciones de seguro no vida",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      1.0,
+      7.0,
+      9.0,
+      13.0,
+      13.0,
+      13.0,
+      13.0
+     ]
+    },
+    {
+     "codigo": "D.73",
+     "concepto": "Transferencias corrientes entre administraciones públicas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      1257.0,
+      2560.0,
+      4008.0,
+      5120.0,
+      6812.0,
+      8885.0,
+      12596.0,
+      13698.0,
+      15995.0
+     ]
+    },
+    {
+     "codigo": "D.74",
+     "concepto": "Cooperación internacional corriente",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      88.0,
+      187.0,
+      438.0,
+      591.0,
+      654.0,
+      1049.0,
+      1512.0,
+      1670.0,
+      1686.0
+     ]
+    },
+    {
+     "codigo": "D.75",
+     "concepto": "Transferencias corrientes diversas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      292.0,
+      472.0,
+      613.0,
+      839.0,
+      1159.0,
+      1337.0,
+      1555.0,
+      1654.0,
+      1968.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Recursos de capital",
+     "bloque": "recursos",
+     "nivel": 1,
+     "valores": [
+      182.0,
+      665.0,
+      1882.0,
+      2690.0,
+      3747.0,
+      6556.0,
+      11617.0,
+      12167.0,
+      12405.0
+     ]
+    },
+    {
+     "codigo": "D.91",
+     "concepto": "Impuestos sobre el capital",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      56.0,
+      66.0,
+      77.0,
+      91.0,
+      103.0,
+      121.0,
+      141.0,
+      168.0,
+      178.0
+     ]
+    },
+    {
+     "codigo": "D.9_S.13",
+     "concepto": "Transferencias de capital entre administraciones públicas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      5.0,
+      5.0,
+      17.0,
+      42.0,
+      78.0,
+      86.0,
+      122.0,
+      148.0,
+      151.0
+     ]
+    },
+    {
+     "codigo": "D.92 (exc. D.9_S.13)",
+     "concepto": "Ayudas a la inversión",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      121.0,
+      594.0,
+      1788.0,
+      2542.0,
+      3550.0,
+      6333.0,
+      11338.0,
+      11835.0,
+      12060.0
+     ]
+    },
+    {
+     "codigo": "D.99 (exc. D.9_S.13)",
+     "concepto": "Otras transferencias de capital",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      15.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Empleos no financieros",
+     "bloque": "empleos",
+     "nivel": 0,
+     "valores": [
+      25220.0,
+      49519.0,
+      76780.0,
+      104892.0,
+      132823.0,
+      183779.0,
+      233871.0,
+      256005.0,
+      286096.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Empleos corrientes",
+     "bloque": "empleos",
+     "nivel": 1,
+     "valores": [
+      24265.0,
+      47361.0,
+      72136.0,
+      98456.0,
+      124196.0,
+      168747.0,
+      211411.0,
+      232040.0,
+      259275.0
+     ]
+    },
+    {
+     "codigo": "D.1",
+     "concepto": "Remuneración de asalariados",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1728.0,
+      3468.0,
+      5324.0,
+      7114.0,
+      8904.0,
+      12005.0,
+      13804.0,
+      15660.0,
+      17523.0
+     ]
+    },
+    {
+     "codigo": "P.2",
+     "concepto": "Consumos intermedios",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      642.0,
+      1199.0,
+      1938.0,
+      2604.0,
+      3230.0,
+      4096.0,
+      4885.0,
+      5555.0,
+      6343.0
+     ]
+    },
+    {
+     "codigo": "D.29",
+     "concepto": "Otros impuestos sobre la producción",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      1.0,
+      5.0,
+      8.0,
+      11.0,
+      13.0,
+      16.0,
+      17.0
+     ]
+    },
+    {
+     "codigo": "D.31",
+     "concepto": "Subvenciones a los productos",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      218.0,
+      1027.0,
+      1351.0,
+      1619.0,
+      2422.0,
+      2700.0,
+      3653.0,
+      3856.0,
+      4368.0
+     ]
+    },
+    {
+     "codigo": "D.39",
+     "concepto": "Otras subvenciones a la producción",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      2.0,
+      4.0,
+      6.0,
+      395.0,
+      404.0,
+      408.0,
+      1103.0,
+      1195.0,
+      1300.0
+     ]
+    },
+    {
+     "codigo": "D.41",
+     "concepto": "Intereses",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      2594.0,
+      5519.0,
+      7953.0,
+      11456.0,
+      15742.0,
+      19741.0,
+      22955.0,
+      25955.0,
+      29210.0
+     ]
+    },
+    {
+     "codigo": "D.42+..+D.45",
+     "concepto": "Otras rentas de la propiedad",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      12.0,
+      12.0,
+      12.0
+     ]
+    },
+    {
+     "codigo": "D.51",
+     "concepto": "Impuestos corrientes sobre la renta… a pagar",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "D.62",
+     "concepto": "Prestaciones sociales distintas de las transferencias sociales en especie",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1844.0,
+      3694.0,
+      5569.0,
+      8115.0,
+      10661.0,
+      14961.0,
+      16848.0,
+      18709.0,
+      20617.0
+     ]
+    },
+    {
+     "codigo": "D.632",
+     "concepto": "Transferencias sociales en especie: producción adquirida en el mercado",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      2.0,
+      38.0,
+      91.0,
+      152.0,
+      200.0,
+      249.0,
+      375.0,
+      565.0,
+      752.0
+     ]
+    },
+    {
+     "codigo": "D.71",
+     "concepto": "Primas netas de seguro no vida",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      1.0,
+      7.0,
+      10.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0
+     ]
+    },
+    {
+     "codigo": "D.72",
+     "concepto": "Indemnizaciones de seguro no vida",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      3.0,
+      1.0,
+      5.0,
+      7.0,
+      9.0,
+      9.0,
+      9.0
+     ]
+    },
+    {
+     "codigo": "D.73",
+     "concepto": "Transferencias corrientes entre administraciones públicas",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      15506.0,
+      28862.0,
+      44376.0,
+      59410.0,
+      73688.0,
+      103986.0,
+      135097.0,
+      146485.0,
+      163652.0
+     ]
+    },
+    {
+     "codigo": "D.74",
+     "concepto": "Cooperación internacional corriente",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      109.0,
+      183.0,
+      334.0,
+      551.0,
+      593.0,
+      655.0,
+      1072.0,
+      1073.0,
+      1082.0
+     ]
+    },
+    {
+     "codigo": "D.75",
+     "concepto": "Transferencias corrientes diversas",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      278.0,
+      419.0,
+      533.0,
+      1165.0,
+      1261.0,
+      1490.0,
+      1807.0,
+      1958.0,
+      2074.0
+     ]
+    },
+    {
+     "codigo": "D.76",
+     "concepto": "Recursos propios de la UE basados en el IVA y la RNB",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1342.0,
+      2948.0,
+      4656.0,
+      5862.0,
+      7068.0,
+      8424.0,
+      9764.0,
+      10978.0,
+      12302.0
+     ]
+    },
+    {
+     "codigo": "D.8",
+     "concepto": "Ajustes por la variación de los derechos por pensiones",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Empleos de capital",
+     "bloque": "empleos",
+     "nivel": 1,
+     "valores": [
+      955.0,
+      2158.0,
+      4644.0,
+      6436.0,
+      8627.0,
+      15032.0,
+      22460.0,
+      23965.0,
+      26821.0
+     ]
+    },
+    {
+     "codigo": "P.51g",
+     "concepto": "Formación bruta de capital fijo",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      632.0,
+      1263.0,
+      1930.0,
+      2441.0,
+      3070.0,
+      4256.0,
+      4837.0,
+      5418.0,
+      6208.0
+     ]
+    },
+    {
+     "codigo": "P.52+P.53",
+     "concepto": "Variación de existencias y adquisiciones menos cesiones de objetos valiosos",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      -24.0,
+      -24.0,
+      -23.0,
+      -22.0
+     ]
+    },
+    {
+     "codigo": "NP",
+     "concepto": "Adquisiciones menos cesiones de activos no financieros no producidos",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      3.0,
+      4.0,
+      10.0,
+      17.0,
+      24.0,
+      34.0,
+      35.0,
+      38.0
+     ]
+    },
+    {
+     "codigo": "D.9_S.13",
+     "concepto": "Transferencias de capital entre administraciones públicas",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      174.0,
+      714.0,
+      1906.0,
+      2837.0,
+      4317.0,
+      8343.0,
+      10544.0,
+      11277.0,
+      12615.0
+     ]
+    },
+    {
+     "codigo": "D.92 (exc. D.9_S.13)",
+     "concepto": "Ayudas a la inversión",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      127.0,
+      148.0,
+      739.0,
+      965.0,
+      1000.0,
+      1689.0,
+      3169.0,
+      3325.0,
+      4026.0
+     ]
+    },
+    {
+     "codigo": "D.99 (exc. D.9_S.13)",
+     "concepto": "Otras transferencias de capital",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      22.0,
+      30.0,
+      65.0,
+      183.0,
+      222.0,
+      744.0,
+      3900.0,
+      3933.0,
+      3956.0
+     ]
+    },
+    {
+     "codigo": "B.9",
+     "concepto": "Capacidad (+) o necesidad (-) de financiación",
+     "bloque": "saldos",
+     "nivel": 0,
+     "valores": [
+      -7480.0,
+      -13172.0,
+      -3008.0,
+      -2628.0,
+      -13963.0,
+      -22090.0,
+      -44388.0,
+      -41641.0,
+      -39034.0
+     ]
+    },
+    {
+     "codigo": "SALDO PRIMARIO",
+     "concepto": "Saldo primario",
+     "bloque": "saldos",
+     "nivel": 0,
+     "valores": [
+      -4886.0,
+      -7653.0,
+      4945.0,
+      8828.0,
+      1779.0,
+      -2349.0,
+      -21433.0,
+      -15686.0,
+      -9824.0
+     ]
+    },
+    {
+     "codigo": "B.8g",
+     "concepto": "Ahorro bruto",
+     "bloque": "saldos",
+     "nivel": 0,
+     "valores": [
+      -6707.0,
+      -11679.0,
+      -246.0,
+      1118.0,
+      -9083.0,
+      -13614.0,
+      -33545.0,
+      -29843.0,
+      -24618.0
+     ]
+    }
+   ],
+   "url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/Estado-M/M_ESTADO_2026.xlsx"
+  },
+  {
+   "anio": 2025,
+   "provisional": true,
+   "actualizado": "2026-09-30",
+   "unidad": "millones de euros, acumulado desde enero",
+   "meses": [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre"
+   ],
+   "pib": null,
+   "partidas": [
+    {
+     "codigo": "",
+     "concepto": "Recursos no financieros",
+     "bloque": "recursos",
+     "nivel": 0,
+     "valores": [
+      16430.0,
+      33933.0,
+      69307.0,
+      94639.0,
+      110311.0,
+      146864.0,
+      169511.0,
+      193578.0,
+      226056.0,
+      262192.0,
+      285546.0,
+      323309.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Recursos corrientes",
+     "bloque": "recursos",
+     "nivel": 1,
+     "valores": [
+      16368.0,
+      33308.0,
+      67748.0,
+      92518.0,
+      107179.0,
+      142774.0,
+      164490.0,
+      188019.0,
+      219138.0,
+      254283.0,
+      276692.0,
+      311056.0
+     ]
+    },
+    {
+     "codigo": "P.11",
+     "concepto": "Producción de mercado",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      48.0,
+      77.0,
+      115.0,
+      175.0,
+      199.0,
+      251.0,
+      287.0,
+      322.0,
+      343.0,
+      400.0,
+      426.0,
+      458.0
+     ]
+    },
+    {
+     "codigo": "P.12",
+     "concepto": "Producción para uso final propio",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      14.0,
+      27.0,
+      42.0,
+      57.0,
+      71.0,
+      93.0,
+      108.0,
+      123.0,
+      138.0,
+      152.0,
+      167.0,
+      195.0
+     ]
+    },
+    {
+     "codigo": "P.131",
+     "concepto": "Pagos por otra producción no de mercado",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      111.0,
+      237.0,
+      338.0,
+      464.0,
+      563.0,
+      649.0,
+      762.0,
+      857.0,
+      963.0,
+      1065.0,
+      1175.0,
+      1285.0
+     ]
+    },
+    {
+     "codigo": "D.211",
+     "concepto": "Impuestos del tipo valor añadido IVA",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      7306.0,
+      14391.0,
+      30360.0,
+      36121.0,
+      42200.0,
+      56546.0,
+      61297.0,
+      66090.0,
+      80630.0,
+      86877.0,
+      92309.0,
+      102168.0
+     ]
+    },
+    {
+     "codigo": "D.212",
+     "concepto": "Impuestos y derechos sobre las importaciones, excluido IVA",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      11.0,
+      22.0,
+      34.0,
+      41.0,
+      54.0,
+      79.0,
+      93.0,
+      107.0,
+      112.0,
+      124.0,
+      137.0,
+      157.0
+     ]
+    },
+    {
+     "codigo": "D.214",
+     "concepto": "Impuestos sobre los productos, excluido IVA e importaciones",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      2186.0,
+      4686.0,
+      6869.0,
+      9267.0,
+      12005.0,
+      14474.0,
+      16783.0,
+      19157.0,
+      22128.0,
+      24423.0,
+      27356.0,
+      29615.0
+     ]
+    },
+    {
+     "codigo": "D.29",
+     "concepto": "Otros impuestos sobre la producción",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      259.0,
+      459.0,
+      719.0,
+      979.0,
+      1257.0,
+      1635.0,
+      2363.0,
+      2647.0,
+      2922.0,
+      3201.0,
+      3473.0,
+      3840.0
+     ]
+    },
+    {
+     "codigo": "D.39",
+     "concepto": "Otras subvenciones a la producción",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "D.41",
+     "concepto": "Intereses",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      520.0,
+      1040.0,
+      1626.0,
+      2307.0,
+      2905.0,
+      3798.0,
+      4434.0,
+      5044.0,
+      5730.0,
+      6320.0,
+      7007.0,
+      7804.0
+     ]
+    },
+    {
+     "codigo": "D.42",
+     "concepto": "Rentas de sociedades",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      183.0,
+      199.0,
+      203.0,
+      203.0,
+      203.0,
+      203.0,
+      203.0,
+      2276.0
+     ]
+    },
+    {
+     "codigo": "D.43+..+D.45",
+     "concepto": "Otras rentas de la propiedad",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      15.0,
+      30.0,
+      45.0,
+      251.0,
+      266.0,
+      281.0,
+      295.0,
+      310.0,
+      326.0,
+      340.0,
+      355.0,
+      525.0
+     ]
+    },
+    {
+     "codigo": "D.51",
+     "concepto": "Impuestos sobre la renta",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      3923.0,
+      8459.0,
+      21364.0,
+      34688.0,
+      36835.0,
+      51295.0,
+      57171.0,
+      70637.0,
+      80144.0,
+      103133.0,
+      112923.0,
+      128072.0
+     ]
+    },
+    {
+     "codigo": "D.59",
+     "concepto": "Otros impuestos corrientes",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      1.0,
+      2.0,
+      4.0,
+      8.0,
+      9.0,
+      12.0,
+      80.0,
+      98.0,
+      101.0,
+      104.0,
+      104.0,
+      107.0
+     ]
+    },
+    {
+     "codigo": "D.611",
+     "concepto": "Cotizaciones sociales efectivas a cargo de los empleadores",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "D.613",
+     "concepto": "Cotizaciones sociales efectivas a cargo de los hogares",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      66.0,
+      132.0,
+      182.0,
+      244.0,
+      293.0,
+      363.0,
+      447.0,
+      495.0,
+      548.0,
+      604.0,
+      653.0,
+      726.0
+     ]
+    },
+    {
+     "codigo": "D.612",
+     "concepto": "Cotizaciones sociales imputadas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      430.0,
+      859.0,
+      1290.0,
+      1719.0,
+      2150.0,
+      3009.0,
+      3440.0,
+      3869.0,
+      4303.0,
+      4737.0,
+      5174.0,
+      6059.0
+     ]
+    },
+    {
+     "codigo": "D.71",
+     "concepto": "Primas netas de seguro no vida",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      10.0,
+      18.0,
+      26.0,
+      37.0,
+      44.0,
+      53.0,
+      53.0,
+      71.0,
+      79.0,
+      89.0,
+      99.0,
+      108.0
+     ]
+    },
+    {
+     "codigo": "D.72",
+     "concepto": "Indemnizaciones de seguro no vida",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      7.0,
+      9.0,
+      10.0,
+      13.0,
+      13.0,
+      13.0,
+      14.0,
+      14.0
+     ]
+    },
+    {
+     "codigo": "D.73",
+     "concepto": "Transferencias corrientes entre administraciones públicas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      1212.0,
+      2312.0,
+      3643.0,
+      4768.0,
+      6448.0,
+      7877.0,
+      13996.0,
+      15084.0,
+      17110.0,
+      18680.0,
+      20935.0,
+      22731.0
+     ]
+    },
+    {
+     "codigo": "D.74",
+     "concepto": "Cooperación internacional corriente",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      49.0,
+      177.0,
+      480.0,
+      605.0,
+      754.0,
+      1026.0,
+      1339.0,
+      1453.0,
+      1777.0,
+      1988.0,
+      2116.0,
+      2662.0
+     ]
+    },
+    {
+     "codigo": "D.75",
+     "concepto": "Transferencias corrientes diversas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      207.0,
+      379.0,
+      609.0,
+      785.0,
+      936.0,
+      1125.0,
+      1329.0,
+      1439.0,
+      1568.0,
+      1830.0,
+      2066.0,
+      2254.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Recursos de capital",
+     "bloque": "recursos",
+     "nivel": 1,
+     "valores": [
+      62.0,
+      625.0,
+      1559.0,
+      2121.0,
+      3132.0,
+      4090.0,
+      5021.0,
+      5559.0,
+      6918.0,
+      7909.0,
+      8854.0,
+      12253.0
+     ]
+    },
+    {
+     "codigo": "D.91",
+     "concepto": "Impuestos sobre el capital",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      14.0,
+      29.0,
+      39.0,
+      55.0,
+      70.0,
+      91.0,
+      105.0,
+      117.0,
+      130.0,
+      139.0,
+      147.0,
+      163.0
+     ]
+    },
+    {
+     "codigo": "D.9_S.13",
+     "concepto": "Transferencias de capital entre administraciones públicas",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      3.0,
+      6.0,
+      32.0,
+      62.0,
+      74.0,
+      74.0,
+      76.0,
+      79.0,
+      81.0,
+      96.0,
+      106.0,
+      111.0
+     ]
+    },
+    {
+     "codigo": "D.92 (exc. D.9_S.13)",
+     "concepto": "Ayudas a la inversión",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      45.0,
+      590.0,
+      1488.0,
+      2004.0,
+      2985.0,
+      3922.0,
+      4837.0,
+      5360.0,
+      6704.0,
+      7671.0,
+      8593.0,
+      11900.0
+     ]
+    },
+    {
+     "codigo": "D.99 (exc. D.9_S.13)",
+     "concepto": "Otras transferencias de capital",
+     "bloque": "recursos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      8.0,
+      79.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Empleos no financieros",
+     "bloque": "empleos",
+     "nivel": 0,
+     "valores": [
+      23674.0,
+      47496.0,
+      72158.0,
+      95063.0,
+      120863.0,
+      166257.0,
+      208306.0,
+      228893.0,
+      257092.0,
+      283946.0,
+      315340.0,
+      358246.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Empleos corrientes",
+     "bloque": "empleos",
+     "nivel": 1,
+     "valores": [
+      22835.0,
+      43974.0,
+      66332.0,
+      87916.0,
+      111298.0,
+      152871.0,
+      193132.0,
+      212161.0,
+      237329.0,
+      261554.0,
+      290466.0,
+      322642.0
+     ]
+    },
+    {
+     "codigo": "D.1",
+     "concepto": "Remuneración de asalariados",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1623.0,
+      3268.0,
+      5008.0,
+      6776.0,
+      8493.0,
+      11412.0,
+      13207.0,
+      14993.0,
+      16738.0,
+      18494.0,
+      20269.0,
+      23933.0
+     ]
+    },
+    {
+     "codigo": "P.2",
+     "concepto": "Consumos intermedios",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      608.0,
+      1126.0,
+      1805.0,
+      2425.0,
+      3044.0,
+      3688.0,
+      4368.0,
+      4928.0,
+      5620.0,
+      6233.0,
+      6850.0,
+      8104.0
+     ]
+    },
+    {
+     "codigo": "D.29",
+     "concepto": "Otros impuestos sobre la producción",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      1.0,
+      3.0,
+      6.0,
+      9.0,
+      12.0,
+      15.0,
+      17.0,
+      19.0,
+      30.0,
+      42.0,
+      46.0
+     ]
+    },
+    {
+     "codigo": "D.31",
+     "concepto": "Subvenciones a los productos",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      290.0,
+      1255.0,
+      1702.0,
+      2169.0,
+      3179.0,
+      3750.0,
+      3934.0,
+      4134.0,
+      4580.0,
+      4717.0,
+      5206.0,
+      5979.0
+     ]
+    },
+    {
+     "codigo": "D.39",
+     "concepto": "Otras subvenciones a la producción",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1.0,
+      3.0,
+      5.0,
+      7.0,
+      21.0,
+      38.0,
+      464.0,
+      474.0,
+      476.0,
+      497.0,
+      527.0,
+      1472.0
+     ]
+    },
+    {
+     "codigo": "D.41",
+     "concepto": "Intereses",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      2357.0,
+      5035.0,
+      7608.0,
+      10752.0,
+      14174.0,
+      17380.0,
+      20153.0,
+      23291.0,
+      26180.0,
+      29139.0,
+      31923.0,
+      34989.0
+     ]
+    },
+    {
+     "codigo": "D.42+..+D.45",
+     "concepto": "Otras rentas de la propiedad",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      14.0,
+      14.0
+     ]
+    },
+    {
+     "codigo": "D.51",
+     "concepto": "Impuestos corrientes sobre la renta… a pagar",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "D.62",
+     "concepto": "Prestaciones sociales distintas de las transferencias sociales en especie",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1747.0,
+      3501.0,
+      5269.0,
+      7712.0,
+      10158.0,
+      14263.0,
+      16023.0,
+      17784.0,
+      19582.0,
+      21389.0,
+      23196.0,
+      26695.0
+     ]
+    },
+    {
+     "codigo": "D.632",
+     "concepto": "Transferencias sociales en especie: producción adquirida en el mercado",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      5.0,
+      21.0,
+      55.0,
+      69.0,
+      84.0,
+      129.0,
+      205.0,
+      316.0,
+      367.0,
+      778.0,
+      1216.0,
+      2033.0
+     ]
+    },
+    {
+     "codigo": "D.71",
+     "concepto": "Primas netas de seguro no vida",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      7.0,
+      10.0,
+      11.0,
+      14.0,
+      14.0,
+      14.0,
+      15.0,
+      15.0
+     ]
+    },
+    {
+     "codigo": "D.72",
+     "concepto": "Indemnizaciones de seguro no vida",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1.0,
+      4.0,
+      5.0,
+      7.0,
+      9.0,
+      15.0,
+      15.0,
+      19.0,
+      18.0,
+      40.0,
+      40.0,
+      64.0
+     ]
+    },
+    {
+     "codigo": "D.73",
+     "concepto": "Transferencias corrientes entre administraciones públicas",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      14828.0,
+      27097.0,
+      40412.0,
+      52277.0,
+      65232.0,
+      93750.0,
+      124927.0,
+      135391.0,
+      151770.0,
+      166805.0,
+      184943.0,
+      201100.0
+     ]
+    },
+    {
+     "codigo": "D.74",
+     "concepto": "Cooperación internacional corriente",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      142.0,
+      257.0,
+      322.0,
+      477.0,
+      561.0,
+      589.0,
+      714.0,
+      737.0,
+      790.0,
+      893.0,
+      997.0,
+      1193.0
+     ]
+    },
+    {
+     "codigo": "D.75",
+     "concepto": "Transferencias corrientes diversas",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      214.0,
+      371.0,
+      998.0,
+      1082.0,
+      1153.0,
+      1357.0,
+      1601.0,
+      1665.0,
+      1770.0,
+      2112.0,
+      2970.0,
+      3658.0
+     ]
+    },
+    {
+     "codigo": "D.76",
+     "concepto": "Recursos propios de la UE basados en el IVA y la RNB",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      1019.0,
+      2035.0,
+      3139.0,
+      4156.0,
+      5174.0,
+      6475.0,
+      7492.0,
+      8395.0,
+      9402.0,
+      10410.0,
+      12258.0,
+      13347.0
+     ]
+    },
+    {
+     "codigo": "D.8",
+     "concepto": "Ajustes por la variación de los derechos por pensiones",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "codigo": "",
+     "concepto": "Empleos de capital",
+     "bloque": "empleos",
+     "nivel": 1,
+     "valores": [
+      839.0,
+      3522.0,
+      5826.0,
+      7147.0,
+      9565.0,
+      13386.0,
+      15174.0,
+      16732.0,
+      19763.0,
+      22392.0,
+      24874.0,
+      35604.0
+     ]
+    },
+    {
+     "codigo": "P.51g",
+     "concepto": "Formación bruta de capital fijo",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      585.0,
+      1177.0,
+      1971.0,
+      2571.0,
+      3172.0,
+      4432.0,
+      5038.0,
+      5644.0,
+      6484.0,
+      7077.0,
+      7680.0,
+      8890.0
+     ]
+    },
+    {
+     "codigo": "P.52+P.53",
+     "concepto": "Variación de existencias y adquisiciones menos cesiones de objetos valiosos",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      2.0,
+      2.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -100.0
+     ]
+    },
+    {
+     "codigo": "NP",
+     "concepto": "Adquisiciones menos cesiones de activos no financieros no producidos",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      0.0,
+      0.0,
+      0.0,
+      2.0,
+      4.0,
+      6.0,
+      9.0,
+      10.0,
+      14.0,
+      25.0,
+      30.0,
+      40.0
+     ]
+    },
+    {
+     "codigo": "D.9_S.13",
+     "concepto": "Transferencias de capital entre administraciones públicas",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      99.0,
+      2165.0,
+      3486.0,
+      3990.0,
+      5414.0,
+      7137.0,
+      8015.0,
+      8834.0,
+      10150.0,
+      11749.0,
+      13203.0,
+      19003.0
+     ]
+    },
+    {
+     "codigo": "D.92 (exc. D.9_S.13)",
+     "concepto": "Ayudas a la inversión",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      119.0,
+      122.0,
+      257.0,
+      410.0,
+      784.0,
+      1140.0,
+      1354.0,
+      1461.0,
+      2006.0,
+      2288.0,
+      2577.0,
+      3610.0
+     ]
+    },
+    {
+     "codigo": "D.99 (exc. D.9_S.13)",
+     "concepto": "Otras transferencias de capital",
+     "bloque": "empleos",
+     "nivel": 2,
+     "valores": [
+      36.0,
+      58.0,
+      112.0,
+      174.0,
+      190.0,
+      670.0,
+      756.0,
+      781.0,
+      1128.0,
+      1271.0,
+      1401.0,
+      4161.0
+     ]
+    },
+    {
+     "codigo": "B.9",
+     "concepto": "Capacidad (+) o necesidad (-) de financiación",
+     "bloque": "saldos",
+     "nivel": 0,
+     "valores": [
+      -7244.0,
+      -13563.0,
+      -2851.0,
+      -424.0,
+      -10552.0,
+      -19393.0,
+      -38795.0,
+      -35315.0,
+      -31036.0,
+      -21754.0,
+      -29794.0,
+      -34937.0
+     ]
+    },
+    {
+     "codigo": "SALDO PRIMARIO",
+     "concepto": "Saldo primario",
+     "bloque": "saldos",
+     "nivel": 0,
+     "valores": [
+      -4887.0,
+      -8528.0,
+      4757.0,
+      10328.0,
+      3622.0,
+      -2013.0,
+      -18642.0,
+      -12024.0,
+      -4856.0,
+      7385.0,
+      2129.0,
+      52.0
+     ]
+    },
+    {
+     "codigo": "B.8g",
+     "concepto": "Ahorro bruto",
+     "bloque": "saldos",
+     "nivel": 0,
+     "valores": [
+      -6467.0,
+      -10666.0,
+      1416.0,
+      4602.0,
+      -4119.0,
+      -10097.0,
+      -28642.0,
+      -24142.0,
+      -18191.0,
+      -7271.0,
+      -13774.0,
+      -11586.0
+     ]
+    }
+   ],
+   "url": "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Documents/Estado-M/M_ESTADO_2025.xlsx"
+  }
+ ]
+}
