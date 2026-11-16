@@ -2338,6 +2338,2343 @@
      ]
     }
    ]
+  },
+  {
+   "anio": 2025,
+   "comunidades": [
+    {
+     "codigo": "01",
+     "comunidad": "Andalucía",
+     "foral": false,
+     "total": 48871.6,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 753.73
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 59.35
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 29.56
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 22.66
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 3473.83
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 1182.78
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 550.3
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 15088.33
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 10259.22
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 306.53
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 2795.15
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 359.1
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 373.41
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 3.13
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 2602.91
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 537.72
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 614.04
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 180.51
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 1294.51
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 195.38
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 3893.06
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 4296.38
+      }
+     ]
+    },
+    {
+     "codigo": "02",
+     "comunidad": "Aragón",
+     "foral": false,
+     "total": 8546.3,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 95.79
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 18.35
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 5.12
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 515.85
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 217.67
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 44.45
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 2749.52
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 1520.2
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 45.36
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 732.22
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 145.52
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 85.78
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 27.51
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 336.18
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 93.77
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 49.39
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 32.35
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 408.05
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 67.15
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 123.52
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 1232.56
+      }
+     ]
+    },
+    {
+     "codigo": "03",
+     "comunidad": "Asturias",
+     "foral": false,
+     "total": 6664.48,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 98.02
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 49.09
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 7.09
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 2.21
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 665.56
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 166.18
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 166.39
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 2457.74
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 1093.29
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 64.84
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 244.96
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 155.2
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 52.67
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 50.81
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 357.67
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 68.07
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 18.52
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 27.65
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 214.56
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 36.45
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 11.27
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 656.24
+      }
+     ]
+    },
+    {
+     "codigo": "04",
+     "comunidad": "Illes Balears",
+     "foral": false,
+     "total": 7469.14,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 18.7
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 19.72
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 10.22
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 364.8
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 134.45
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 95.2
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 2470.56
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 1420.43
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 59.16
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 79.85
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 190.62
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 203.48
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 114.26
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 346.05
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 62.1
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 71.47
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 40.93
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 193.16
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 28.23
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 574.3
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 971.44
+      }
+     ]
+    },
+    {
+     "codigo": "05",
+     "comunidad": "Canarias",
+     "foral": false,
+     "total": 12342.74,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 206.2
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 53.87
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 10.68
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 0.35
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 786.8
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 346.06
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 186.91
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 4581.25
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 2435.46
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 67.46
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 127.32
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 187.26
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 193.42
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 102.18
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 521.53
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 65.03
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 141.66
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 71.41
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 348.58
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 117.47
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 1035.89
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 755.96
+      }
+     ]
+    },
+    {
+     "codigo": "06",
+     "comunidad": "Cantabria",
+     "foral": false,
+     "total": 3755.66,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 50.35
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 24.58
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 1.53
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 0.01
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 324.74
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 115.02
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 27.58
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 1217.91
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 725.15
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 64.04
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 74.1
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 66.87
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 39.51
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 8.14
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 314.29
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 74.45
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 58.25
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 11.65
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 39.3
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 36.95
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 19.84
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 461.4
+      }
+     ]
+    },
+    {
+     "codigo": "07",
+     "comunidad": "Castilla y León",
+     "foral": false,
+     "total": 14562.49,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 0.05
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 19.03
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 5.26
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 150.64
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 1204.39
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 411.77
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 112.18
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 4812.77
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 2688.65
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 152.82
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 1497.09
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 94.08
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 216.77
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 45.25
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 604.05
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 210.04
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 198.99
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 44.86
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 133.6
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 50.26
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 125.48
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 1784.47
+      }
+     ]
+    },
+    {
+     "codigo": "08",
+     "comunidad": "Castilla-La Mancha",
+     "foral": false,
+     "total": 12716.18,
+     "politicas": [
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 15.21
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 4.77
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 954.57
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 284.99
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 218.23
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 3773.56
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 2324.29
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 64.69
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 1332.42
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 159.96
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 158.94
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 35.68
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 582.24
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 51.53
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 258.94
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 38.7
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 184.65
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 31.19
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 3.37
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 2238.26
+      }
+     ]
+    },
+    {
+     "codigo": "09",
+     "comunidad": "Cataluña",
+     "foral": false,
+     "total": 50605.29,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 722.44
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 2265.99
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 57.51
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 104.22
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 3334.13
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 999.27
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 324.83
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 11439.99
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 8115.92
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 559.61
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 794.16
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 165.22
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 193.7
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 511.68
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 1737.98
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 444.74
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 520.83
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 259.14
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 1500.59
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 548.79
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 4607.76
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 11396.77
+      }
+     ]
+    },
+    {
+     "codigo": "10",
+     "comunidad": "Extremadura",
+     "foral": false,
+     "total": 8098.34,
+     "politicas": [
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 13.53
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 14.28
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 3.15
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 701.23
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 380.59
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 142.92
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 2342.62
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 1453.02
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 86.55
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 1139.39
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 80.29
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 110.23
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 21.48
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 428.01
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 97.67
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 79.62
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 27.02
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 109.27
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 27.22
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 55.48
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 784.77
+      }
+     ]
+    },
+    {
+     "codigo": "11",
+     "comunidad": "Galicia",
+     "foral": false,
+     "total": 15740.54,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 192.89
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 40.28
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 12.05
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 8.03
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 1398.11
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 421.05
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 241.31
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 5434.96
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 2963.46
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 161.12
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 542.55
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 136.7
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 441.86
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 34.66
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 806.99
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 343.74
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 184.87
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 47.46
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 268.68
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 108.39
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 187.9
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 1763.49
+      }
+     ]
+    },
+    {
+     "codigo": "12",
+     "comunidad": "Madrid",
+     "foral": false,
+     "total": 31596.3,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 706.97
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 359.95
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 3.78
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 0.12
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 2695.05
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 684.04
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 755.29
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 10441.27
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 6527.78
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 248.4
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 63.63
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 8.48
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 67.55
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 1985.69
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 837.03
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 228.07
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 28.4
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 50.77
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 1669.6
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 177.75
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 126.03
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 3930.63
+      }
+     ]
+    },
+    {
+     "codigo": "13",
+     "comunidad": "Murcia",
+     "foral": false,
+     "total": 8037.48,
+     "politicas": [
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 41.41
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 2.33
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 0.07
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 687.78
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 117.84
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 39.93
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 2576.56
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 2050.66
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 27.24
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 172.39
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 55.82
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 52.23
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 18.36
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 311.99
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 41.3
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 23.52
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 25.82
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 275.27
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 66.99
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 15.18
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 1434.76
+      }
+     ]
+    },
+    {
+     "codigo": "14",
+     "comunidad": "Navarra",
+     "foral": true,
+     "total": 6431.26,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 43.93
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 154.29
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 26.68
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 151.08
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 571.52
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 67.2
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 149.93
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 1504.27
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 1033.34
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 84.67
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 144.21
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 34.37
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 16.19
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 57.79
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 316.03
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 68.67
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 16.84
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 23.48
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 251.08
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 32.52
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 1224.04
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 459.14
+      }
+     ]
+    },
+    {
+     "codigo": "15",
+     "comunidad": "País Vasco",
+     "foral": true,
+     "total": 15811.13,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 260.07
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 871.44
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 69.1
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 1142.06
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 456.22
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 450.79
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 5143.06
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 3696.67
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 132.47
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 221.22
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 27.01
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 85.37
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 83.45
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 712.39
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 668.88
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 113.67
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 72.13
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 368.56
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 85.88
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 126.03
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 1024.69
+      }
+     ]
+    },
+    {
+     "codigo": "16",
+     "comunidad": "La Rioja",
+     "foral": false,
+     "total": 2114.7,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 22.29
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 11.32
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 7.18
+      },
+      {
+       "codigo": "21",
+       "politica": "Pensiones",
+       "area": "Protección y promoción social",
+       "importe": 0.0
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 184.91
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 30.03
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 26.17
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 624.7
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 417.88
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 30.54
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 69.92
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 3.53
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 86.81
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 6.5
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 96.6
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 117.53
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 8.23
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 15.58
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 51.82
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 17.81
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 36.58
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 248.78
+      }
+     ]
+    },
+    {
+     "codigo": "17",
+     "comunidad": "C. Valenciana",
+     "foral": false,
+     "total": 32976.87,
+     "politicas": [
+      {
+       "codigo": "11",
+       "politica": "Justicia",
+       "area": "Servicios públicos básicos",
+       "importe": 567.21
+      },
+      {
+       "codigo": "13",
+       "politica": "Seguridad Ciudadana e Instituciones Penitenciarias",
+       "area": "Servicios públicos básicos",
+       "importe": 441.54
+      },
+      {
+       "codigo": "14",
+       "politica": "Política Exterior",
+       "area": "Servicios públicos básicos",
+       "importe": 96.58
+      },
+      {
+       "codigo": "23",
+       "politica": "Servicios Sociales y Promoción Social",
+       "area": "Protección y promoción social",
+       "importe": 2806.38
+      },
+      {
+       "codigo": "24",
+       "politica": "Fomento del Empleo",
+       "area": "Protección y promoción social",
+       "importe": 550.13
+      },
+      {
+       "codigo": "26",
+       "politica": "Acceso a la Vivienda y Fomento de la Edificación",
+       "area": "Protección y promoción social",
+       "importe": 316.43
+      },
+      {
+       "codigo": "31",
+       "politica": "Sanidad",
+       "area": "Bienes públicos preferentes",
+       "importe": 8970.74
+      },
+      {
+       "codigo": "32",
+       "politica": "Educación",
+       "area": "Bienes públicos preferentes",
+       "importe": 6984.28
+      },
+      {
+       "codigo": "33",
+       "politica": "Cultura",
+       "area": "Bienes públicos preferentes",
+       "importe": 267.58
+      },
+      {
+       "codigo": "41",
+       "politica": "Agricultura, Pesca y Alimentación",
+       "area": "Actuaciones económicas",
+       "importe": 608.81
+      },
+      {
+       "codigo": "42",
+       "politica": "Industria y Energía",
+       "area": "Actuaciones económicas",
+       "importe": 430.55
+      },
+      {
+       "codigo": "43",
+       "politica": "Comercio, Turismo y Pymes",
+       "area": "Actuaciones económicas",
+       "importe": 179.36
+      },
+      {
+       "codigo": "44",
+       "politica": "Subvenciones al Transporte",
+       "area": "Actuaciones económicas",
+       "importe": 163.96
+      },
+      {
+       "codigo": "45",
+       "politica": "Infraestructuras",
+       "area": "Actuaciones económicas",
+       "importe": 1163.61
+      },
+      {
+       "codigo": "46",
+       "politica": "Investigación, Desarrollo e Innovación",
+       "area": "Actuaciones económicas",
+       "importe": 246.14
+      },
+      {
+       "codigo": "49",
+       "politica": "Otras Actuaciones de Carácter Económico",
+       "area": "Actuaciones económicas",
+       "importe": 372.12
+      },
+      {
+       "codigo": "91",
+       "politica": "Alta Dirección",
+       "area": "Actuaciones de carácter general",
+       "importe": 116.07
+      },
+      {
+       "codigo": "92",
+       "politica": "Servicios de Carácter General",
+       "area": "Actuaciones de carácter general",
+       "importe": 1418.34
+      },
+      {
+       "codigo": "93",
+       "politica": "Administración Financiera y Tributaria",
+       "area": "Actuaciones de carácter general",
+       "importe": 149.17
+      },
+      {
+       "codigo": "94",
+       "politica": "Transferencias a otras Administraciones Públicas",
+       "area": "Actuaciones de carácter general",
+       "importe": 3.69
+      },
+      {
+       "codigo": "95",
+       "politica": "Deuda Pública",
+       "area": "Actuaciones de carácter general",
+       "importe": 7124.18
+      }
+     ]
+    }
+   ]
   }
  ]
 }

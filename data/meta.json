@@ -6,18 +6,20 @@
    "fichero": "estado.json"
   },
   "pge": {
-   "descargado": "2026-11-16T20:10:40+00:00",
-   "hash": "3d89cc09f0132a59",
+   "descargado": "2026-11-16T20:26:44+00:00",
+   "hash": "b6df026a9866852c",
    "fichero": "pge.json"
   },
   "entregas": {
    "descargado": "2026-11-16T20:10:21+00:00",
    "hash": "1e8184aa8685d7e7",
-   "fichero": "entregas.json"
+   "fichero": "entregas.json",
+   "error": "SourceError: No se pudo conectar con https://www.hacienda.gob.es/es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx: HTTPSConnectionPool(host='www.hacienda.gob.es', port=443): Max retries exceeded with url: /es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.hacienda.gob.es', port=443) at 0x7356ff3cb470>, 'Connection to www.hacienda.gob.es timed out. (connect timeout=60)'))",
+   "error_fecha": "2026-11-16T20:26:44+00:00"
   },
   "ccaa": {
-   "descargado": "2026-11-16T20:10:21+00:00",
-   "hash": "16c4a57294624550",
+   "descargado": "2026-11-16T20:26:44+00:00",
+   "hash": "b1431323f966fec0",
    "fichero": "ccaa.json"
   }
  }
