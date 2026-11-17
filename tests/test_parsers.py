@@ -134,6 +134,22 @@ def test_desglose_gastos_andalucia_2026():
     assert all(p["importe"] for p in d["partidas"])
 
 
+def test_series_poblacion_ine():
+    import json
+    cods = fd.series_poblacion(json.loads(read("ine_tabla_poblacion.json")))
+    assert set(fd.CCAA.values()) | {"España", "Ceuta", "Melilla"} == set(cods)
+    assert cods["Andalucía"] == "ECP115502" and cods["España"] == "ECP320"
+
+
+def test_poblacion_andalucia_a_1_de_enero():
+    import json
+    valores, prov = fd.parse_serie_poblacion(json.loads(read("ine_poblacion_andalucia.json")), desde=2014)
+    assert valores["2025"] == 8676713
+    assert "2014" in valores and "2026" in valores
+    assert all(8_000_000 < v < 9_500_000 for v in valores.values())
+    assert "2024" not in prov
+
+
 def test_parse_html_links_and_hidden():
     p = fd.parse_html('<form><input type="hidden" name="__VIEWSTATE" value="abc"></form>'
                       '<a href="/x/entregas-a-cuenta-2026.xlsx">Excel</a>')

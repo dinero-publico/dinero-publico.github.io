@@ -131,7 +131,7 @@ function lineas(container, xs, series, opts = {}) {
       .attr("r", 2.6).attr("fill", s.color);
     svg.append("g").selectAll("circle").data(pts).join("circle").attr("cx", (d) => x(d.x)).attr("cy", (d) => y(d.v))
       .attr("r", 10).attr("fill", "transparent")
-      .on("mousemove", (ev, d) => showTip(ev, [`${s.name} · ${d.x}`, nf(d.v) + " M€", ...(s.tip ? s.tip(d.x, d.v) : [])]))
+      .on("mousemove", (ev, d) => showTip(ev, [`${s.name} · ${d.x}`, opts.fmt ? opts.fmt(d.v) : nf(d.v) + " M€", ...(s.tip ? s.tip(d.x, d.v) : [])]))
       .on("mouseleave", hideTip);
   }
   node.replaceChildren(svg.node());
@@ -437,7 +437,19 @@ const SPF = [["31", "sanidad"], ["32", "educación"], ["23", "servicios sociales
 const polImporte = (c, cod) => (c.politicas.find((p) => p.codigo === cod) || {}).importe || 0;
 const spfDe = (c) => d3.sum(SPF, ([cod]) => polImporte(c, cod));
 
-function renderCcaa(entregas, ccaa, cofog) {
+function renderCcaa(entregas, ccaa, cofog, pob) {
+  // Población a 1 de enero del año (o la última publicada antes).
+  const hab = (com, y) => {
+    const t = pob && pob.territorios[com];
+    if (!t) return null;
+    const ys = Object.keys(t).map(Number).filter((x) => x <= y).sort((a, b) => b - a);
+    return ys.length ? t[ys[0]] : null;
+  };
+  const porHab = (meur, com, y) => { const h = hab(com, y); return h && meur != null ? (meur * 1e6) / h : null; };
+  const ef = (v) => (v == null || isNaN(v) ? "—" : fmt0.format(v) + " €");
+  const ph = () => pob && $("#sel-modo").value === "ph";
+  if (!pob) $("#sel-modo").closest("label").hidden = true;
+  $("#sel-modo").onchange = () => all();
   const state = {
     ea: entregas.anios[0].anio,
     anio: ccaa.anios[0].anio,
@@ -487,12 +499,15 @@ function renderCcaa(entregas, ccaa, cofog) {
     } else {
       box.hidden = true;
     }
+    const habComun = d3.sum(a.filas, (f) => hab(f.comunidad, a.anio) || 0);
+    if (habComun) $("#ea-total").textContent += ` · ${ef((tot * 1e6) / habComun)} por habitante de media`;
     const rows = a.filas.map((f) => ({
-      key: f.comunidad, label: f.comunidad, v: f.total,
-      tip: [f.comunidad, `${nf(f.total)} M€ en ${a.anio}`, `IRPF ${nf(f.irpf)} · IVA ${nf(f.iva)} · II.EE. ${nf(f.impuestos_especiales)}`,
+      key: f.comunidad, label: f.comunidad, v: ph() ? porHab(f.total, f.comunidad, a.anio) : f.total,
+      tip: [f.comunidad, `${nf(f.total)} M€ en ${a.anio}`, `${ef(porHab(f.total, f.comunidad, a.anio))} por habitante`,
+        `IRPF ${nf(f.irpf)} · IVA ${nf(f.iva)} · II.EE. ${nf(f.impuestos_especiales)}`,
         `F. Suficiencia ${nf(f.fondo_suficiencia)} · F. Garantía ${nf(f.fondo_garantia)}`, "Pulsa para ver su gasto"],
-    })).sort((x, y) => y.v - x.v);
-    barras("#ch-ea", rows, { aria: "Entregas a cuenta por comunidad", selected: state.com, labW: 170, onClick: (r) => setCom(r.key) });
+    })).filter((r) => r.v != null).sort((x, y) => y.v - x.v);
+    barras("#ch-ea", rows, { aria: "Entregas a cuenta por comunidad", selected: state.com, labW: 170, valFmt: ph() ? ef : nf, onClick: (r) => setCom(r.key) });
   }
 
   function drawDetalle() {
@@ -508,9 +523,11 @@ function renderCcaa(entregas, ccaa, cofog) {
       // Para comparar lo que recibe con lo que gasta, se usa el presupuesto del mismo año que las entregas.
       const cMismo = (ccaa.anios.find((x) => x.anio === state.ea) || { comunidades: [] }).comunidades.find((x) => x.comunidad === state.com);
       const spf = cMismo ? spfDe(cMismo) : null;
+      const phc = (v) => ef(porHab(v, state.com, a.anio));
       res.replaceChildren(
         el("h4", {}, `Presupuesto ${a.anio}`),
         el("div", { class: "big kpi-num" }, nf(c.total) + " M€"),
+        pob ? el("p", {}, el("strong", {}, `${phc(c.total)} por habitante`), ` · Sanidad ${phc(pol("31"))} · Educación ${phc(pol("32"))} · Servicios sociales ${phc(pol("23"))}`) : "",
         el("p", {}, `Sanidad ${pf((100 * pol("31")) / c.total)} · Educación ${pf((100 * pol("32")) / c.total)} · Servicios sociales ${pf((100 * pol("23")) / c.total)} · Deuda ${pf((100 * pol("95")) / c.total)}`),
         ea && spf ? el("p", {}, `En ${state.ea} recibe `, el("strong", {}, `${nf(ea.total)} M€`), ` en entregas a cuenta y presupuesta `,
           el("strong", {}, `${nf(spf)} M€`), ` para sanidad, educación y servicios sociales: lo que recibe equivale al `, el("strong", {}, pf((100 * ea.total) / spf)), ` de ese gasto.`) : "",
@@ -559,21 +576,25 @@ function renderCcaa(entregas, ccaa, cofog) {
     const principales = [...capRows].sort((x, y) => y.v - x.v).slice(0, 3).map((r) => `${pf((100 * r.v) / p.importe)} ${r.label.replace(/^\d\. /, "").toLowerCase()}`);
     const ys = ccaa.anios.map((x) => x.anio).sort((x, y) => x - y);
     const serie = ys.map((y) => { const cc = ccaa.anios.find((q) => q.anio === y).comunidades.find((q) => q.comunidad === state.com); const pp = cc && cc.politicas.find((q) => q.codigo === state.pol); return pp ? pp.importe : null; });
-    const pesos = a.comunidades.map((cc) => { const pp = cc.politicas.find((q) => q.codigo === state.pol); return { key: cc.comunidad, label: cc.comunidad, v: pp ? (100 * pp.importe) / cc.total : 0,
-      tip: [cc.comunidad, `${nf(pp ? pp.importe : 0)} M€ · ${pf(pp ? (100 * pp.importe) / cc.total : 0)} de su presupuesto`] }; }).sort((x, y) => y.v - x.v);
+    const pesos = a.comunidades.map((cc) => { const pp = cc.politicas.find((q) => q.codigo === state.pol); const imp = pp ? pp.importe : 0;
+      return { key: cc.comunidad, label: cc.comunidad, v: ph() ? porHab(imp, cc.comunidad, a.anio) : (100 * imp) / cc.total,
+        tip: [cc.comunidad, `${nf(imp)} M€ · ${pf((100 * imp) / cc.total)} de su presupuesto`, `${ef(porHab(imp, cc.comunidad, a.anio))} por habitante`] }; })
+      .filter((r) => r.v != null).sort((x, y) => y.v - x.v);
     box.replaceChildren(
-      el("h4", {}, `${p.politica} en ${state.com} · ${a.anio}: ${nf(p.importe)} M€ (${pf((100 * p.importe) / c.total)} del presupuesto)`),
+      el("h4", {}, `${p.politica} en ${state.com} · ${a.anio}: ${nf(p.importe)} M€ (${pf((100 * p.importe) / c.total)} del presupuesto` +
+        (pob ? `, ${ef(porHab(p.importe, state.com, a.anio))} por habitante)` : ")")),
       principales.length ? el("p", {}, `Se reparte así: ${principales.join(", ")}.`) : "",
       el("div", { class: "cols" },
         el("div", {}, el("h5", {}, "Por tipo de gasto (capítulos)"), capChart),
-        el("div", {}, el("h5", {}, `Evolución ${ys[0]}–${ys[ys.length - 1]} (M€)`), evol)),
-      el("h5", {}, `Peso de ${p.politica.toLowerCase()} en el presupuesto de cada comunidad · ${a.anio}`),
+        el("div", {}, el("h5", {}, `Evolución ${ys[0]}–${ys[ys.length - 1]} (${ph() ? "€ por habitante" : "M€"})`), evol)),
+      el("h5", {}, ph() ? `${p.politica} por habitante en cada comunidad · ${a.anio}` : `Peso de ${p.politica.toLowerCase()} en el presupuesto de cada comunidad · ${a.anio}`),
       rank
     );
     if (capRows.length) barras(capChart, capRows, { aria: `Capítulos de ${p.politica}`, labW: 220 });
     else capChart.replaceChildren(el("p", { class: "note" }, "Sin desglose por capítulos para este año."));
-    lineas(evol, ys.map(String), [{ name: p.politica, color: css("--c1"), vals: serie }], { H: 200, aria: `Evolución de ${p.politica} en ${state.com}` });
-    barras(rank, pesos, { aria: `Peso de ${p.politica} por comunidad`, labW: 170, selected: state.com, valFmt: pf, onClick: (r) => setCom(r.key) });
+    const serieV = ph() ? serie.map((v, i) => porHab(v, state.com, ys[i])) : serie;
+    lineas(evol, ys.map(String), [{ name: p.politica, color: css("--c1"), vals: serieV }], { H: 200, aria: `Evolución de ${p.politica} en ${state.com}` });
+    barras(rank, pesos, { aria: `${p.politica} por comunidad`, labW: 170, selected: state.com, valFmt: ph() ? ef : pf, onClick: (r) => setCom(r.key) });
   }
 
   // Desglose económico: capítulo > artículo > concepto, desplegable.
@@ -611,32 +632,41 @@ function renderCcaa(entregas, ccaa, cofog) {
     const fEa = (y) => { const a = entregas.anios.find((q) => q.anio === y); const f = a && a.filas.find((q) => q.comunidad === state.com); return f ? f.total : null; };
     const fPres = (y) => { const a = ccaa.anios.find((q) => q.anio === y); const c = a && a.comunidades.find((q) => q.comunidad === state.com); return c ? spfDe(c) : null; };
     const fEje = (y) => { const a = cofog && cofog.comunidades.find((q) => q.anio === y); const c = a && a.filas.find((q) => q.comunidad === state.com); return c ? (c.divisiones["07"] || 0) + (c.divisiones["09"] || 0) + (c.divisiones["10"] || 0) : null; };
+    const conv = (f) => ys.map((y) => (ph() ? porHab(f(y), state.com, y) : f(y)));
+    const fmtV = (v) => (ph() ? ef(v) + " por habitante" : nf(v) + " M€");
     const series = [
-      { name: "Entregas a cuenta recibidas", color: css("--c2"), vals: ys.map(fEa), tip: (x, v) => { const p = fPres(+x); return p ? [`Equivale al ${pf((100 * v) / p)} de su presupuesto en sanidad, educación y servicios sociales`] : []; } },
-      { name: "Presupuesto en sanidad, educación y servicios sociales", color: css("--c3"), vals: ys.map(fPres) },
-      { name: "Gasto ejecutado en sanidad, educación y protección social (IGAE)", color: css("--c3"), dash: true, vals: ys.map(fEje) },
+      { name: "Entregas a cuenta recibidas", color: css("--c2"), vals: conv(fEa), tip: (x, v) => { const p = fPres(+x), e = fEa(+x); return p ? [`Equivale al ${pf((100 * e) / p)} de su presupuesto en sanidad, educación y servicios sociales`] : []; } },
+      { name: "Presupuesto en sanidad, educación y servicios sociales", color: css("--c3"), vals: conv(fPres) },
+      { name: "Gasto ejecutado en sanidad, educación y protección social (IGAE)", color: css("--c3"), dash: true, vals: conv(fEje) },
     ].filter((s) => s.vals.some((v) => v != null));
-    $("#ccaa-evol-tit").textContent = `${state.com}: lo que recibe y lo que gasta en servicios básicos`;
+    $("#ccaa-evol-tit").textContent = `${state.com}: lo que recibe y lo que gasta en servicios básicos${ph() ? " (€ por habitante)" : ""}`;
     leyenda("#leg-ccaa-evol", series);
-    lineas("#ch-ccaa-evol", xs, series, { aria: `Evolución de ${state.com}`, H: 280 });
+    lineas("#ch-ccaa-evol", xs, series, { aria: `Evolución de ${state.com}`, H: 280, fmt: fmtV });
   }
 
   function drawTabla() {
     const a = caAnio(), ea = eaAnio();
+    const enHab = ph();
+    $("#tbl-unidad").textContent = enHab
+      ? `Presupuesto y políticas de ${a.anio} y entregas de ${ea.anio}, en euros por habitante. «Peso» y «Entregas / servicios básicos» siguen en %.`
+      : `Presupuesto ${a.anio} y entregas ${ea.anio} en millones de euros; las políticas, en % del presupuesto.`;
     const data = a.comunidades.map((c) => {
       const pol = (cod) => (c.politicas.find((p) => p.codigo === cod) || {}).importe || 0;
       const e = ea.filas.find((f) => f.comunidad === c.comunidad);
-      return { comunidad: c.comunidad, total: c.total, entregas: e ? e.total : null, peso: e ? (100 * e.total) / c.total : null,
+      const v = (m, y = a.anio) => (enHab ? porHab(m, c.comunidad, y) : m);
+      const p = (cod) => (enHab ? porHab(pol(cod), c.comunidad, a.anio) : (100 * pol(cod)) / c.total);
+      return { comunidad: c.comunidad, total: v(c.total), entregas: e ? v(e.total, ea.anio) : null, peso: e ? (100 * e.total) / c.total : null,
         cob: e && spfDe(c) ? (100 * e.total) / spfDe(c) : null,
-        p31: (100 * pol("31")) / c.total, p32: (100 * pol("32")) / c.total, p23: (100 * pol("23")) / c.total, p95: (100 * pol("95")) / c.total };
+        p31: p("31"), p32: p("32"), p23: p("23"), p95: p("95") };
     });
+    const fm = enHab ? ef : nf, fp = enHab ? ef : pf;
     const k = state.sortK, dir = state.sortDir;
     data.sort((x, y) => (typeof x[k] === "string" ? x[k].localeCompare(y[k], "es") : (x[k] ?? -1) - (y[k] ?? -1)) * dir);
     const tb = $("#tbl-ccaa tbody");
     tb.replaceChildren(...data.map((r) => el("tr", { class: r.comunidad === state.com ? "sel" : "", onclick: () => { setCom(r.comunidad); $("#ccaa-tit").scrollIntoView({ behavior: "smooth" }); } },
-      el("td", {}, r.comunidad), el("td", { class: "num" }, nf(r.total)), el("td", { class: "num" }, r.entregas == null ? "foral" : nf(r.entregas)),
-      el("td", { class: "num" }, pf(r.peso)), el("td", { class: "num" }, pf(r.cob)), el("td", { class: "num" }, pf(r.p31)), el("td", { class: "num" }, pf(r.p32)),
-      el("td", { class: "num" }, pf(r.p23)), el("td", { class: "num" }, pf(r.p95)))));
+      el("td", {}, r.comunidad), el("td", { class: "num" }, fm(r.total)), el("td", { class: "num" }, r.entregas == null ? "foral" : fm(r.entregas)),
+      el("td", { class: "num" }, pf(r.peso)), el("td", { class: "num" }, pf(r.cob)), el("td", { class: "num" }, fp(r.p31)), el("td", { class: "num" }, fp(r.p32)),
+      el("td", { class: "num" }, fp(r.p23)), el("td", { class: "num" }, fp(r.p95)))));
   }
   document.querySelectorAll("#tbl-ccaa th").forEach((th) => th.addEventListener("click", () => {
     const k = th.dataset.k;
@@ -659,6 +689,7 @@ function renderFuentes(meta, d) {
     entregas: ["Entregas a cuenta a las comunidades (Financiación Autonómica)", d.entregas && d.entregas.fuente, null],
     ccaa: ["Presupuestos de las comunidades autónomas (SGCIEF)", d.ccaa && d.ccaa.fuente, null],
     cofog: ["Gasto de las administraciones públicas por función, COFOG (IGAE)", d.cofog && d.cofog.fuente, null],
+    poblacion: ["Población residente a 1 de enero (INE, Estadística Continua de Población)", d.poblacion && d.poblacion.fuente, null],
   };
   const ul = $("#lista-fuentes");
   ul.replaceChildren();
@@ -687,13 +718,13 @@ async function getJSON(name) {
 }
 
 (async function main() {
-  const names = ["meta", "estado", "pge", "entregas", "ccaa", "cofog"];
+  const names = ["meta", "estado", "pge", "entregas", "ccaa", "cofog", "poblacion"];
   const res = await Promise.allSettled(names.map((n) => getJSON(n + ".json")));
   const d = Object.fromEntries(names.map((n, i) => [n, res[i].status === "fulfilled" ? res[i].value : null]));
   const fail = (sel, what) => { const n = $(sel); if (n) n.replaceChildren(el("p", { class: "err" }, `No se pudieron cargar los datos de ${what}.`)); };
   try { d.estado ? renderEstado(d.estado) : fail("#kpis", "ejecución del Estado"); } catch (e) { console.error(e); fail("#kpis", "ejecución del Estado"); }
   try { d.pge ? renderPge(d.pge, d.cofog, d.entregas) : fail("#ch-pge", "presupuesto"); } catch (e) { console.error(e); fail("#ch-pge", "presupuesto"); }
   try { d.cofog ? renderFunciones(d.cofog) : fail("#ch-fun", "gasto por función"); } catch (e) { console.error(e); fail("#ch-fun", "gasto por función"); }
-  try { d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog) : fail("#ch-ea", "comunidades"); } catch (e) { console.error(e); fail("#ch-ea", "comunidades"); }
+  try { d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog, d.poblacion) : fail("#ch-ea", "comunidades"); } catch (e) { console.error(e); fail("#ch-ea", "comunidades"); }
   renderFuentes(d.meta || {}, d);
 })();

@@ -78,6 +78,7 @@
     <h2>Reparto a las comunidades autónomas</h2>
     <p class="note">Entregas a cuenta del sistema de financiación: el anticipo anual que el Estado paga a cada comunidad de régimen común (su parte del IRPF, el IVA y los impuestos especiales, más los fondos de suficiencia y garantía). País Vasco y Navarra tienen régimen foral y no reciben entregas a cuenta. Pulsa una comunidad para ver en qué gasta.</p>
     <div class="ctrl">
+      <label>Comparar <select id="sel-modo"><option value="abs">en millones de euros y %</option><option value="ph">en euros por habitante</option></select></label>
       <label>Año de las entregas <select id="sel-ea"></select></label>
       <span class="total" id="ea-total"></span>
     </div>
@@ -104,7 +105,8 @@
     <div class="chart" id="ch-ccaa-evol"></div>
 
     <h3>Comparativa entre comunidades</h3>
-    <p class="note">Porcentaje del presupuesto de cada comunidad que va a cada política. «Peso de las entregas»: valor de las entregas a cuenta sobre su presupuesto (buena parte son impuestos cedidos pagados en la propia comunidad). «Entregas / servicios básicos»: entregas a cuenta sobre lo que presupuesta en sanidad, educación y servicios sociales. Pulsa una fila para verla arriba.</p>
+    <p class="note" id="tbl-unidad"></p>
+    <p class="note">Porcentaje del presupuesto de cada comunidad que va a cada política, o euros por habitante si eliges esa comparación arriba. «Peso de las entregas»: valor de las entregas a cuenta sobre su presupuesto (buena parte son impuestos cedidos pagados en la propia comunidad). «Entregas / servicios básicos»: entregas a cuenta sobre lo que presupuesta en sanidad, educación y servicios sociales. Pulsa una fila para verla arriba.</p>
     <div class="scroll"><table class="tbl" id="tbl-ccaa">
       <thead><tr>
         <th data-k="comunidad">Comunidad</th><th class="num" data-k="total">Presupuesto (M€)</th>
@@ -127,6 +129,7 @@
         <li>Mientras no se aprueben nuevos Presupuestos, sigue en vigor el último aprobado, prorrogado. La etiqueta «-P» indica presupuesto prorrogado. Las modificaciones de crédito durante el año no aparecen aquí.</li>
         <li>Las entregas a cuenta son anticipos: al cabo de dos años se liquidan con la recaudación real.</li>
         <li>Los presupuestos autonómicos son los iniciales (aprobados o prorrogados) consolidados, no el gasto ejecutado.</li>
+        <li>Los euros por habitante usan la población residente a 1 de enero de cada año (INE, Estadística Continua de Población; el último año es provisional). Si un año aún no tiene población publicada, se usa la del último año disponible.</li>
         <li>La financiación autonómica no es finalista: las comunidades deciden en qué la gastan. Las comparaciones con sanidad, educación y servicios sociales indican a qué equivale lo recibido, no que esté reservado por ley para esos servicios.</li>
         <li>El gasto por función (COFOG) es gasto ejecutado en contabilidad nacional y no coincide con los presupuestos iniciales. Sumar administraciones duplicaría las transferencias entre ellas; por eso se muestran aparte.</li>
       </ul>

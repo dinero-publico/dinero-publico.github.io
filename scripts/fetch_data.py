@@ -91,6 +91,22 @@ COFOG_NOMBRES = {
     "comunitat valenciana": "C. Valenciana",
 }
 
+# INE, Estadística Continua de Población: población residente por comunidad.
+INE_API = "https://servicios.ine.es/wstempus/js/ES/"
+INE_TABLA_POBLACION = 56940  # Población residente por fecha, sexo y edad (desde 1971), por comunidad
+INE_PAGINA = "https://www.ine.es/jaxiT3/Tabla.htm?t=56940"
+INE_NOMBRES = {
+    "total nacional": "España",
+    "asturias, principado de": "Asturias",
+    "balears, illes": "Illes Balears",
+    "castilla - la mancha": "Castilla-La Mancha",
+    "comunitat valenciana": "C. Valenciana",
+    "madrid, comunidad de": "Madrid",
+    "murcia, región de": "Murcia",
+    "navarra, comunidad foral de": "Navarra",
+    "rioja, la": "La Rioja",
+}
+
 # Años de histórico que se guardan de cada fuente.
 YEARS_BACK = 10
 
@@ -896,6 +912,63 @@ def fetch_cofog(dl: Downloader, desde: int) -> dict:
 
 
 # --------------------------------------------------------------------------- #
+# 6. INE: población residente a 1 de enero, por comunidad
+# --------------------------------------------------------------------------- #
+def series_poblacion(tabla: list[dict]) -> dict[str, str]:
+    """De la tabla del INE, el código de la serie «total, todas las edades» de cada territorio."""
+    out = {}
+    for s in tabla:
+        partes = [clean(p) for p in s.get("Nombre", "").split(".")]
+        if "Todas las edades" not in partes or "Hombres" in partes or "Mujeres" in partes:
+            continue
+        territorio = next((p for p in partes if p and p not in ("Total", "Todas las edades", "Población", "Número")), None)
+        if territorio:
+            out[INE_NOMBRES.get(territorio.lower(), territorio)] = s["COD"]
+    return out
+
+
+def parse_serie_poblacion(serie: dict, desde: int) -> tuple[dict[str, int], list[str]]:
+    """Valores a 1 de enero (periodo 19 del INE) por año; y los años provisionales."""
+    valores, provisionales = {}, []
+    for x in serie.get("Data", []):
+        if x.get("FK_Periodo") != 19 or x.get("Valor") is None or x["Anyo"] < desde:
+            continue
+        valores[str(x["Anyo"])] = int(x["Valor"])
+        if x.get("FK_TipoDato") == 2:
+            provisionales.append(str(x["Anyo"]))
+    return valores, provisionales
+
+
+def fetch_poblacion(dl: Downloader, desde: int) -> dict:
+    if dl.offline_dir is not None:
+        raise SourceError("La población se consulta en la API del INE; no hay modo offline")
+
+    def get_json(url):
+        r = dl._request("GET", url)
+        if r.status_code != 200:
+            raise SourceError(f"{url} respondió {r.status_code}")
+        return r.json()
+
+    codigos = series_poblacion(get_json(f"{INE_API}DATOS_TABLA/{INE_TABLA_POBLACION}?nult=1"))
+    faltan = [n for n in list(CCAA.values()) + ["España"] if n not in codigos]
+    if faltan:
+        raise SourceError(f"El INE no devolvió la población de: {', '.join(faltan)}")
+    territorios, provisionales = {}, set()
+    for nombre, cod in sorted(codigos.items()):
+        valores, prov = parse_serie_poblacion(get_json(f"{INE_API}DATOS_SERIE/{cod}?nult=120"), desde)
+        if valores:
+            territorios[nombre] = valores
+            provisionales.update(prov)
+    log.info("  Población: %d territorios, %s–%s", len(territorios), min(territorios["España"]), max(territorios["España"]))
+    return {
+        "fuente": INE_PAGINA,
+        "fecha": "1 de enero de cada año",
+        "provisionales": sorted(provisionales),
+        "territorios": territorios,
+    }
+
+
+# --------------------------------------------------------------------------- #
 # Orquestación
 # --------------------------------------------------------------------------- #
 def digest(obj) -> str:
@@ -910,7 +983,7 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--offline", type=Path, help="carpeta con los Excel ya descargados (no usa la red)")
     ap.add_argument("--year", type=int, default=dt.date.today().year, help="año de referencia (por defecto, el actual)")
-    ap.add_argument("--only", choices=["estado", "pge", "entregas", "ccaa", "cofog"], action="append", help="procesar solo estas fuentes")
+    ap.add_argument("--only", choices=["estado", "pge", "entregas", "ccaa", "cofog", "poblacion"], action="append", help="procesar solo estas fuentes")
     ap.add_argument("--delay", type=float, default=1.0, help="segundos de espera entre peticiones")
     args = ap.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(message)s")
@@ -930,6 +1003,7 @@ def main(argv: list[str] | None = None) -> int:
         "entregas": ("entregas.json", lambda: fetch_entregas(dl)),
         "ccaa": ("ccaa.json", lambda: fetch_ccaa(dl, anios, previo("ccaa.json"), reuse_before=y - 1)),
         "cofog": ("cofog.json", lambda: fetch_cofog(dl, desde=y - YEARS_BACK - 2)),
+        "poblacion": ("poblacion.json", lambda: fetch_poblacion(dl, desde=y - YEARS_BACK - 2)),
     }
     meta_path = DATA_DIR / "meta.json"
     meta = json.loads(meta_path.read_text("utf-8")) if meta_path.exists() else {}

@@ -32,6 +32,7 @@ Si una fuente falla (Hacienda caída, cambio de formato…), se conservan sus ú
 | Entregas a cuenta del sistema de financiación autonómica | S. G. Financiación Autonómica y Local | Anual + actualizaciones | [hacienda.gob.es](https://www.hacienda.gob.es/es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx) |
 | Presupuestos iniciales de las CCAA por política de gasto | S. G. de Coordinación de la Información Económico-Financiera | Anual | [serviciostelematicosext.hacienda.gob.es](https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionPresupuestos/aspx/inicio.aspx) |
 | Gasto ejecutado por función (COFOG) de cada administración y de cada comunidad | IGAE | Anual | [igae.pap.hacienda.gob.es](https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacofogCA.aspx) |
+| Población residente a 1 de enero por comunidad (para los euros por habitante) | INE | Trimestral | [ine.es](https://www.ine.es/jaxiT3/Tabla.htm?t=56940) |
 
 Se guardan unos diez años de histórico de cada fuente. Los presupuestos autonómicos de años cerrados no cambian, así que el script los reutiliza del JSON ya guardado y solo vuelve a descargar los dos últimos años.
 
@@ -86,6 +87,7 @@ site/                   web estática: index.html, app.js, style.css, vendor/d3.
 - `data/entregas.json`: entregas a cuenta por comunidad y concepto, en M€, de los últimos ejercicios publicados.
 - `data/ccaa.json`: presupuesto inicial consolidado de cada comunidad por política de gasto, en M€. Cada política trae su reparto por `capitulos` (nombres en la raíz del fichero), y cada comunidad su desglose económico en `gastos` (código de capítulo, artículo, concepto o subconcepto → M€; los nombres están en `economica`).
 - `data/cofog.json`: gasto ejecutado por división COFOG (`07` sanidad, `09` educación, `10` protección social…), en M€. `subsectores` tiene la serie anual de la Administración central, regional, local y Seguridad Social (con `transferencias_aapp`, el grupo 01.8); `comunidades`, el detalle por comunidad de cada año.
+- `data/poblacion.json`: población residente a 1 de enero de cada comunidad, Ceuta, Melilla y España (INE, Estadística Continua de Población, tabla 56940), para calcular euros por habitante. `provisionales` indica los años aún provisionales.
 - `data/meta.json`: fecha en que cambió cada fuente y último error, si lo hubo.
 
 ## Notas de interpretación

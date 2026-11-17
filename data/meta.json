@@ -26,6 +26,11 @@
    "descargado": "2026-11-16T21:26:15+00:00",
    "hash": "979556e1e7c2148f",
    "fichero": "cofog.json"
+  },
+  "poblacion": {
+   "descargado": "2026-11-17T13:57:25+00:00",
+   "hash": "1fc41e14c0fa3c3d",
+   "fichero": "poblacion.json"
   }
  }
 }
