@@ -46,37 +46,37 @@
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
-   "contentUrl": "https://dinero-publico.github.io/data/estado.json"
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/estado.json"
   },
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
-   "contentUrl": "https://dinero-publico.github.io/data/pge.json"
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/pge.json"
   },
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
-   "contentUrl": "https://dinero-publico.github.io/data/entregas.json"
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/entregas.json"
   },
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
-   "contentUrl": "https://dinero-publico.github.io/data/ccaa.json"
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/ccaa.json"
   },
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
-   "contentUrl": "https://dinero-publico.github.io/data/cofog.json"
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/cofog.json"
   },
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
-   "contentUrl": "https://dinero-publico.github.io/data/poblacion.json"
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/poblacion.json"
   },
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
-   "contentUrl": "https://dinero-publico.github.io/data/meta.json"
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/meta.json"
   }
  ]
 }
@@ -108,7 +108,7 @@
   </div>
   <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
   <nav class="subnav" aria-label="Apartados de la página">
-    <a href="#fuentes-oficiales">Fuentes</a><a href="#proceso">Proceso</a><a href="#notas">Notas</a><a href="#glosario">Glosario</a><a href="#bibliografia">Bibliografía</a><a href="#descargas">Descargas</a>
+    <a href="#fuentes-oficiales">Fuentes</a><a href="#proceso">Proceso</a><a href="#comprobaciones">Comprobaciones</a><a href="#notas">Notas</a><a href="#glosario">Glosario</a><a href="#bibliografia">Bibliografía</a><a href="#descargas">Descargas</a>
   </nav>
 
   <section aria-labelledby="fuentes-oficiales">
@@ -191,12 +191,20 @@
 
   <section aria-labelledby="proceso">
     <h2 id="proceso">Cómo se procesan los datos</h2>
+    <p>La obtención de los datos y la web están separadas: los datos los prepara una <a href="https://github.com/dinero-publico/datos">herramienta propia de código abierto</a> y se publican en <a href="https://dinero-publico.github.io/datos/">dinero-publico.github.io/datos</a>. Esta web solo los lee.</p>
     <ol class="pasos">
-      <li><strong>Descarga.</strong> Un proceso automático (GitHub Actions) se ejecuta cada día a las 07:17 UTC y descarga los mismos Excel y datos que cualquier persona puede bajar desde las páginas oficiales. No existe una API pública de Hacienda.</li>
-      <li><strong>Lectura.</strong> Un script en Python lee cada fichero, comprueba que su estructura es la esperada (por ejemplo, que las partidas suman el total) y lo convierte a JSON. Si una fuente cambia de formato o no responde, se conservan sus últimos datos válidos y se avisa en esta página.</li>
-      <li><strong>Publicación.</strong> Si hay datos nuevos se guardan en el repositorio, de modo que el historial de cambios es también el historial de los datos, y se publica la web.</li>
-      <li><strong>Cálculos.</strong> La web solo hace operaciones sencillas a la vista: sumas, porcentajes, variaciones y divisiones por la población. No se estima ni se corrige ningún dato.</li>
+      <li><strong>Descarga.</strong> Cada día a las 07:17 UTC, un proceso automático (GitHub Actions) descarga los mismos Excel y datos que cualquier persona puede bajar de las páginas oficiales, y guarda una copia de los originales. No existe una API pública de Hacienda.</li>
+      <li><strong>Transformación.</strong> Cada fichero se lee y se convierte a JSON con una estructura común (importes en millones de euros). Si una fuente cambia de formato o no responde, se conservan sus últimos datos válidos y se avisa en esta página.</li>
+      <li><strong>Análisis.</strong> Se calculan datos que no vienen tal cual en las fuentes (el año en que rige cada presupuesto del Estado y qué presupuestos autonómicos están prorrogados) y se comprueba la coherencia de cada fuente: que las partidas sumen sus totales, que estén todas las comunidades y años… El resultado se publica en el <a href="#comprobaciones">informe de comprobaciones</a>.</li>
+      <li><strong>Publicación.</strong> Si hay datos nuevos se guardan en el repositorio de datos, de modo que su historial de cambios es también el historial de los datos.</li>
+      <li><strong>Cálculos de la web.</strong> La web solo hace operaciones sencillas a la vista: sumas, porcentajes, variaciones y divisiones por la población. No se estima ni se corrige ningún dato.</li>
     </ol>
+  </section>
+
+  <section aria-labelledby="comprobaciones">
+    <h2 id="comprobaciones">Comprobaciones de los datos</h2>
+    <p id="informe-resumen" class="muted">Cargando el informe…</p>
+    <ul id="informe-lista" class="pasos"></ul>
   </section>
 
   <section aria-labelledby="notas">
@@ -204,7 +212,7 @@
     <ul>
       <li>La ejecución del Estado está en <strong>contabilidad nacional</strong> (SEC 2010): no coincide exactamente con la ejecución presupuestaria en caja ni con los créditos del presupuesto.</li>
       <li>Mientras no se aprueben nuevos Presupuestos, sigue en vigor el último aprobado, <strong>prorrogado</strong>. La SEPG publica cada prórroga con la etiqueta «-P» del año del que procede: «2025-P» es el presupuesto prorrogado para 2026 (se publicó en enero de 2026). En esta web cada presupuesto aparece en el año en que rige, con la marca «prorrogado» y el año del último presupuesto aprobado. Las modificaciones de crédito durante el año no aparecen.</li>
-      <li>Hacienda no indica qué <strong>presupuestos autonómicos</strong> están prorrogados. La web los marca cuando el presupuesto repite el total exacto del año anterior o al menos cinco políticas de gasto al céntimo; cuando hay presupuesto nuevo, casi nunca coinciden más de dos o tres. Es una deducción a partir de los datos: puede haber prórrogas con ajustes amplios que no se detecten.</li>
+      <li>Hacienda no indica qué <strong>presupuestos autonómicos</strong> están prorrogados. Se marcan como prorrogados cuando el presupuesto repite el total exacto del año anterior o al menos cinco políticas de gasto al céntimo; cuando hay presupuesto nuevo, casi nunca coinciden más de dos o tres. Es una deducción a partir de los datos: puede haber prórrogas con ajustes amplios que no se detecten.</li>
       <li>Las <strong>variaciones</strong> entre años se calculan en euros corrientes, sin descontar la inflación. Comparar dos años que son prórrogas del mismo presupuesto solo muestra ajustes técnicos; por eso, en los Presupuestos del Estado se compara por defecto con el último año que tuvo un presupuesto distinto.</li>
       <li>Las <strong>entregas a cuenta</strong> son anticipos: al cabo de dos años se liquidan con la recaudación real.</li>
       <li>Los presupuestos autonómicos son los <strong>iniciales</strong> (aprobados o prorrogados) consolidados, no el gasto ejecutado. El gasto ejecutado por función lo da la COFOG de la IGAE.</li>
@@ -249,17 +257,18 @@
 
   <section aria-labelledby="descargas">
     <h2 id="descargas">Descarga de los datos</h2>
-    <p>Los datos ya procesados, en JSON, para reutilizarlos libremente citando las fuentes originales:</p>
+    <p>Los datos ya procesados, en JSON, para reutilizarlos libremente citando las fuentes originales. El catálogo completo, con tamaños y fechas, está en <a href="https://dinero-publico.github.io/datos/">dinero-publico.github.io/datos</a>.</p>
     <ul>
-      <li><a href="data/estado.json" download>estado.json</a> — Ejecución mensual del Estado</li>
-      <li><a href="data/pge.json" download>pge.json</a> — Presupuestos del Estado por política y programa</li>
-      <li><a href="data/entregas.json" download>entregas.json</a> — Entregas a cuenta por comunidad</li>
-      <li><a href="data/ccaa.json" download>ccaa.json</a> — Presupuestos autonómicos por política, capítulo y partida</li>
-      <li><a href="data/cofog.json" download>cofog.json</a> — Gasto por función (COFOG)</li>
-      <li><a href="data/poblacion.json" download>poblacion.json</a> — Población a 1 de enero</li>
-      <li><a href="data/meta.json" download>meta.json</a> — Fechas de actualización de cada fuente</li>
+      <li><a href="/datos/v1/estado.json" download>estado.json</a> — Ejecución mensual del Estado</li>
+      <li><a href="/datos/v1/pge.json" download>pge.json</a> — Presupuestos del Estado por política y programa</li>
+      <li><a href="/datos/v1/entregas.json" download>entregas.json</a> — Entregas a cuenta por comunidad</li>
+      <li><a href="/datos/v1/ccaa.json" download>ccaa.json</a> — Presupuestos autonómicos por política, capítulo y partida</li>
+      <li><a href="/datos/v1/cofog.json" download>cofog.json</a> — Gasto por función (COFOG)</li>
+      <li><a href="/datos/v1/poblacion.json" download>poblacion.json</a> — Población a 1 de enero</li>
+      <li><a href="/datos/v1/meta.json" download>meta.json</a> — Fechas de actualización de cada fuente</li>
+      <li><a href="/datos/v1/informe.json" download>informe.json</a> — Resultado de las comprobaciones</li>
     </ul>
-    <p>El formato de cada fichero se describe en el <a href="https://github.com/dinero-publico/dinero-publico.github.io#formato-de-los-datos">README del repositorio</a>.</p>
+    <p>El formato de cada fichero y la herramienta que los genera se describen en el <a href="https://github.com/dinero-publico/datos#readme">repositorio de datos</a>.</p>
   </section>
 
   <section aria-labelledby="licencia">

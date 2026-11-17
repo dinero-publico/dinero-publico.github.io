@@ -1,0 +1,44 @@
+name: Publicar web
+
+# La web no descarga datos: los lee en el navegador desde /datos/v1/, que publica
+# el repositorio dinero-publico/datos con su propio workflow diario.
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ["site/**", ".github/workflows/**"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publicar-web
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Preparar la web
+        run: |
+          mkdir -p _site
+          cp -r site/* _site/
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publicar:
+    needs: web
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

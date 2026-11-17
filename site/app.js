@@ -1,7 +1,8 @@
-/* Presupuestos abiertos — web estática que lee data/*.json */
+/* Dinero Público — web estática. Los datos los prepara la herramienta del repositorio
+   dinero-publico/datos y se publican en /datos/v1/ (mismo dominio). */
 "use strict";
 
-const DATA = "data/";
+const DATA = "/datos/v1/";
 const fmt0 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0 });
 const fmt1 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
 const nf = (v) => (v == null || isNaN(v) ? "—" : fmt0.format(v));
@@ -318,15 +319,9 @@ function renderEstado(estado) {
 }
 
 /* ---------- PGE ---------- */
-/* Columnas de la SEPG → año en que rige cada presupuesto. «2025-P» es el presupuesto de 2025 prorrogado
-   para 2026 (la SEPG lo publicó en enero de 2026): rige al año siguiente y procede del último aprobado. */
+/* Año en que rige cada columna de la SEPG («2025-P» rige en 2026), calculado por la herramienta de datos. */
 function pgeAnios(pge) {
-  let base = null;
-  return pge.columnas.map((col) => {
-    const prorr = col.endsWith("-P"), y = +col.slice(0, 4);
-    if (!prorr) base = y;
-    return { col, anio: prorr ? y + 1 : y, prorr, base: prorr ? base : null };
-  });
+  return pge.ejercicios.map((e) => ({ col: e.columna, anio: e.anio, prorr: e.prorrogado, base: e.base }));
 }
 const pgeEtq = (a) => (a.prorr ? `${a.anio} (prorrogado de ${a.base})` : String(a.anio));
 const PRORR_TXT = (a) => `Presupuesto prorrogado: siguen en vigor los de ${a.base}`;
@@ -533,30 +528,9 @@ const SPF = [["31", "sanidad"], ["32", "educación"], ["23", "servicios sociales
 const polImporte = (c, cod) => (c.politicas.find((p) => p.codigo === cod) || {}).importe || 0;
 const spfDe = (c) => d3.sum(SPF, ([cod]) => polImporte(c, cod));
 
-/* Presupuestos autonómicos prorrogados. Hacienda no los señala, así que se deducen de los datos: un presupuesto
-   que repite el total exacto, o al menos 5 políticas al céntimo, respecto al del año anterior es una prórroga
-   (cuando hay presupuesto nuevo casi nunca coinciden más de 2 o 3 políticas).
-   Devuelve un Map "comunidad|año" → { base: último año con presupuesto propio, iguales, n }. */
-function ccaaProrrogas(ccaa) {
-  const out = new Map();
-  const de = (y, com) => { const a = ccaa.anios.find((q) => q.anio === y); return a && a.comunidades.find((c) => c.comunidad === com); };
-  for (const a of [...ccaa.anios].sort((x, y) => x.anio - y.anio)) {
-    for (const c of a.comunidades) {
-      const p = de(a.anio - 1, c.comunidad);
-      if (!p) continue;
-      const prev = new Map(p.politicas.map((q) => [q.codigo, q.importe]));
-      const pols = c.politicas.filter((q) => q.importe);
-      const iguales = pols.filter((q) => prev.has(q.codigo) && Math.abs(prev.get(q.codigo) - q.importe) < 0.01).length;
-      if (iguales >= 5 || Math.abs(c.total - p.total) < 1e-4 * p.total) {
-        const ant = out.get(`${c.comunidad}|${a.anio - 1}`);
-        out.set(`${c.comunidad}|${a.anio}`, { base: ant ? ant.base : a.anio - 1, iguales, n: pols.length });
-      }
-    }
-  }
-  return out;
-}
+/* Presupuestos autonómicos prorrogados: los detecta la herramienta de datos (ccaa.json → prorrogados). */
 const prorrTxt = (pr, y) => "Presupuesto prorrogado: " +
-  (pr.iguales === pr.n ? `idéntico al de ${y - 1}` : pr.iguales >= 5 ? `repite al céntimo ${pr.iguales} de sus ${pr.n} políticas del de ${y - 1}` : `mismo total que en ${y - 1}`) +
+  (pr.iguales === pr.politicas ? `idéntico al de ${y - 1}` : pr.iguales >= 5 ? `repite al céntimo ${pr.iguales} de sus ${pr.politicas} políticas del de ${y - 1}` : `mismo total que en ${y - 1}`) +
   (pr.base < y - 1 ? `; sin presupuesto nuevo desde ${pr.base}` : "") + ".";
 
 function renderCcaa(entregas, ccaa, cofog, pob) {
@@ -572,8 +546,7 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
   const ph = () => pob && $("#sel-modo").value === "ph";
   if (!pob) $("#sel-modo").closest("label").hidden = true;
   $("#sel-modo").onchange = () => all();
-  const PR = ccaaProrrogas(ccaa);
-  const prorr = (com, y) => PR.get(`${com}|${y}`) || null;
+  const prorr = (com, y) => ((ccaa.prorrogados || {})[com] || {})[y] || null;
   const anios = ccaa.anios.map((a) => a.anio).sort((a, b) => b - a);
   const state = {
     ea: entregas.anios[0].anio,
@@ -916,6 +889,23 @@ function renderMeta(meta, estado) {
   if (b) b.textContent = ult ? `Datos actualizados el ${fecha(ult)}` : "";
 }
 
+/* ---------- Informe de comprobaciones de la herramienta de datos (página de fuentes) ---------- */
+const NOMBRE_FUENTE = { estado: "Ejecución del Estado", pge: "Presupuestos del Estado", entregas: "Entregas a cuenta", ccaa: "Presupuestos autonómicos", cofog: "Gasto por función (COFOG)", poblacion: "Población" };
+function renderInforme(inf) {
+  const res = $("#informe-resumen"), ul = $("#informe-lista");
+  if (!res) return;
+  if (!inf) { res.textContent = "No se pudo cargar el informe de comprobaciones."; return; }
+  const r = inf.resumen;
+  res.replaceChildren(el("strong", {}, `${r.correctas} de ${r.pruebas} comprobaciones correctas`),
+    ` en el último análisis (${fecha(inf.generado)}). `, el("a", { href: "/datos/v1/informe.json" }, "Informe completo"), ".");
+  res.classList.remove("muted");
+  ul.replaceChildren(...inf.pruebas.map((p) => el("li", {},
+    el("span", { class: p.ok ? "inc-good" : "err" }, p.ok ? "✓ " : "✗ "), `${NOMBRE_FUENTE[p.fuente] || p.fuente}: ${p.prueba}`,
+    p.casos ? el("span", { class: "muted" }, ` (${fmt0.format(p.casos)} casos)`) : "",
+    !p.ok ? el("div", { class: "note" }, `${p.n_fallos} con diferencias, por ejemplo: ${p.fallos.slice(0, 2).join("; ")}`) : "",
+    p.avisos ? el("div", { class: "note" }, `Aviso: ${p.avisos[0]}${p.avisos.length > 1 ? ` (y ${p.avisos.length - 1} más)` : ""}`) : "")));
+}
+
 /* ---------- Portada: cifras clave ---------- */
 function renderHome(d) {
   const box = $("#home-kpis");
@@ -984,7 +974,7 @@ addEventListener("scroll", hideTip, { passive: true });
     presupuesto: ["pge", "cofog", "entregas"],
     "quien-gasta": ["cofog"],
     comunidades: ["entregas", "ccaa", "cofog", "poblacion"],
-    fuentes: ["estado"],
+    fuentes: ["estado", "informe"],
   };
   const pagina = document.body.dataset.page;
   const names = ["meta", ...(PAGINAS[pagina] || [])];
@@ -997,5 +987,6 @@ addEventListener("scroll", hideTip, { passive: true });
   if (pagina === "presupuesto") run(() => (d.pge ? renderPge(d.pge, d.cofog, d.entregas) : fail("#ch-pge", "presupuesto")), "#ch-pge", "presupuesto");
   if (pagina === "quien-gasta") run(() => (d.cofog ? renderFunciones(d.cofog) : fail("#ch-fun", "gasto por función")), "#ch-fun", "gasto por función");
   if (pagina === "comunidades") run(() => (d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog, d.poblacion) : fail("#ch-ea", "comunidades")), "#ch-ea", "comunidades");
+  if (pagina === "fuentes") renderInforme(d.informe);
   renderMeta(d.meta || {}, d.estado);
 })();
