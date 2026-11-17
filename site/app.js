@@ -99,9 +99,10 @@ function barras(container, rows, opts = {}) {
   g.append("text").attr("class", "val").attr("y", by + bh - 3)
     .attr("x", (r) => x(Math.max(0, r.v)) + 6).text((r) => (opts.valFmt || nf)(r.v));
   g.append("rect").attr("width", W).attr("height", rh).style("fill", "transparent")
-    .on("mousemove", (ev, r) => showTip(ev, r.tip || [r.label, nf(r.v) + " M€"]))
+    .on("pointermove pointerdown", (ev, r) => showTip(ev, r.tip || [r.label, nf(r.v) + " M€"]))
     .on("mouseleave", hideTip)
     .on("click", (ev, r) => opts.onClick && opts.onClick(r));
+  if (opts.onClick) g.each(function (r) { pulsable(this, () => opts.onClick(r), `${r.label}: ${(opts.valFmt || nf)(r.v)}`); });
   node.replaceChildren(svg.node());
 }
 const trunc = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
@@ -131,7 +132,7 @@ function lineas(container, xs, series, opts = {}) {
       .attr("r", 2.6).attr("fill", s.color);
     svg.append("g").selectAll("circle").data(pts).join("circle").attr("cx", (d) => x(d.x)).attr("cy", (d) => y(d.v))
       .attr("r", 10).attr("fill", "transparent")
-      .on("mousemove", (ev, d) => showTip(ev, [`${s.name} · ${d.x}`, opts.fmt ? opts.fmt(d.v) : nf(d.v) + " M€", ...(s.tip ? s.tip(d.x, d.v) : [])]))
+      .on("pointermove pointerdown", (ev, d) => showTip(ev, [`${s.name} · ${d.x}`, opts.fmt ? opts.fmt(d.v) : nf(d.v) + " M€", ...(s.tip ? s.tip(d.x, d.v) : [])]))
       .on("mouseleave", hideTip);
   }
   node.replaceChildren(svg.node());
@@ -166,7 +167,7 @@ function apiladas(container, rows, claves, opts = {}) {
     }
     g.append("text").attr("class", "val").attr("y", by + bh - 4).attr("x", x(acc) + 6).text(nf(tot));
     g.append("rect").attr("width", W).attr("height", rh).style("fill", "transparent")
-      .on("mousemove", (ev) => showTip(ev, [r.label, `${nf(tot)} M€ en total`,
+      .on("pointermove pointerdown", (ev) => showTip(ev, [r.label, `${nf(tot)} M€ en total`,
         ...claves.filter((c) => r.parts[c.k]).map((c) => `${c.name}: ${nf(r.parts[c.k])} M€ (${pf((100 * r.parts[c.k]) / tot)})`)]))
       .on("mouseleave", hideTip);
   });
@@ -236,7 +237,7 @@ function renderEstado(estado) {
         .attr("stroke", s.color).attr("stroke-width", s.dash ? 1.6 : 2.4).attr("stroke-dasharray", s.dash ? "5 4" : null);
       svg.append("g").selectAll("circle").data(s.vals.filter((d) => d.v != null)).join("circle")
         .attr("cx", (d) => x(d.i)).attr("cy", (d) => y(d.v)).attr("r", 9).attr("fill", "transparent")
-        .on("mousemove", (ev, d) => showTip(ev, [`${s.name} · ${d.mes}`, nf(d.v) + " M€ acumulados"]))
+        .on("pointermove pointerdown", (ev, d) => showTip(ev, [`${s.name} · ${d.mes}`, nf(d.v) + " M€ acumulados"]))
         .on("mouseleave", hideTip);
     }
     node.replaceChildren(svg.node());
@@ -331,7 +332,7 @@ function renderPge(pge, cofog, entregas) {
         b(`${nf(ur.divisiones["09"])} M€ en educación`), `; el Estado, ${nf(uc.divisiones["07"])} y ${nf(uc.divisiones["09"])} M€ (gasto ejecutado según la IGAE).`),
       p(`El Estado contribuye a pagarlo de dos formas: con la política «Transferencias a otras Administraciones Públicas» (${nf(v("94"))} M€, que incluye los fondos de financiación autonómica y la participación de los ayuntamientos)`,
         cedidos ? `, y sobre todo cediendo a las comunidades una parte del IRPF, el IVA y los impuestos especiales (${nf(cedidos)} M€ en entregas a cuenta en ${ea.anio}), que ni siquiera figura como gasto del Estado.` : ", y cediéndoles una parte del IRPF, el IVA y los impuestos especiales, que no figura como gasto del Estado."),
-      el("p", { class: "note" }, el("a", { href: "#funciones" }, "Ver quién gasta en cada función ↓"))
+      el("p", { class: "note" }, el("a", { href: "quien-gasta.html" }, "Ver quién gasta en cada función →"))
     );
   }
 
@@ -611,7 +612,13 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
       const tr = el("tr", { class: (nivel === 0 ? "cap" : "") + (hs.length ? " exp" : "") },
         el("td", { style: `padding-left:${9 + nivel * 18}px` }, hs.length ? (abierto ? "▾ " : "▸ ") : "  ", `${cod}. ${nombres[cod] || ""}`),
         el("td", { class: "num" }, nf(v)), el("td", { class: "num" }, pf((100 * v) / c.total)));
-      if (hs.length) tr.addEventListener("click", () => { abierto ? state.abiertos.delete(cod) : state.abiertos.add(cod); drawEconomica(a, c); });
+      if (hs.length) {
+        const alternar = () => { abierto ? state.abiertos.delete(cod) : state.abiertos.add(cod); drawEconomica(a, c); $(`#ccaa-econ tr[data-cod="${cod}"]`)?.focus(); };
+        tr.dataset.cod = cod;
+        tr.setAttribute("aria-expanded", abierto ? "true" : "false");
+        tr.addEventListener("click", alternar);
+        pulsable(tr, alternar);
+      }
       tb.append(tr);
       if (abierto) hs.forEach((h) => fila(h, nivel + 1));
     };
@@ -667,13 +674,20 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
       el("td", {}, r.comunidad), el("td", { class: "num" }, fm(r.total)), el("td", { class: "num" }, r.entregas == null ? "foral" : fm(r.entregas)),
       el("td", { class: "num" }, pf(r.peso)), el("td", { class: "num" }, pf(r.cob)), el("td", { class: "num" }, fp(r.p31)), el("td", { class: "num" }, fp(r.p32)),
       el("td", { class: "num" }, fp(r.p23)), el("td", { class: "num" }, fp(r.p95)))));
+    tb.querySelectorAll("tr").forEach((tr, i) => pulsable(tr, () => tr.click(), `Ver ${data[i].comunidad}`));
+    document.querySelectorAll("#tbl-ccaa th").forEach((th) => th.setAttribute("aria-sort",
+      th.dataset.k === state.sortK ? (state.sortDir > 0 ? "ascending" : "descending") : "none"));
   }
-  document.querySelectorAll("#tbl-ccaa th").forEach((th) => th.addEventListener("click", () => {
-    const k = th.dataset.k;
-    state.sortDir = state.sortK === k ? -state.sortDir : (k === "comunidad" ? 1 : -1);
-    state.sortK = k;
-    drawTabla();
-  }));
+  document.querySelectorAll("#tbl-ccaa th").forEach((th) => {
+    const ordenar = () => {
+      const k = th.dataset.k;
+      state.sortDir = state.sortK === k ? -state.sortDir : (k === "comunidad" ? 1 : -1);
+      state.sortK = k;
+      drawTabla();
+    };
+    th.addEventListener("click", ordenar);
+    pulsable(th, ordenar, `Ordenar por ${th.textContent}`);
+  });
 
   function all() { drawEa(); drawDetalle(); drawEvol(); drawTabla(); }
   if (!nombres.includes(state.com)) state.com = "Andalucía";
@@ -681,28 +695,65 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
   onResize(() => { drawEa(); drawDetalle(); drawEvol(); });
 }
 
-/* ---------- Fuentes ---------- */
-function renderFuentes(meta, d) {
-  const etiquetas = {
-    estado: ["Ejecución mensual del Estado (IGAE)", d.estado && d.estado.fuente, d.estado && d.estado.anios[0].actualizado],
-    pge: ["Presupuestos Generales del Estado consolidados (SEPG)", d.pge && d.pge.fuente, null],
-    entregas: ["Entregas a cuenta a las comunidades (Financiación Autonómica)", d.entregas && d.entregas.fuente, null],
-    ccaa: ["Presupuestos de las comunidades autónomas (SGCIEF)", d.ccaa && d.ccaa.fuente, null],
-    cofog: ["Gasto de las administraciones públicas por función, COFOG (IGAE)", d.cofog && d.cofog.fuente, null],
-    poblacion: ["Población residente a 1 de enero (INE, Estadística Continua de Población)", d.poblacion && d.poblacion.fuente, null],
-  };
-  const ul = $("#lista-fuentes");
-  ul.replaceChildren();
-  for (const [k, [nombre, url, act]] of Object.entries(etiquetas)) {
-    const m = (meta.fuentes || {})[k] || {};
-    const li = el("li", {}, url ? el("a", { href: url }, nombre) : nombre, ". ");
-    if (act) li.append(`Publicado por Hacienda el ${fecha(act)}. `);
-    if (m.descargado) li.append(`Datos nuevos incorporados el ${fecha(m.descargado)}.`);
-    if (m.error) li.append(el("span", { class: "err" }, ` Último intento fallido (${fecha(m.error_fecha)}): se muestran los datos anteriores.`));
-    ul.append(li);
+/* ---------- Estado de cada fuente (página de fuentes) y fecha de actualización (todas) ---------- */
+function renderMeta(meta, estado) {
+  const fuentes = meta.fuentes || {};
+  document.querySelectorAll("[data-fuente]").forEach((dd) => {
+    const k = dd.dataset.fuente, m = fuentes[k] || {};
+    dd.replaceChildren();
+    if (k === "estado" && estado) dd.append(`Último dato publicado por la IGAE el ${fecha(estado.anios[0].actualizado)}. `);
+    dd.append(m.descargado ? `Datos nuevos incorporados el ${fecha(m.descargado)}.` : "Sin datos todavía.");
+    if (m.error) dd.append(el("span", { class: "err" }, ` Último intento de descarga fallido (${fecha(m.error_fecha)}): se muestran los datos anteriores.`));
+  });
+  const ult = d3.max(Object.values(fuentes), (f) => f.descargado);
+  const b = $("#badge-act");
+  if (b) b.textContent = ult ? `Datos actualizados el ${fecha(ult)}` : "";
+}
+
+/* ---------- Portada: cifras clave ---------- */
+function renderHome(d) {
+  const box = $("#home-kpis");
+  const tarjeta = (href, t, v, sub) => el("a", { class: "kpi card-link", href }, el("h3", {}, t), el("div", { class: "big" }, v), el("div", { class: "sub" }, sub));
+  const out = [];
+  let lead = "";
+  if (d.estado) {
+    const act = d.estado.anios[0], n = act.meses.length, mes = act.meses[n - 1].toLowerCase();
+    const sal = partida(act, "saldos", "B.9").valores[n - 1];
+    const emp = totalBloque(act, "empleos").valores[n - 1];
+    lead = `Hasta ${mes} de ${act.anio} el Estado ha gastado ${nf(emp)} millones de euros, con un déficit de ${nf(Math.abs(sal))} millones.`;
+    out.push(tarjeta("estado.html", `Saldo del Estado hasta ${mes} ${act.anio}`, nf(sal) + " M€",
+      act.pib ? `${fmt1.format((100 * Math.abs(sal)) / act.pib)} % del PIB · gasto: ${nf(emp)} M€` : `Gasto: ${nf(emp)} M€`));
   }
-  const ult = d3.max(Object.values(meta.fuentes || {}), (f) => f.descargado);
-  $("#badge-act").textContent = ult ? `Última actualización de datos: ${fecha(ult)}` : "";
+  if (d.pge) {
+    const col = d.pge.columnas[d.pge.columnas.length - 1];
+    const pens = d.pge.politicas.find((p) => p.codigo === "21");
+    out.push(tarjeta("presupuesto.html", `Presupuesto del Estado en vigor (${col})`, nf(d.pge.total ? d.pge.total[col] : null) + " M€",
+      pens ? `Pensiones: ${nf(pens.valores[col])} M€, la mayor política` : ""));
+  }
+  if (d.cofog) {
+    const reg = d.cofog.subsectores.regional, r = reg[reg.length - 1];
+    const tot = d3.sum(Object.values(d.cofog.subsectores), (arr) => { const a = arr.find((q) => q.anio === r.anio); return a ? a.divisiones["07"] || 0 : 0; });
+    out.push(tarjeta("quien-gasta.html", `Gasto público en sanidad que hacen las comunidades (${r.anio})`, pf((100 * r.divisiones["07"]) / tot),
+      `${nf(r.divisiones["07"])} M€ frente a ${nf(d.cofog.subsectores.central.find((q) => q.anio === r.anio).divisiones["07"])} M€ del Estado`));
+  }
+  if (d.entregas) {
+    const a = d.entregas.anios[0], tot = d3.sum(a.filas, (f) => f.total);
+    const hab = d.poblacion ? d3.sum(a.filas, (f) => { const t = d.poblacion.territorios[f.comunidad] || {}; return t[a.anio] || t[a.anio - 1] || 0; }) : 0;
+    out.push(tarjeta("comunidades.html", `Entregas a cuenta a las comunidades (${a.anio})`, nf(tot) + " M€",
+      hab ? `${fmt0.format((tot * 1e6) / hab)} € por habitante de media` : ""));
+  }
+  if (out.length) box.replaceChildren(...out);
+  else box.replaceChildren(el("p", { class: "err" }, "No se pudieron cargar los datos."));
+  if (lead) $("#lead").textContent = lead + " Datos oficiales de Hacienda y del INE, actualizados cada día.";
+}
+
+/* ---------- Accesibilidad: filas y cabeceras pulsables también con teclado ---------- */
+function pulsable(node, fn, label) {
+  node.setAttribute("tabindex", "0");
+  // Las filas y cabeceras de tabla conservan su papel; el resto se anuncia como botón.
+  if (!/^(TR|TH)$/.test(node.tagName)) node.setAttribute("role", "button");
+  if (label) node.setAttribute("aria-label", label);
+  node.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); fn(); } });
 }
 
 /* ---------- Utilidades ---------- */
@@ -717,14 +768,28 @@ async function getJSON(name) {
   return r.json();
 }
 
+addEventListener("scroll", hideTip, { passive: true });
+
 (async function main() {
-  const names = ["meta", "estado", "pge", "entregas", "ccaa", "cofog", "poblacion"];
+  // Cada página carga solo los datos que necesita.
+  const PAGINAS = {
+    inicio: ["estado", "pge", "cofog", "entregas", "poblacion"],
+    estado: ["estado"],
+    presupuesto: ["pge", "cofog", "entregas"],
+    "quien-gasta": ["cofog"],
+    comunidades: ["entregas", "ccaa", "cofog", "poblacion"],
+    fuentes: ["estado"],
+  };
+  const pagina = document.body.dataset.page;
+  const names = ["meta", ...(PAGINAS[pagina] || [])];
   const res = await Promise.allSettled(names.map((n) => getJSON(n + ".json")));
   const d = Object.fromEntries(names.map((n, i) => [n, res[i].status === "fulfilled" ? res[i].value : null]));
   const fail = (sel, what) => { const n = $(sel); if (n) n.replaceChildren(el("p", { class: "err" }, `No se pudieron cargar los datos de ${what}.`)); };
-  try { d.estado ? renderEstado(d.estado) : fail("#kpis", "ejecución del Estado"); } catch (e) { console.error(e); fail("#kpis", "ejecución del Estado"); }
-  try { d.pge ? renderPge(d.pge, d.cofog, d.entregas) : fail("#ch-pge", "presupuesto"); } catch (e) { console.error(e); fail("#ch-pge", "presupuesto"); }
-  try { d.cofog ? renderFunciones(d.cofog) : fail("#ch-fun", "gasto por función"); } catch (e) { console.error(e); fail("#ch-fun", "gasto por función"); }
-  try { d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog, d.poblacion) : fail("#ch-ea", "comunidades"); } catch (e) { console.error(e); fail("#ch-ea", "comunidades"); }
-  renderFuentes(d.meta || {}, d);
+  const run = (fn, sel, what) => { try { fn(); } catch (e) { console.error(e); fail(sel, what); } };
+  if (pagina === "inicio") run(() => renderHome(d), "#home-kpis", "la portada");
+  if (pagina === "estado") run(() => (d.estado ? renderEstado(d.estado) : fail("#kpis", "ejecución del Estado")), "#kpis", "ejecución del Estado");
+  if (pagina === "presupuesto") run(() => (d.pge ? renderPge(d.pge, d.cofog, d.entregas) : fail("#ch-pge", "presupuesto")), "#ch-pge", "presupuesto");
+  if (pagina === "quien-gasta") run(() => (d.cofog ? renderFunciones(d.cofog) : fail("#ch-fun", "gasto por función")), "#ch-fun", "gasto por función");
+  if (pagina === "comunidades") run(() => (d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog, d.poblacion) : fail("#ch-ea", "comunidades")), "#ch-ea", "comunidades");
+  renderMeta(d.meta || {}, d.estado);
 })();

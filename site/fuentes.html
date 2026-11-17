@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuentes, metodología y bibliografía · Dinero Público</title>
+<meta name="description" content="De dónde salen los datos de Dinero Público: IGAE, SEPG, Financiación Autonómica, SGCIEF e INE. Cómo se procesan, notas de interpretación, glosario, marco legal y descarga de los datos.">
+<link rel="canonical" href="https://dinero-publico.github.io/fuentes.html">
+<meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161614" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="Dinero Público">
+<meta property="og:title" content="Fuentes, metodología y bibliografía · Dinero Público">
+<meta property="og:description" content="De dónde salen los datos de Dinero Público: IGAE, SEPG, Financiación Autonómica, SGCIEF e INE. Cómo se procesan, notas de interpretación, glosario, marco legal y descarga de los datos.">
+<meta property="og:url" content="https://dinero-publico.github.io/fuentes.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect x=%221%22 y=%229%22 width=%223%22 height=%226%22 fill=%22%232f6db5%22/%3E%3Crect x=%226%22 y=%225%22 width=%223%22 height=%2210%22 fill=%22%232f6db5%22/%3E%3Crect x=%2211%22 y=%221%22 width=%223%22 height=%2214%22 fill=%22%23d1803a%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "Dataset",
+ "name": "Dinero Público: ingresos y gastos públicos de España",
+ "description": "Ejecución mensual del Estado, Presupuestos Generales del Estado por política, entregas a cuenta y presupuestos de las comunidades autónomas, gasto público por función (COFOG) y población, procesados a JSON a partir de fuentes oficiales.",
+ "url": "https://dinero-publico.github.io/fuentes.html",
+ "inLanguage": "es",
+ "isAccessibleForFree": true,
+ "license": "https://www.hacienda.gob.es/es-ES/Paginas/Avisolegal.aspx",
+ "creator": {
+  "@type": "Organization",
+  "name": "Dinero Público",
+  "url": "https://dinero-publico.github.io/"
+ },
+ "spatialCoverage": "España",
+ "temporalCoverage": "2014/..",
+ "isBasedOn": [
+  "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/EstadoOperacionesNF.aspx",
+  "https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/DocumentacionEstadisticas/Estadisticas/Paginas/Estadisticas.aspx",
+  "https://www.hacienda.gob.es/es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx",
+  "https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionPresupuestos/aspx/inicio.aspx",
+  "https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacofogCA.aspx",
+  "https://www.ine.es/jaxiT3/Tabla.htm?t=56940"
+ ],
+ "distribution": [
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/data/estado.json"
+  },
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/data/pge.json"
+  },
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/data/entregas.json"
+  },
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/data/ccaa.json"
+  },
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/data/cofog.json"
+  },
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/data/poblacion.json"
+  },
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/data/meta.json"
+  }
+ ]
+}
+</script>
+</head>
+<body data-page="fuentes">
+<a class="skip" href="#main">Saltar al contenido</a>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="./">Dinero Público</a>
+    <nav aria-label="Secciones">
+      <ul>
+      <li><a href="./">Inicio</a></li>
+      <li><a href="estado.html">Estado</a></li>
+      <li><a href="presupuesto.html">Presupuesto</a></li>
+      <li><a href="quien-gasta.html">Quién gasta</a></li>
+      <li><a href="comunidades.html">Comunidades</a></li>
+      <li><a href="fuentes.html" aria-current="page">Fuentes</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <div class="pagehead">
+    <h1>Fuentes y metodología</h1>
+    <p class="lead">Todos los datos proceden de publicaciones oficiales del Ministerio de Hacienda y del INE. Se descargan automáticamente cada día, sin retoques manuales, y la web solo cambia cuando hay datos nuevos.</p>
+    <p class="badges"><span class="badge" id="badge-act"></span></p>
+  </div>
+  <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
+  <nav class="subnav" aria-label="Apartados de la página">
+    <a href="#fuentes-oficiales">Fuentes</a><a href="#proceso">Proceso</a><a href="#notas">Notas</a><a href="#glosario">Glosario</a><a href="#bibliografia">Bibliografía</a><a href="#descargas">Descargas</a>
+  </nav>
+
+  <section aria-labelledby="fuentes-oficiales">
+    <h2 id="fuentes-oficiales">Fuentes oficiales</h2>
+    <div class="fuentes">
+    <article class="card fuente" id="f-estado">
+      <h3>Ejecución mensual del Estado</h3>
+      <p class="org">Intervención General de la Administración del Estado (IGAE)</p>
+      <p>Operaciones no financieras del subsector Estado, serie mensual en contabilidad nacional (SEC 2010): recursos, empleos y saldos acumulados desde enero, y el PIB de referencia.</p>
+      <dl>
+        <dt>Periodicidad</dt><dd>Mensual, con unas semanas de retraso.</dd>
+        <dt>Años en la web</dt><dd>2016 – último mes publicado</dd>
+        <dt>Cómo se obtiene</dt><dd>Un Excel por año (M_ESTADO_AAAA.xlsx). Se leen las partidas con su código SEC y se renombran con nombres comprensibles.</dd>
+        <dt>Estado</dt><dd data-fuente="estado">—</dd>
+      </dl>
+      <p><a href="https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/EstadoOperacionesNF.aspx" rel="noopener">Ir a la fuente oficial</a></p>
+    </article>
+    <article class="card fuente" id="f-pge">
+      <h3>Presupuestos Generales del Estado consolidados</h3>
+      <p class="org">Secretaría General de Presupuestos y Gastos (SEPG)</p>
+      <p>Créditos iniciales por política y programa de gasto (capítulos 1 a 8) del Estado, organismos autónomos, Seguridad Social y resto de entes con presupuesto limitativo, consolidados.</p>
+      <dl>
+        <dt>Periodicidad</dt><dd>Anual, al aprobarse o prorrogarse los Presupuestos.</dd>
+        <dt>Años en la web</dt><dd>2017 – presupuesto en vigor</dd>
+        <dt>Cómo se obtiene</dt><dd>Excel «Presupuestos Generales del Estado consolidados»: hojas 1.4 (políticas) y 1.6 (programas).</dd>
+        <dt>Estado</dt><dd data-fuente="pge">—</dd>
+      </dl>
+      <p><a href="https://www.sepg.pap.hacienda.gob.es/sitios/sepg/es-ES/Presupuestos/DocumentacionEstadisticas/Estadisticas/Paginas/Estadisticas.aspx" rel="noopener">Ir a la fuente oficial</a></p>
+    </article>
+    <article class="card fuente" id="f-entregas">
+      <h3>Entregas a cuenta del sistema de financiación autonómica</h3>
+      <p class="org">Secretaría General de Financiación Autonómica y Local</p>
+      <p>Anticipos que reciben las comunidades de régimen común, Ceuta y Melilla por la tarifa autonómica del IRPF, el IVA, los impuestos especiales y los fondos de Suficiencia Global y de Garantía.</p>
+      <dl>
+        <dt>Periodicidad</dt><dd>Anual, con actualizaciones durante el ejercicio.</dd>
+        <dt>Años en la web</dt><dd>2018 – año en curso</dd>
+        <dt>Cómo se obtiene</dt><dd>Un Excel por ejercicio. Esta fuente bloquea a menudo las descargas desde servidores fuera de España, por lo que a veces se actualiza manualmente.</dd>
+        <dt>Estado</dt><dd data-fuente="entregas">—</dd>
+      </dl>
+      <p><a href="https://www.hacienda.gob.es/es-es/cdi/paginas/sistemasfinanciaciondeuda/informacionccaas/informes%20financiacion%20comunidades%20autonomas1.aspx" rel="noopener">Ir a la fuente oficial</a></p>
+    </article>
+    <article class="card fuente" id="f-ccaa">
+      <h3>Presupuestos de las comunidades autónomas</h3>
+      <p class="org">S. G. de Coordinación de la Información Económico-Financiera (SGCIEF)</p>
+      <p>Presupuestos iniciales consolidados de cada comunidad: clasificación funcional por políticas y capítulos, y desglose económico de los gastos por capítulo, artículo y concepto.</p>
+      <dl>
+        <dt>Periodicidad</dt><dd>Anual.</dd>
+        <dt>Años en la web</dt><dd>2016 – año en curso</dd>
+        <dt>Cómo se obtiene</dt><dd>Descargas «Clasificación funcional por capítulos» y «Desglose de los gastos» de cada comunidad y año. Los años cerrados se reutilizan porque no cambian.</dd>
+        <dt>Estado</dt><dd data-fuente="ccaa">—</dd>
+      </dl>
+      <p><a href="https://serviciostelematicosext.hacienda.gob.es/SGCIEF/PublicacionPresupuestos/aspx/inicio.aspx" rel="noopener">Ir a la fuente oficial</a></p>
+    </article>
+    <article class="card fuente" id="f-cofog">
+      <h3>Gasto de las administraciones públicas por función (COFOG)</h3>
+      <p class="org">Intervención General de la Administración del Estado (IGAE)</p>
+      <p>Gasto ejecutado en contabilidad nacional clasificado por funciones (sanidad, educación, protección social…) para la Administración central, regional, local y los fondos de la Seguridad Social, y detalle por comunidad autónoma.</p>
+      <dl>
+        <dt>Periodicidad</dt><dd>Anual, con unos dos años de retraso; el último año es provisional.</dd>
+        <dt>Años en la web</dt><dd>2014 – último año publicado</dd>
+        <dt>Cómo se obtiene</dt><dd>Series «desde 1995» de cada subsector y ficheros de detalle por comunidad. Se usa la fila «Gasto total» de cada división y el grupo 01.8 (transferencias entre administraciones).</dd>
+        <dt>Estado</dt><dd data-fuente="cofog">—</dd>
+      </dl>
+      <p><a href="https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacofogCA.aspx" rel="noopener">Ir a la fuente oficial</a></p>
+    </article>
+    <article class="card fuente" id="f-poblacion">
+      <h3>Población residente</h3>
+      <p class="org">Instituto Nacional de Estadística (INE)</p>
+      <p>Población residente a 1 de enero por comunidad autónoma, Ceuta, Melilla y total nacional (Estadística Continua de Población, tabla 56940). Se usa para los euros por habitante.</p>
+      <dl>
+        <dt>Periodicidad</dt><dd>Trimestral; el último dato es provisional.</dd>
+        <dt>Años en la web</dt><dd>2014 – año en curso</dd>
+        <dt>Cómo se obtiene</dt><dd>API JSON del INE (servicios.ine.es/wstempus).</dd>
+        <dt>Estado</dt><dd data-fuente="poblacion">—</dd>
+      </dl>
+      <p><a href="https://www.ine.es/jaxiT3/Tabla.htm?t=56940" rel="noopener">Ir a la fuente oficial</a></p>
+    </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="proceso">
+    <h2 id="proceso">Cómo se procesan los datos</h2>
+    <ol class="pasos">
+      <li><strong>Descarga.</strong> Un proceso automático (GitHub Actions) se ejecuta cada día a las 07:17 UTC y descarga los mismos Excel y datos que cualquier persona puede bajar desde las páginas oficiales. No existe una API pública de Hacienda.</li>
+      <li><strong>Lectura.</strong> Un script en Python lee cada fichero, comprueba que su estructura es la esperada (por ejemplo, que las partidas suman el total) y lo convierte a JSON. Si una fuente cambia de formato o no responde, se conservan sus últimos datos válidos y se avisa en esta página.</li>
+      <li><strong>Publicación.</strong> Si hay datos nuevos se guardan en el repositorio, de modo que el historial de cambios es también el historial de los datos, y se publica la web.</li>
+      <li><strong>Cálculos.</strong> La web solo hace operaciones sencillas a la vista: sumas, porcentajes, variaciones y divisiones por la población. No se estima ni se corrige ningún dato.</li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="notas">
+    <h2 id="notas">Notas de interpretación</h2>
+    <ul>
+      <li>La ejecución del Estado está en <strong>contabilidad nacional</strong> (SEC 2010): no coincide exactamente con la ejecución presupuestaria en caja ni con los créditos del presupuesto.</li>
+      <li>Mientras no se aprueben nuevos Presupuestos, sigue en vigor el último aprobado, <strong>prorrogado</strong>. La etiqueta «-P» indica presupuesto prorrogado. Las modificaciones de crédito durante el año no aparecen.</li>
+      <li>Las <strong>entregas a cuenta</strong> son anticipos: al cabo de dos años se liquidan con la recaudación real.</li>
+      <li>Los presupuestos autonómicos son los <strong>iniciales</strong> (aprobados o prorrogados) consolidados, no el gasto ejecutado. El gasto ejecutado por función lo da la COFOG de la IGAE.</li>
+      <li>La financiación autonómica <strong>no es finalista</strong>: las comunidades deciden en qué la gastan. Las comparaciones con sanidad, educación y servicios sociales indican a qué equivale lo recibido, no que esté reservado por ley para esos servicios.</li>
+      <li>El gasto por función (COFOG) es gasto ejecutado en contabilidad nacional. Sumar administraciones duplicaría las transferencias entre ellas; por eso se muestran aparte.</li>
+      <li>Los <strong>euros por habitante</strong> usan la población residente a 1 de enero de cada año (el último año es provisional). Si un año aún no tiene población publicada, se usa la del último año disponible.</li>
+      <li>Navarra y País Vasco (<strong>régimen foral</strong>) recaudan casi todos sus impuestos y asumen competencias que en el resto paga el Estado, así que su presupuesto por habitante es mucho mayor y no es directamente comparable con el de las comunidades de régimen común.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="glosario">
+    <h2 id="glosario">Glosario</h2>
+    <dl class="glosario">
+      <dt>Política de gasto</dt><dd>Agrupación de los programas presupuestarios según su finalidad (pensiones, sanidad, defensa…). Es la clasificación funcional de los presupuestos españoles.</dd>
+      <dt>Capítulo</dt><dd>Clasificación económica del gasto: 1 personal, 2 compras de bienes y servicios, 3 intereses, 4 transferencias corrientes, 5 fondo de contingencia, 6 inversiones, 7 transferencias de capital, 8 activos y 9 pasivos financieros. Se subdivide en artículos y conceptos.</dd>
+      <dt>Presupuesto consolidado</dt><dd>Suma de la administración y sus organismos descontando lo que se transfieren entre ellos, para no contar dos veces el mismo euro.</dd>
+      <dt>Presupuesto prorrogado</dt><dd>El del año anterior, que sigue vigente cuando no se aprueba uno nuevo.</dd>
+      <dt>Contabilidad nacional (SEC 2010)</dt><dd>Sistema europeo de cuentas que registra ingresos y gastos cuando se producen (no cuando se cobran o pagan) y permite comparar administraciones y países.</dd>
+      <dt>Déficit (B.9)</dt><dd>Capacidad o necesidad de financiación: ingresos no financieros menos gastos no financieros. Negativo es déficit.</dd>
+      <dt>COFOG</dt><dd>Clasificación de las funciones de las administraciones públicas de Naciones Unidas: diez divisiones como sanidad (07), educación (09) o protección social (10).</dd>
+      <dt>Entregas a cuenta</dt><dd>Pagos mensuales a cuenta de lo que corresponde a cada comunidad por el sistema de financiación; se ajustan dos años después en la liquidación.</dd>
+      <dt>Fondo de Garantía de Servicios Públicos Fundamentales</dt><dd>Fondo del sistema de financiación que reparte recursos para que todas las comunidades puedan prestar sanidad, educación y servicios sociales en condiciones similares. Un valor negativo indica que la comunidad aporta más de lo que recibe.</dd>
+      <dt>Fondo de Suficiencia Global</dt><dd>Cubre la diferencia entre las necesidades de financiación de cada comunidad y sus recursos tributarios.</dd>
+      <dt>Régimen foral</dt><dd>Sistema propio de País Vasco (Concierto Económico) y Navarra (Convenio Económico): recaudan sus impuestos y pagan al Estado un cupo o aportación por los servicios que este presta.</dd>
+    </dl>
+  </section>
+
+  <section aria-labelledby="bibliografia">
+    <h2 id="bibliografia">Marco legal y bibliografía</h2>
+    <ul class="biblio">
+      <li>Ley 47/2003, de 26 de noviembre, General Presupuestaria. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2003-21614" rel="noopener">BOE-A-2003-21614</a>.</li>
+      <li>Ley Orgánica 8/1980, de 22 de septiembre, de Financiación de las Comunidades Autónomas (LOFCA). <a href="https://www.boe.es/buscar/act.php?id=BOE-A-1980-21166" rel="noopener">BOE-A-1980-21166</a>.</li>
+      <li>Ley 22/2009, de 18 de diciembre, por la que se regula el sistema de financiación de las Comunidades Autónomas de régimen común y Ciudades con Estatuto de Autonomía. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2009-20375" rel="noopener">BOE-A-2009-20375</a>.</li>
+      <li>Ley 12/2002, de 23 de mayo, por la que se aprueba el Concierto Económico con la Comunidad Autónoma del País Vasco. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2002-9969" rel="noopener">BOE-A-2002-9969</a>.</li>
+      <li>Ley 28/1990, de 26 de diciembre, por la que se aprueba el Convenio Económico entre el Estado y la Comunidad Foral de Navarra. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-1990-31117" rel="noopener">BOE-A-1990-31117</a>.</li>
+      <li>Reglamento (UE) n.º 549/2013 del Parlamento Europeo y del Consejo, relativo al Sistema Europeo de Cuentas Nacionales y Regionales de la Unión Europea (SEC 2010). <a href="https://eur-lex.europa.eu/eli/reg/2013/549/oj" rel="noopener">EUR-Lex</a>.</li>
+      <li>Eurostat (2019). <cite>Manual on sources and methods for the compilation of COFOG statistics</cite>. <a href="https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/ks-gq-19-010" rel="noopener">Eurostat</a>.</li>
+      <li>IGAE. <cite>Informe sobre la clasificación funcional del gasto público (COFOG)</cite>. <a href="https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacogof.aspx" rel="noopener">IGAE</a>.</li>
+      <li>INE. <cite>Estadística Continua de Población: metodología y últimos datos</cite>. <a href="https://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&amp;cid=1254736177095&amp;menu=ultiDatos&amp;idp=1254735572981" rel="noopener">INE</a>.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="descargas">
+    <h2 id="descargas">Descarga de los datos</h2>
+    <p>Los datos ya procesados, en JSON, para reutilizarlos libremente citando las fuentes originales:</p>
+    <ul>
+      <li><a href="data/estado.json" download>estado.json</a> — Ejecución mensual del Estado</li>
+      <li><a href="data/pge.json" download>pge.json</a> — Presupuestos del Estado por política y programa</li>
+      <li><a href="data/entregas.json" download>entregas.json</a> — Entregas a cuenta por comunidad</li>
+      <li><a href="data/ccaa.json" download>ccaa.json</a> — Presupuestos autonómicos por política, capítulo y partida</li>
+      <li><a href="data/cofog.json" download>cofog.json</a> — Gasto por función (COFOG)</li>
+      <li><a href="data/poblacion.json" download>poblacion.json</a> — Población a 1 de enero</li>
+      <li><a href="data/meta.json" download>meta.json</a> — Fechas de actualización de cada fuente</li>
+    </ul>
+    <p>El formato de cada fichero se describe en el <a href="https://github.com/dinero-publico/dinero-publico.github.io#formato-de-los-datos">README del repositorio</a>.</p>
+  </section>
+
+  <section aria-labelledby="licencia">
+    <h2 id="licencia">Reutilización y licencia</h2>
+    <p>Los datos son del Ministerio de Hacienda y del INE y se reutilizan según el <a href="https://www.hacienda.gob.es/es-ES/Paginas/Avisolegal.aspx" rel="noopener">aviso legal de Hacienda</a> y el <a href="https://www.ine.es/aviso_legal" rel="noopener">aviso legal del INE</a>, que permiten su reutilización citando la fuente. El código de esta web es abierto, con licencia MIT, y está en <a href="https://github.com/dinero-publico/dinero-publico.github.io">GitHub</a>. Este proyecto es independiente y no tiene relación con ninguna administración.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <nav aria-label="Pie de página"><ul class="foot-nav">
+      <li><a href="./">Inicio</a></li>
+      <li><a href="estado.html">Estado</a></li>
+      <li><a href="presupuesto.html">Presupuesto</a></li>
+      <li><a href="quien-gasta.html">Quién gasta</a></li>
+      <li><a href="comunidades.html">Comunidades</a></li>
+      <li><a href="fuentes.html">Fuentes</a></li>
+    </ul></nav>
+    <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
+    <p>Proyecto independiente, sin relación con ninguna administración. <a href="https://github.com/dinero-publico/dinero-publico.github.io">Código abierto</a> con licencia MIT.</p>
+  </div>
+</footer>
+
+<div class="tip" id="tip" hidden></div>
+<script src="vendor/d3.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

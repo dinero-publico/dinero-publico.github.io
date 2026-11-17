@@ -1,4 +1,6 @@
-# Presupuestos abiertos
+# Dinero Público
+
+Web: https://dinero-publico.github.io/
 
 **¿De dónde viene y a dónde va el dinero público en España?**
 Una web estática que se actualiza sola con los datos oficiales del Ministerio de Hacienda:
@@ -76,7 +78,8 @@ Cada descarga guarda una copia del Excel original en `raw/` (no se sube al repos
 scripts/fetch_data.py   descarga + parseo de las cuatro fuentes
 tests/                  tests con Excel oficiales reales (tests/fixtures)
 data/                   JSON generados (los actualiza el workflow)
-site/                   web estática: index.html, app.js, style.css, vendor/d3.min.js
+site/                   web estática: una página por sección (index, estado, presupuesto, quien-gasta,
+                        comunidades, fuentes), app.js, style.css, vendor/d3.min.js, sitemap.xml, robots.txt
 .github/workflows/      actualización diaria y publicación en GitHub Pages
 ```
 

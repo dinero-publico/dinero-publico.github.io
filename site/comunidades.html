@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comunidades autónomas: qué reciben y en qué gastan · Dinero Público</title>
+<meta name="description" content="Entregas a cuenta del sistema de financiación, presupuesto de cada comunidad autónoma por política y partida, evolución desde 2016 y comparativa en euros por habitante.">
+<link rel="canonical" href="https://dinero-publico.github.io/comunidades.html">
+<meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161614" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="Dinero Público">
+<meta property="og:title" content="Comunidades autónomas: qué reciben y en qué gastan · Dinero Público">
+<meta property="og:description" content="Entregas a cuenta del sistema de financiación, presupuesto de cada comunidad autónoma por política y partida, evolución desde 2016 y comparativa en euros por habitante.">
+<meta property="og:url" content="https://dinero-publico.github.io/comunidades.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect x=%221%22 y=%229%22 width=%223%22 height=%226%22 fill=%22%232f6db5%22/%3E%3Crect x=%226%22 y=%225%22 width=%223%22 height=%2210%22 fill=%22%232f6db5%22/%3E%3Crect x=%2211%22 y=%221%22 width=%223%22 height=%2214%22 fill=%22%23d1803a%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="comunidades">
+<a class="skip" href="#main">Saltar al contenido</a>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="./">Dinero Público</a>
+    <nav aria-label="Secciones">
+      <ul>
+      <li><a href="./">Inicio</a></li>
+      <li><a href="estado.html">Estado</a></li>
+      <li><a href="presupuesto.html">Presupuesto</a></li>
+      <li><a href="quien-gasta.html">Quién gasta</a></li>
+      <li><a href="comunidades.html" aria-current="page">Comunidades</a></li>
+      <li><a href="fuentes.html">Fuentes</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <div class="pagehead">
+    <h1>Comunidades autónomas</h1>
+    <p class="lead">Lo que cada comunidad recibe del sistema de financiación, en qué lo gasta partida a partida y cómo se compara con las demás.</p>
+    <p class="badges"><span class="badge" id="badge-act"></span></p>
+  </div>
+  <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
+  <nav class="subnav" aria-label="Apartados de la página">
+    <a href="#reparto">Reparto</a><a href="#ccaa-tit">En qué gasta</a><a href="#ccaa-evol-tit">Evolución</a><a href="#comparativa">Comparativa</a>
+  </nav>
+
+  <div class="ctrl ctrl-main">
+    <label>Comparar <select id="sel-modo"><option value="abs">en millones de euros y %</option><option value="ph">en euros por habitante</option></select></label>
+    <label>Año de las entregas <select id="sel-ea"></select></label>
+  </div>
+
+  <section aria-labelledby="reparto">
+    <h2 id="reparto">Reparto a las comunidades</h2>
+    <p class="note">Entregas a cuenta del sistema de financiación: el anticipo anual que el Estado paga a cada comunidad de régimen común (su parte del IRPF, el IVA y los impuestos especiales, más los fondos de suficiencia y garantía). País Vasco y Navarra tienen régimen foral y no reciben entregas a cuenta. Pulsa una comunidad para ver en qué gasta.</p>
+    <p class="total" id="ea-total"></p>
+    <div class="chart" id="ch-ea"></div>
+    <div class="card aviso" id="ea-destino" hidden></div>
+  </section>
+
+  <section aria-labelledby="ccaa-tit">
+    <h2 id="ccaa-tit">¿En qué gasta cada comunidad?</h2>
+    <div class="ctrl">
+      <label>Comunidad <select id="sel-ccaa"></select></label>
+      <label>Año del presupuesto <select id="sel-ccaa-anio"></select></label>
+    </div>
+    <div class="cols">
+      <div class="card" id="ccaa-resumen"></div>
+      <div class="card" id="ccaa-ea"></div>
+    </div>
+    <p class="note">Pulsa una política para ver en qué se gasta: por tipo de gasto, su evolución y su peso en cada comunidad.</p>
+    <div class="chart" id="ch-ccaa"></div>
+    <div class="detalle" id="ccaa-pol" hidden></div>
+    <div class="detalle" id="ccaa-econ" hidden></div>
+  </section>
+
+  <section aria-labelledby="ccaa-evol-tit">
+    <h2 id="ccaa-evol-tit">Lo que recibe y lo que gasta en servicios básicos</h2>
+    <p class="note">Entregas a cuenta del sistema de financiación frente al presupuesto inicial en sanidad, educación y servicios sociales y al gasto ejecutado en sanidad, educación y protección social que publica la IGAE (con unos dos años de retraso).</p>
+    <div class="legend" id="leg-ccaa-evol"></div>
+    <div class="chart" id="ch-ccaa-evol"></div>
+  </section>
+
+  <section aria-labelledby="comparativa">
+    <h2 id="comparativa">Comparativa entre comunidades</h2>
+    <p class="note" id="tbl-unidad"></p>
+    <p class="note">«Peso de las entregas»: valor de las entregas a cuenta sobre su presupuesto (buena parte son impuestos cedidos pagados en la propia comunidad). «Entregas / servicios básicos»: entregas a cuenta sobre lo que presupuesta en sanidad, educación y servicios sociales. Pulsa una cabecera para ordenar y una fila para ver la comunidad.</p>
+    <div class="scroll"><table class="tbl" id="tbl-ccaa">
+      <caption class="sr-only">Comparativa de presupuestos y entregas a cuenta por comunidad autónoma</caption>
+      <thead><tr>
+        <th scope="col" data-k="comunidad">Comunidad</th><th scope="col" class="num" data-k="total">Presupuesto</th>
+        <th scope="col" class="num" data-k="entregas">Entregas</th><th scope="col" class="num" data-k="peso">Peso entregas</th>
+        <th scope="col" class="num" data-k="cob">Entregas / servicios básicos</th>
+        <th scope="col" class="num" data-k="p31">Sanidad</th><th scope="col" class="num" data-k="p32">Educación</th>
+        <th scope="col" class="num" data-k="p23">Serv. sociales</th><th scope="col" class="num" data-k="p95">Deuda</th>
+      </tr></thead><tbody></tbody>
+    </table></div>
+    <p class="note"><a href="fuentes.html#f-ccaa">Sobre estas fuentes</a> y <a href="fuentes.html#notas">notas de interpretación</a>.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <nav aria-label="Pie de página"><ul class="foot-nav">
+      <li><a href="./">Inicio</a></li>
+      <li><a href="estado.html">Estado</a></li>
+      <li><a href="presupuesto.html">Presupuesto</a></li>
+      <li><a href="quien-gasta.html">Quién gasta</a></li>
+      <li><a href="comunidades.html">Comunidades</a></li>
+      <li><a href="fuentes.html">Fuentes</a></li>
+    </ul></nav>
+    <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
+    <p>Proyecto independiente, sin relación con ninguna administración. <a href="https://github.com/dinero-publico/dinero-publico.github.io">Código abierto</a> con licencia MIT.</p>
+  </div>
+</footer>
+
+<div class="tip" id="tip" hidden></div>
+<script src="vendor/d3.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
