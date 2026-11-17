@@ -65,15 +65,22 @@
     <div class="ctrl">
       <label>Comunidad <select id="sel-ccaa"></select></label>
       <label>Año del presupuesto <select id="sel-ccaa-anio"></select></label>
+      <label>Comparar con <select id="sel-ccaa-base"></select></label>
     </div>
     <div class="cols">
       <div class="card" id="ccaa-resumen"></div>
       <div class="card" id="ccaa-ea"></div>
     </div>
-    <p class="note">Pulsa una política para ver en qué se gasta: por tipo de gasto, su evolución y su peso en cada comunidad.</p>
+    <p class="note" id="ccaa-pol-nota"></p>
     <div class="chart" id="ch-ccaa"></div>
     <div class="detalle" id="ccaa-pol" hidden></div>
     <div class="detalle" id="ccaa-econ" hidden></div>
+    <div id="ccaa-var" hidden>
+      <h3 id="ccaa-var-tit"></h3>
+      <div class="ctrl"><label>Variación en <select id="sel-ccaa-var"><option value="pct">porcentaje</option><option value="eur">millones de euros</option></select></label></div>
+      <p class="note" id="ccaa-var-nota"></p>
+      <div class="chart" id="ch-ccaa-var"></div>
+    </div>
   </section>
 
   <section aria-labelledby="ccaa-evol-tit">
@@ -86,11 +93,11 @@
   <section aria-labelledby="comparativa">
     <h2 id="comparativa">Comparativa entre comunidades</h2>
     <p class="note" id="tbl-unidad"></p>
-    <p class="note">«Peso de las entregas»: valor de las entregas a cuenta sobre su presupuesto (buena parte son impuestos cedidos pagados en la propia comunidad). «Entregas / servicios básicos»: entregas a cuenta sobre lo que presupuesta en sanidad, educación y servicios sociales. Pulsa una cabecera para ordenar y una fila para ver la comunidad.</p>
+    <p class="note">«Peso de las entregas»: valor de las entregas a cuenta sobre su presupuesto (buena parte son impuestos cedidos pagados en la propia comunidad). «Entregas / servicios básicos»: entregas a cuenta sobre lo que presupuesta en sanidad, educación y servicios sociales. La etiqueta «prorrogado» señala las comunidades sin presupuesto nuevo ese año. Pulsa una cabecera para ordenar y una fila para ver la comunidad.</p>
     <div class="scroll"><table class="tbl" id="tbl-ccaa">
       <caption class="sr-only">Comparativa de presupuestos y entregas a cuenta por comunidad autónoma</caption>
       <thead><tr>
-        <th scope="col" data-k="comunidad">Comunidad</th><th scope="col" class="num" data-k="total">Presupuesto</th>
+        <th scope="col" data-k="comunidad">Comunidad</th><th scope="col" class="num" data-k="total">Presupuesto</th><th scope="col" class="num" data-k="var">Variación</th>
         <th scope="col" class="num" data-k="entregas">Entregas</th><th scope="col" class="num" data-k="peso">Peso entregas</th>
         <th scope="col" class="num" data-k="cob">Entregas / servicios básicos</th>
         <th scope="col" class="num" data-k="p31">Sanidad</th><th scope="col" class="num" data-k="p32">Educación</th>

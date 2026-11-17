@@ -122,6 +122,12 @@ select { font: inherit; padding: 5px 8px; border-radius: 6px; border: 1px solid 
 .foot-nav { display: flex; flex-wrap: wrap; gap: 4px 16px; list-style: none; padding: 0; margin: 0 0 10px; }
 .foot-nav a { color: var(--fg); text-decoration: none; }
 .foot-nav a:hover { text-decoration: underline; }
+.chart .delta { fill: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+.chart .delta.sube { fill: var(--c2); }
+.chart .delta.baja { fill: var(--c1); }
+.tag { display: inline-block; font-family: system-ui, sans-serif; font-size: .72rem; font-weight: 500; line-height: 1.5; color: var(--c2); border: 1px solid currentColor; border-radius: 99px; padding: 0 7px; margin-left: 6px; vertical-align: middle; white-space: nowrap; }
+.hueco { display: inline-block; width: 9px; height: 9px; border: 1.8px solid var(--muted); border-radius: 50%; background: var(--bg); margin-right: 5px; vertical-align: baseline; }
+.var-up { color: var(--c2); } .var-down { color: var(--c1); }
 .chart .row[tabindex]:focus { outline: none; }
 .chart .row[tabindex]:focus-visible .bar { stroke: var(--fg); stroke-width: 2; }
 .tbl tr:focus-visible td { background: var(--panel); }

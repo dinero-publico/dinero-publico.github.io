@@ -96,7 +96,9 @@ site/                   web estática: una página por sección (index, estado, 
 ## Notas de interpretación
 
 - La ejecución del Estado está en **contabilidad nacional**: no es lo mismo que la ejecución presupuestaria en caja ni que los créditos aprobados.
-- Mientras no haya nuevos Presupuestos, sigue vigente el último aprobado, **prorrogado**. Las modificaciones de crédito durante el año no aparecen en esta serie.
+- Mientras no haya nuevos Presupuestos, sigue vigente el último aprobado, **prorrogado**. La SEPG etiqueta cada prórroga con el año del que procede («2025-P» rige en 2026); la web la muestra en el año en que rige. Las modificaciones de crédito durante el año no aparecen en esta serie.
+- Los presupuestos autonómicos **prorrogados** no vienen señalados en los datos de Hacienda: la web los deduce cuando un presupuesto repite el total exacto o al menos cinco políticas al céntimo del año anterior.
+- Las variaciones entre años están en euros corrientes, sin descontar la inflación.
 - Las **entregas a cuenta** son anticipos y se liquidan dos años después con la recaudación real. Buena parte son impuestos cedidos pagados en la propia comunidad.
 - Los presupuestos autonómicos son los **iniciales**, no el gasto ejecutado. El gasto ejecutado por función lo da la COFOG de la IGAE, con unos dos años de retraso.
 - La financiación autonómica **no es finalista**. Las comparaciones entre lo que recibe una comunidad y lo que dedica a sanidad, educación y servicios sociales muestran a qué equivale, no que esté reservado por ley.

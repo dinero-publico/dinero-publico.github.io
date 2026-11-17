@@ -7,6 +7,12 @@ const fmt1 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 1, minimumF
 const nf = (v) => (v == null || isNaN(v) ? "—" : fmt0.format(v));
 const pf = (v) => (v == null || isNaN(v) ? "—" : fmt1.format(v) + " %");
 const sgn = (v) => (v == null || isNaN(v) ? "—" : (v > 0 ? "+" : "") + fmt1.format(v) + " %");
+const nfs = (v) => (v == null || isNaN(v) ? "—" : (v > 0 ? "+" : "") + fmt0.format(v));
+/* Variación porcentual de b a v; null si no se puede calcular. */
+const pct = (v, b) => (v == null || b == null || !b || isNaN(v) || isNaN(b) ? null : (100 * (v - b)) / Math.abs(b));
+/* Texto corto de una variación: «▲ 3,2 %», «▼ 1,0 %» o «= igual». */
+const flecha = (d) => (d == null ? "" : Math.abs(d) < 0.05 ? "= igual" : (d > 0 ? "▲ " : "▼ ") + fmt1.format(Math.abs(d)) + " %");
+const tag = (txt, title) => { const t = el("span", { class: "tag" }, txt); if (title) t.title = title; return t; };
 const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const $ = (s) => document.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
@@ -81,9 +87,11 @@ function barras(container, rows, opts = {}) {
   const rh = narrow ? 38 : 26;
   const labW = narrow ? 0 : Math.min(opts.labW || 260, W * 0.42);
   const valW = 74;
+  // Columna opcional a la derecha con la variación frente a otro año.
+  const dW = opts.delta ? 70 : 0;
   const max = d3.max(rows, (r) => Math.max(0, r.v)) || 1;
   const min = Math.min(0, d3.min(rows, (r) => r.v) || 0);
-  const x = d3.scaleLinear([min, max], [labW, W - valW]);
+  const x = d3.scaleLinear([min, max], [labW, W - valW - dW]);
   const H = rows.length * rh + 4;
   const svg = d3.create("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", opts.aria || "");
   const g = svg.selectAll("g").data(rows).join("g")
@@ -98,11 +106,18 @@ function barras(container, rows, opts = {}) {
     .style("fill", (r) => r.color || (opts.selected === r.key ? css("--sel") : css("--c1")));
   g.append("text").attr("class", "val").attr("y", by + bh - 3)
     .attr("x", (r) => x(Math.max(0, r.v)) + 6).text((r) => (opts.valFmt || nf)(r.v));
+  if (opts.delta) {
+    g.append("text").attr("class", (r) => { const d = opts.delta(r); return "delta" + (d == null || Math.abs(d) < 0.05 ? "" : d > 0 ? " sube" : " baja"); })
+      .attr("y", by + bh - 3).attr("x", W).attr("text-anchor", "end").text((r) => flecha(opts.delta(r)));
+  }
   g.append("rect").attr("width", W).attr("height", rh).style("fill", "transparent")
     .on("pointermove pointerdown", (ev, r) => showTip(ev, r.tip || [r.label, nf(r.v) + " M€"]))
     .on("mouseleave", hideTip)
     .on("click", (ev, r) => opts.onClick && opts.onClick(r));
-  if (opts.onClick) g.each(function (r) { pulsable(this, () => opts.onClick(r), `${r.label}: ${(opts.valFmt || nf)(r.v)}`); });
+  if (opts.onClick) g.each(function (r) {
+    const d = opts.delta ? opts.delta(r) : null;
+    pulsable(this, () => opts.onClick(r), `${r.label}: ${(opts.valFmt || nf)(r.v)}${d != null ? `, ${sgn(d)}${opts.deltaTit ? " " + opts.deltaTit : ""}` : ""}`);
+  });
   node.replaceChildren(svg.node());
 }
 const trunc = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
@@ -128,11 +143,19 @@ function lineas(container, xs, series, opts = {}) {
     const line = d3.line().x((d) => x(d.x)).y((d) => y(d.v));
     svg.append("path").attr("d", line(pts)).attr("fill", "none").attr("stroke", s.color)
       .attr("stroke-width", s.dash ? 1.8 : 2.4).attr("stroke-dasharray", s.dash ? "5 4" : null);
+    // Los años marcados (presupuestos prorrogados) se dibujan con un círculo hueco.
+    const mk = (d) => (opts.marca ? opts.marca(d.x, s) : null);
     svg.append("g").selectAll("circle").data(pts).join("circle").attr("cx", (d) => x(d.x)).attr("cy", (d) => y(d.v))
-      .attr("r", 2.6).attr("fill", s.color);
+      .attr("r", (d) => (mk(d) ? 4 : 2.6)).attr("fill", (d) => (mk(d) ? css("--bg") : s.color))
+      .attr("stroke", s.color).attr("stroke-width", (d) => (mk(d) ? 1.8 : 0));
     svg.append("g").selectAll("circle").data(pts).join("circle").attr("cx", (d) => x(d.x)).attr("cy", (d) => y(d.v))
       .attr("r", 10).attr("fill", "transparent")
-      .on("pointermove pointerdown", (ev, d) => showTip(ev, [`${s.name} · ${d.x}`, opts.fmt ? opts.fmt(d.v) : nf(d.v) + " M€", ...(s.tip ? s.tip(d.x, d.v) : [])]))
+      .on("pointermove pointerdown", (ev, d) => {
+        const i = xs.indexOf(d.x), prev = i > 0 ? s.vals[i - 1] : null;
+        showTip(ev, [`${s.name} · ${d.x}`, opts.fmt ? opts.fmt(d.v) : nf(d.v) + " M€",
+          ...(prev != null && opts.yoy !== false ? [`${sgn(pct(d.v, prev))} frente a ${xs[i - 1]}`] : []),
+          ...(mk(d) ? [mk(d)] : []), ...(s.tip ? s.tip(d.x, d.v) : [])]);
+      })
       .on("mouseleave", hideTip);
   }
   node.replaceChildren(svg.node());
@@ -254,15 +277,19 @@ function renderEstado(estado) {
         const va = prev ? prev.valores[n - 1] : null;
         const label = NOMBRES[bloque][p.codigo] || p.concepto;
         const tipTxt = [label, `${nf(v)} M€ hasta ${mes.toLowerCase()}`, `${p.codigo} · ${p.concepto}`];
-        if (va) tipTxt.push(`${sgn((100 * (v - va)) / va)} frente a ${ant.anio}`);
-        return { key: p.codigo, label, v, tip: tipTxt, color };
+        if (va) tipTxt.push(`${nf(va)} M€ hasta ${mes.toLowerCase()} de ${ant.anio} (${sgn(pct(v, va))})`);
+        return { key: p.codigo, label, v, va, tip: tipTxt, color };
       })
       .sort((a, b) => b.v - a.v);
     const top = rows.slice(0, 10);
     const resto = rows.slice(10);
-    if (resto.length) top.push({ key: "resto", label: `Resto (${resto.length} partidas)`, v: d3.sum(resto, (r) => r.v), color: css("--c6"),
-      tip: ["Resto", ...resto.map((r) => `${r.label}: ${nf(r.v)}`)] });
-    const d = () => barras(sel, top, { aria: `${bloque} del Estado por partida`, labW: 230 });
+    if (resto.length) {
+      const v = d3.sum(resto, (r) => r.v), va = d3.sum(resto, (r) => r.va || 0);
+      top.push({ key: "resto", label: `Resto (${resto.length} partidas)`, v, va: va || null, color: css("--c6"),
+        tip: ["Resto", ...resto.map((r) => `${r.label}: ${nf(r.v)}`)] });
+    }
+    const d = () => barras(sel, top, { aria: `${bloque} del Estado por partida`, labW: 230,
+      delta: ant ? (r) => pct(r.v, r.va) : null, deltaTit: ant ? `frente a ${ant.anio}` : "" });
     d();
     onResize(d);
   };
@@ -291,24 +318,58 @@ function renderEstado(estado) {
 }
 
 /* ---------- PGE ---------- */
+/* Columnas de la SEPG → año en que rige cada presupuesto. «2025-P» es el presupuesto de 2025 prorrogado
+   para 2026 (la SEPG lo publicó en enero de 2026): rige al año siguiente y procede del último aprobado. */
+function pgeAnios(pge) {
+  let base = null;
+  return pge.columnas.map((col) => {
+    const prorr = col.endsWith("-P"), y = +col.slice(0, 4);
+    if (!prorr) base = y;
+    return { col, anio: prorr ? y + 1 : y, prorr, base: prorr ? base : null };
+  });
+}
+const pgeEtq = (a) => (a.prorr ? `${a.anio} (prorrogado de ${a.base})` : String(a.anio));
+const PRORR_TXT = (a) => `Presupuesto prorrogado: siguen en vigor los de ${a.base}`;
+
 function renderPge(pge, cofog, entregas) {
-  const cols = pge.columnas;
-  let col = cols[cols.length - 1];
-  const selCol = $("#sel-pge");
-  selCol.replaceChildren(...[...cols].reverse().map((c) => new Option(c.endsWith("-P") ? `${c.slice(0, 4)} (prorrogado)` : c, c)));
-  selCol.onchange = () => { col = selCol.value; all(); };
+  const A = pgeAnios(pge);
+  // Por defecto se compara con el último año que tuvo un presupuesto distinto (no otra prórroga del mismo).
+  const origen = (q) => (q.prorr ? q.base : q.anio);
+  const ibDefecto = (k) => { for (let j = k - 1; j >= 0; j--) if (origen(A[j]) !== origen(A[k])) return j; return k - 1; };
+  let i = A.length - 1, ib = ibDefecto(i); // ejercicio elegido y ejercicio con el que se compara
+  const selCol = $("#sel-pge"), selBase = $("#sel-pge-base"), selVar = $("#sel-pge-var");
+  selCol.replaceChildren(...A.map((a, k) => new Option(pgeEtq(a), k)).reverse());
+  selCol.value = i;
+  const llenarBase = () => {
+    selBase.replaceChildren(...A.slice(0, i).map((a, k) => new Option(pgeEtq(a), k)).reverse());
+    if (ib >= i || ib < 0) ib = i - 1;
+    selBase.disabled = i === 0;
+    if (ib >= 0) selBase.value = ib;
+  };
+  llenarBase();
+  selCol.onchange = () => { i = +selCol.value; ib = ibDefecto(i); llenarBase(); all(); };
+  selBase.onchange = () => { ib = +selBase.value; all(); };
+  selVar.onchange = () => drawVar();
+  const col = () => A[i].col;
+  const colB = () => (ib >= 0 ? A[ib].col : null);
+  const total = (c) => (pge.total ? pge.total[c] : d3.sum(pge.politicas, (p) => p.valores[c]));
+  const marca = (x) => { const a = A.find((q) => String(q.anio) === x); return a && a.prorr ? PRORR_TXT(a) : null; };
+  const xs = A.map((a) => String(a.anio));
   let sel = null;
   let rows = [];
   const pol = (cod) => pge.politicas.find((p) => p.codigo === cod);
 
   function nota() {
-    const prorr = col.endsWith("-P");
-    const ultimo = col === cols[cols.length - 1];
-    $("#pge-etq").textContent = `· ${col}`;
-    $("#pge-nota").textContent =
-      `Créditos iniciales de los Presupuestos Generales del Estado consolidados (capítulos 1 a 8) en la columna «${col}» ` +
-      `(presupuesto ${prorr ? "prorrogado" : "aprobado"}${ultimo ? ", el que está en vigor" : ""}), en millones de euros: ` +
-      `${nf(pge.total ? pge.total[col] : d3.sum(pge.politicas, (p) => p.valores[col]))} M€ en total. Pulsa una política para ver sus programas y su evolución.`;
+    const a = A[i], b = ib >= 0 ? A[ib] : null;
+    $("#pge-etq").replaceChildren(`· ${a.anio}`, a.prorr ? tag("prorrogado", PRORR_TXT(a)) : "");
+    $("#pge-nota").replaceChildren(
+      `Créditos iniciales de los Presupuestos Generales del Estado consolidados (capítulos 1 a 8) para ${a.anio}` +
+      (a.prorr ? `. No se aprobaron presupuestos nuevos: siguen en vigor los de ${a.base}, prorrogados (la SEPG los publica como «${a.col}»)` : "") +
+      (i === A.length - 1 ? ". Es el presupuesto en vigor" : "") + `. Total: `,
+      el("strong", {}, `${nf(total(a.col))} M€`),
+      b ? `, ${sgn(pct(total(a.col), total(b.col)))} frente a ${b.anio}.` : ".",
+      " A la derecha de cada barra, la variación frente al ejercicio elegido en «Comparar con». Pulsa una política para ver sus programas y su evolución."
+    );
   }
 
   // Aviso: Sanidad y Educación «parecen» pequeñas porque las gestionan las comunidades.
@@ -318,8 +379,8 @@ function renderPge(pge, cofog, entregas) {
     const cen = cofog && cofog.subsectores.central;
     if (!reg || !cen) { box.hidden = true; return; }
     const ur = reg[reg.length - 1], uc = cen.find((a) => a.anio === ur.anio) || cen[cen.length - 1];
-    const v = (c) => (pol(c) || { valores: {} }).valores[col];
-    const ea = entregas && entregas.anios.find((a) => a.anio === +col.slice(0, 4));
+    const v = (c) => (pol(c) || { valores: {} }).valores[col()];
+    const ea = entregas && entregas.anios.find((a) => a.anio === A[i].anio);
     const cedidos = ea ? d3.sum(ea.filas, (f) => (f.irpf || 0) + (f.iva || 0) + (f.impuestos_especiales || 0)) : null;
     const p = (...kids) => el("p", {}, ...kids);
     const b = (t) => el("strong", {}, t);
@@ -337,33 +398,67 @@ function renderPge(pge, cofog, entregas) {
   }
 
   function draw() {
-    const prevCol = cols[cols.indexOf(col) - 1];
+    const c = col(), cb = colB(), b = ib >= 0 ? A[ib] : null;
     rows = pge.politicas.map((p) => ({
-      key: p.codigo, label: p.politica, v: p.valores[col] || 0, p,
-      tip: [p.politica, `${nf(p.valores[col])} M€ en ${col}`, prevCol ? `${nf(p.valores[prevCol])} M€ en ${prevCol}` : "", `${p.programas.length} programas`].filter(Boolean),
-    })).sort((a, b) => b.v - a.v);
-    barras("#ch-pge", rows, { aria: "Presupuesto por política de gasto", selected: sel, onClick: (r) => { sel = sel === r.key ? null : r.key; draw(); detalle(); } });
+      key: p.codigo, label: p.politica, v: p.valores[c] || 0, vb: cb ? p.valores[cb] : null, p,
+      tip: [p.politica, `${nf(p.valores[c])} M€ en ${A[i].anio}`, b ? `${nf(p.valores[cb])} M€ en ${b.anio} (${sgn(pct(p.valores[c], p.valores[cb]))})` : "", `${p.programas.length} programas`].filter(Boolean),
+    })).sort((x, y) => y.v - x.v);
+    barras("#ch-pge", rows, { aria: "Presupuesto por política de gasto", selected: sel, delta: b ? (r) => pct(r.v, r.vb) : null, deltaTit: b ? `frente a ${b.anio}` : "",
+      onClick: (r) => { sel = sel === r.key ? null : r.key; draw(); detalle(); } });
   }
+
   function detalle() {
     const box = $("#pge-detalle");
     const r = rows.find((x) => x.key === sel);
     if (!r) { box.hidden = true; return; }
     box.hidden = false;
-    const progs = r.p.programas.filter((g) => g.valores[col]).sort((a, b) => b.valores[col] - a.valores[col]);
+    const c = col(), cb = colB(), a = A[i], b = ib >= 0 ? A[ib] : null;
+    const progs = r.p.programas.filter((g) => g.valores[c] || (cb && g.valores[cb])).sort((x, y) => (y.valores[c] || 0) - (x.valores[c] || 0));
     const tb = el("tbody");
-    progs.forEach((g) => tb.append(el("tr", {}, el("td", {}, g.codigo), el("td", {}, g.programa), el("td", { class: "num" }, nf(g.valores[col])), el("td", { class: "num" }, pf((100 * g.valores[col]) / r.v)))));
+    progs.forEach((g) => tb.append(el("tr", {}, el("td", {}, g.codigo), el("td", {}, g.programa),
+      el("td", { class: "num" }, nf(g.valores[c])), el("td", { class: "num" }, pf((100 * (g.valores[c] || 0)) / r.v)),
+      ...(b ? [el("td", { class: "num" }, nf(g.valores[cb])), el("td", { class: "num" }, g.valores[c] && g.valores[cb] ? sgn(pct(g.valores[c], g.valores[cb])) : g.valores[c] ? "nuevo" : "desaparece")] : []))));
     const evol = el("div", { class: "chart" });
+    const v0 = r.p.valores[A[0].col];
     box.replaceChildren(
-      el("h4", {}, `${r.p.codigo} · ${r.label}: ${nf(r.v)} M€ en ${col}`),
-      el("p", { class: "note" }, `Evolución ${cols[0]}–${cols[cols.length - 1]} (créditos iniciales; «-P» = prorrogado, repite el año anterior).`),
+      el("h4", {}, `${r.p.codigo} · ${r.label}: ${nf(r.v)} M€ en ${a.anio}`),
+      el("p", {}, b ? `Frente a ${b.anio}: ${sgn(pct(r.v, r.vb))} (${nfs(r.v - (r.vb || 0))} M€). ` : "",
+        v0 ? `Desde ${A[0].anio}: ${sgn(pct(r.v, v0))}.` : ""),
+      el("p", { class: "note" }, `Evolución ${xs[0]}–${xs[xs.length - 1]} en créditos iniciales. Los círculos huecos son años con presupuesto prorrogado.`),
       evol,
-      el("div", { class: "scroll" }, el("table", { class: "tbl" }, el("thead", {}, el("tr", {}, el("th", {}, "Programa"), el("th", {}, "Nombre"), el("th", { class: "num" }, "M€"), el("th", { class: "num" }, "% de la política"))), tb))
+      el("div", { class: "scroll" }, el("table", { class: "tbl" }, el("thead", {}, el("tr", {}, el("th", {}, "Programa"), el("th", {}, "Nombre"),
+        el("th", { class: "num" }, `M€ ${a.anio}`), el("th", { class: "num" }, "% de la política"),
+        ...(b ? [el("th", { class: "num" }, `M€ ${b.anio}`), el("th", { class: "num" }, "Variación")] : []))), tb))
     );
-    lineas(evol, cols, [{ name: r.label, color: css("--c1"), vals: cols.map((c) => r.p.valores[c]) }], { H: 200, aria: `Evolución de ${r.label}` });
+    lineas(evol, xs, [{ name: r.label, color: css("--c1"), vals: A.map((q) => r.p.valores[q.col]) }], { H: 200, aria: `Evolución de ${r.label}`, marca });
   }
-  function all() { nota(); aviso(); draw(); detalle(); }
+
+  // Tendencia: total y qué políticas suben o bajan frente al ejercicio de comparación.
+  function drawTotal() {
+    lineas("#ch-pge-total", xs, [{ name: "Presupuesto total consolidado", color: css("--c1"), vals: A.map((a) => total(a.col)) }],
+      { H: 220, aria: "Evolución del presupuesto total del Estado", marca });
+  }
+  function drawVar() {
+    const box = $("#pge-var-nota");
+    if (ib < 0) { $("#ch-pge-var").replaceChildren(); box.textContent = "No hay un ejercicio anterior con el que comparar."; return; }
+    const a = A[i], b = A[ib], c = a.col, cb = b.col, enPct = selVar.value === "pct";
+    const tot = total(c);
+    // Se omiten las políticas muy pequeñas: un cambio de pocos millones daría porcentajes enormes.
+    const vr = pge.politicas.filter((p) => Math.max(p.valores[c] || 0, p.valores[cb] || 0) >= tot * 0.005).map((p) => {
+      const v = p.valores[c] || 0, vb = p.valores[cb] || 0, d = enPct ? pct(v, vb) : v - vb;
+      return { key: p.codigo, label: p.politica, v: d, color: css(d >= 0 ? "--c2" : "--c1"),
+        tip: [p.politica, `${nf(v)} M€ en ${a.anio}`, `${nf(vb)} M€ en ${b.anio}`, `${nfs(v - vb)} M€ (${sgn(pct(v, vb))})`] };
+    }).filter((r) => r.v != null).sort((x, y) => y.v - x.v);
+    const mismaBase = a.prorr && (b.prorr ? b.base === a.base : b.anio === a.base);
+    box.textContent = `${a.anio} frente a ${b.anio}, en ${enPct ? "porcentaje" : "millones de euros"}. ` +
+      (a.prorr && ib === ibDefecto(i) && ib < i - 1 ? `${b.anio} es el último año con un presupuesto distinto del vigente en ${a.anio}. ` : "") +
+      (mismaBase ? `Los dos ejercicios corresponden al mismo presupuesto (${a.base}, prorrogado): las diferencias son solo ajustes técnicos de la prórroga. ` : "") +
+      "Euros corrientes, sin descontar la inflación. Se omiten las políticas de menos del 0,5 % del presupuesto.";
+    barras("#ch-pge-var", vr, { aria: `Variación de cada política entre ${b.anio} y ${a.anio}`, labW: 260, valFmt: enPct ? sgn : (v) => nfs(v) + " M€" });
+  }
+  function all() { nota(); aviso(); draw(); detalle(); drawTotal(); drawVar(); }
   all();
-  onResize(() => { draw(); detalle(); });
+  onResize(() => { draw(); detalle(); drawTotal(); drawVar(); });
 }
 
 /* ---------- ¿Quién gasta en cada función? (COFOG) ---------- */
@@ -438,6 +533,32 @@ const SPF = [["31", "sanidad"], ["32", "educación"], ["23", "servicios sociales
 const polImporte = (c, cod) => (c.politicas.find((p) => p.codigo === cod) || {}).importe || 0;
 const spfDe = (c) => d3.sum(SPF, ([cod]) => polImporte(c, cod));
 
+/* Presupuestos autonómicos prorrogados. Hacienda no los señala, así que se deducen de los datos: un presupuesto
+   que repite el total exacto, o al menos 5 políticas al céntimo, respecto al del año anterior es una prórroga
+   (cuando hay presupuesto nuevo casi nunca coinciden más de 2 o 3 políticas).
+   Devuelve un Map "comunidad|año" → { base: último año con presupuesto propio, iguales, n }. */
+function ccaaProrrogas(ccaa) {
+  const out = new Map();
+  const de = (y, com) => { const a = ccaa.anios.find((q) => q.anio === y); return a && a.comunidades.find((c) => c.comunidad === com); };
+  for (const a of [...ccaa.anios].sort((x, y) => x.anio - y.anio)) {
+    for (const c of a.comunidades) {
+      const p = de(a.anio - 1, c.comunidad);
+      if (!p) continue;
+      const prev = new Map(p.politicas.map((q) => [q.codigo, q.importe]));
+      const pols = c.politicas.filter((q) => q.importe);
+      const iguales = pols.filter((q) => prev.has(q.codigo) && Math.abs(prev.get(q.codigo) - q.importe) < 0.01).length;
+      if (iguales >= 5 || Math.abs(c.total - p.total) < 1e-4 * p.total) {
+        const ant = out.get(`${c.comunidad}|${a.anio - 1}`);
+        out.set(`${c.comunidad}|${a.anio}`, { base: ant ? ant.base : a.anio - 1, iguales, n: pols.length });
+      }
+    }
+  }
+  return out;
+}
+const prorrTxt = (pr, y) => "Presupuesto prorrogado: " +
+  (pr.iguales === pr.n ? `idéntico al de ${y - 1}` : pr.iguales >= 5 ? `repite al céntimo ${pr.iguales} de sus ${pr.n} políticas del de ${y - 1}` : `mismo total que en ${y - 1}`) +
+  (pr.base < y - 1 ? `; sin presupuesto nuevo desde ${pr.base}` : "") + ".";
+
 function renderCcaa(entregas, ccaa, cofog, pob) {
   // Población a 1 de enero del año (o la última publicada antes).
   const hab = (com, y) => {
@@ -451,25 +572,45 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
   const ph = () => pob && $("#sel-modo").value === "ph";
   if (!pob) $("#sel-modo").closest("label").hidden = true;
   $("#sel-modo").onchange = () => all();
+  const PR = ccaaProrrogas(ccaa);
+  const prorr = (com, y) => PR.get(`${com}|${y}`) || null;
+  const anios = ccaa.anios.map((a) => a.anio).sort((a, b) => b - a);
   const state = {
     ea: entregas.anios[0].anio,
-    anio: ccaa.anios[0].anio,
+    anio: anios[0],
+    base: anios[1] ?? null,
     com: decodeURIComponent((location.hash.match(/ccaa=([^&]+)/) || [])[1] || "Andalucía"),
     sortK: "total", sortDir: -1,
     pol: "31",
     abiertos: new Set(),
   };
   const eaAnio = () => entregas.anios.find((a) => a.anio === state.ea);
-  const caAnio = () => ccaa.anios.find((a) => a.anio === state.anio);
+  const caDe = (y) => ccaa.anios.find((a) => a.anio === y);
+  const caAnio = () => caDe(state.anio);
+  const comDe = (y, com) => { const a = caDe(y); return a && a.comunidades.find((c) => c.comunidad === com); };
+  const polDe = (c, cod) => (c ? (c.politicas.find((p) => p.codigo === cod) || {}).importe ?? null : null);
 
-  const selEa = $("#sel-ea"), selC = $("#sel-ccaa"), selA = $("#sel-ccaa-anio");
+  const selEa = $("#sel-ea"), selC = $("#sel-ccaa"), selA = $("#sel-ccaa-anio"), selB = $("#sel-ccaa-base"), selV = $("#sel-ccaa-var");
   selEa.replaceChildren(...entregas.anios.map((a) => new Option(a.anio, a.anio)));
-  selA.replaceChildren(...ccaa.anios.map((a) => new Option(a.anio, a.anio)));
+  const llenarBase = () => {
+    selB.replaceChildren(...anios.filter((y) => y < state.anio).map((y) => new Option(y, y)));
+    if (state.base == null || state.base >= state.anio) state.base = anios.find((y) => y < state.anio) ?? null;
+    selB.disabled = state.base == null;
+    if (state.base != null) selB.value = state.base;
+  };
+  // Las opciones de año indican si el presupuesto de la comunidad elegida está prorrogado.
+  const llenarAnios = () => {
+    selA.replaceChildren(...anios.map((y) => new Option(prorr(state.com, y) ? `${y} (prorrogado)` : String(y), y)));
+    selA.value = state.anio;
+  };
   const nombres = [...new Set([...ccaa.anios[0].comunidades.map((c) => c.comunidad), ...entregas.anios[0].filas.map((f) => f.comunidad)])].sort((a, b) => a.localeCompare(b, "es"));
   selC.replaceChildren(...nombres.map((n) => new Option(n, n)));
   selEa.onchange = () => { state.ea = +selEa.value; all(); };
-  selA.onchange = () => { state.anio = +selA.value; all(); };
+  selA.onchange = () => { state.anio = +selA.value; state.base = null; llenarBase(); all(); };
+  selB.onchange = () => { state.base = +selB.value; all(); };
+  selV.onchange = () => drawVar();
   selC.onchange = () => setCom(selC.value);
+  llenarBase();
 
   function setCom(c) {
     state.com = c;
@@ -479,10 +620,11 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
 
   function drawEa() {
     const a = eaAnio();
+    const prevEa = entregas.anios.find((q) => q.anio === a.anio - 1);
     const tot = d3.sum(a.filas, (f) => f.total);
-    $("#ea-total").textContent = `Total ${a.anio}: ${nf(tot)} M€${a.norma ? " · " + a.norma : ""}`;
+    $("#ea-total").textContent = `Total ${a.anio}: ${nf(tot)} M€` + (prevEa ? ` (${sgn(pct(tot, d3.sum(prevEa.filas, (f) => f.total)))} frente a ${prevEa.anio})` : "") + (a.norma ? " · " + a.norma : "");
     // Conjunto de comunidades de régimen común: lo que reciben frente a lo que presupuestan en servicios básicos.
-    const pres = ccaa.anios.find((x) => x.anio === a.anio);
+    const pres = caDe(a.anio);
     const comunes = pres ? pres.comunidades.filter((c) => !c.foral && a.filas.some((f) => f.comunidad === c.comunidad)) : [];
     const box = $("#ea-destino");
     if (comunes.length) {
@@ -502,32 +644,43 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
     }
     const habComun = d3.sum(a.filas, (f) => hab(f.comunidad, a.anio) || 0);
     if (habComun) $("#ea-total").textContent += ` · ${ef((tot * 1e6) / habComun)} por habitante de media`;
-    const rows = a.filas.map((f) => ({
-      key: f.comunidad, label: f.comunidad, v: ph() ? porHab(f.total, f.comunidad, a.anio) : f.total,
-      tip: [f.comunidad, `${nf(f.total)} M€ en ${a.anio}`, `${ef(porHab(f.total, f.comunidad, a.anio))} por habitante`,
-        `IRPF ${nf(f.irpf)} · IVA ${nf(f.iva)} · II.EE. ${nf(f.impuestos_especiales)}`,
-        `F. Suficiencia ${nf(f.fondo_suficiencia)} · F. Garantía ${nf(f.fondo_garantia)}`, "Pulsa para ver su gasto"],
-    })).filter((r) => r.v != null).sort((x, y) => y.v - x.v);
-    barras("#ch-ea", rows, { aria: "Entregas a cuenta por comunidad", selected: state.com, labW: 170, valFmt: ph() ? ef : nf, onClick: (r) => setCom(r.key) });
+    const val = (f, y) => (f ? (ph() ? porHab(f.total, f.comunidad, y) : f.total) : null);
+    const rows = a.filas.map((f) => {
+      const fp = prevEa && prevEa.filas.find((q) => q.comunidad === f.comunidad);
+      return {
+        key: f.comunidad, label: f.comunidad, v: val(f, a.anio), vb: val(fp, a.anio - 1),
+        tip: [f.comunidad, `${nf(f.total)} M€ en ${a.anio}`, fp ? `${nf(fp.total)} M€ en ${prevEa.anio} (${sgn(pct(f.total, fp.total))})` : "", `${ef(porHab(f.total, f.comunidad, a.anio))} por habitante`,
+          `IRPF ${nf(f.irpf)} · IVA ${nf(f.iva)} · II.EE. ${nf(f.impuestos_especiales)}`,
+          `F. Suficiencia ${nf(f.fondo_suficiencia)} · F. Garantía ${nf(f.fondo_garantia)}`, "Pulsa para ver su gasto"].filter(Boolean),
+      };
+    }).filter((r) => r.v != null).sort((x, y) => y.v - x.v);
+    barras("#ch-ea", rows, { aria: "Entregas a cuenta por comunidad", selected: state.com, labW: 170, valFmt: ph() ? ef : nf, onClick: (r) => setCom(r.key),
+      delta: prevEa ? (r) => pct(r.v, r.vb) : null, deltaTit: prevEa ? `frente a ${prevEa.anio}` : "" });
   }
 
   function drawDetalle() {
     const a = caAnio();
     const c = a.comunidades.find((x) => x.comunidad === state.com);
+    const cb = state.base != null ? comDe(state.base, state.com) : null;
     const ea = eaAnio().filas.find((f) => f.comunidad === state.com);
     selC.value = state.com;
+    llenarAnios();
+    const pr = prorr(state.com, a.anio);
     $("#ccaa-tit").textContent = `¿En qué gasta ${state.com}?`;
     const res = $("#ccaa-resumen");
     if (c) {
       const pol = (cod) => polImporte(c, cod);
       const peso = ea ? (100 * ea.total) / c.total : null;
       // Para comparar lo que recibe con lo que gasta, se usa el presupuesto del mismo año que las entregas.
-      const cMismo = (ccaa.anios.find((x) => x.anio === state.ea) || { comunidades: [] }).comunidades.find((x) => x.comunidad === state.com);
+      const cMismo = comDe(state.ea, state.com);
       const spf = cMismo ? spfDe(cMismo) : null;
       const phc = (v) => ef(porHab(v, state.com, a.anio));
       res.replaceChildren(
-        el("h4", {}, `Presupuesto ${a.anio}`),
+        el("h4", {}, `Presupuesto ${a.anio}`, pr ? tag("prorrogado", prorrTxt(pr, a.anio)) : ""),
         el("div", { class: "big kpi-num" }, nf(c.total) + " M€"),
+        cb ? el("p", { class: "sub" }, `${sgn(pct(c.total, cb.total))} frente a ${state.base} (${nfs(c.total - cb.total)} M€)` +
+          (prorr(state.com, state.base) ? `; el de ${state.base} también estaba prorrogado` : "")) : "",
+        pr ? el("p", { class: "note" }, prorrTxt(pr, a.anio)) : "",
         pob ? el("p", {}, el("strong", {}, `${phc(c.total)} por habitante`), ` · Sanidad ${phc(pol("31"))} · Educación ${phc(pol("32"))} · Servicios sociales ${phc(pol("23"))}`) : "",
         el("p", {}, `Sanidad ${pf((100 * pol("31")) / c.total)} · Educación ${pf((100 * pol("32")) / c.total)} · Servicios sociales ${pf((100 * pol("23")) / c.total)} · Deuda ${pf((100 * pol("95")) / c.total)}`),
         ea && spf ? el("p", {}, `En ${state.ea} recibe `, el("strong", {}, `${nf(ea.total)} M€`), ` en entregas a cuenta y presupuesta `,
@@ -549,71 +702,91 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
     } else {
       box.replaceChildren(el("h4", {}, "Entregas a cuenta"), el("p", { class: "note" }, `${state.com} no recibe entregas a cuenta del sistema común (régimen foral).`));
     }
-    if (!c) { $("#ch-ccaa").replaceChildren(); $("#ccaa-pol").hidden = true; $("#ccaa-econ").hidden = true; return; }
+    if (!c) { $("#ch-ccaa").replaceChildren(); $("#ccaa-pol").hidden = true; $("#ccaa-econ").hidden = true; $("#ccaa-var").hidden = true; return; }
     const areas = [...new Set(c.politicas.map((p) => p.area))];
     const colores = ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6"].map(css);
-    const rows = c.politicas.filter((p) => p.importe > 0).map((p) => ({
-      key: p.codigo, label: p.politica, v: p.importe, color: p.codigo === state.pol ? css("--sel") : colores[areas.indexOf(p.area) % colores.length],
-      tip: [p.politica, `${nf(p.importe)} M€ · ${pf((100 * p.importe) / c.total)} del presupuesto`, p.area, "Pulsa para ver en qué se gasta"],
-    })).sort((x, y) => y.v - x.v);
+    $("#ccaa-pol-nota").textContent = "Pulsa una política para ver en qué se gasta: por tipo de gasto, su evolución y su peso en cada comunidad." +
+      (cb ? ` A la derecha, la variación frente a ${state.base}.` : "");
+    const rows = c.politicas.filter((p) => p.importe > 0).map((p) => {
+      const vb = polDe(cb, p.codigo);
+      return {
+        key: p.codigo, label: p.politica, v: p.importe, vb, color: p.codigo === state.pol ? css("--sel") : colores[areas.indexOf(p.area) % colores.length],
+        tip: [p.politica, `${nf(p.importe)} M€ · ${pf((100 * p.importe) / c.total)} del presupuesto`, cb ? `${nf(vb)} M€ en ${state.base} (${sgn(pct(p.importe, vb))})` : "", p.area, "Pulsa para ver en qué se gasta"].filter(Boolean),
+      };
+    }).sort((x, y) => y.v - x.v);
     if (!rows.some((r) => r.key === state.pol)) state.pol = rows[0].key;
     barras("#ch-ccaa", rows, { aria: `Presupuesto de ${state.com} por política`, labW: 300, selected: state.pol,
+      delta: cb ? (r) => pct(r.v, r.vb) : null, deltaTit: cb ? `frente a ${state.base}` : "",
       onClick: (r) => { state.pol = r.key; drawDetalle(); $("#ccaa-pol").scrollIntoView({ behavior: "smooth", block: "nearest" }); } });
-    drawPolitica(a, c);
-    drawEconomica(a, c);
+    drawPolitica(a, c, cb);
+    drawEconomica(a, c, cb);
+    drawVar();
   }
 
   // Detalle de una política: capítulos, evolución y comparación con las demás comunidades.
-  function drawPolitica(a, c) {
+  function drawPolitica(a, c, cb) {
     const box = $("#ccaa-pol");
     const p = c.politicas.find((x) => x.codigo === state.pol);
     if (!p) { box.hidden = true; return; }
     box.hidden = false;
     const caps = ccaa.capitulos || [];
     const capChart = el("div", { class: "chart" }), evol = el("div", { class: "chart" }), rank = el("div", { class: "chart" });
+    const pb = cb && cb.politicas.find((x) => x.codigo === state.pol);
     const capRows = p.capitulos ? caps.map((nombre, i) => ({ key: String(i + 1), label: `${i + 1}. ${nombre}`, v: p.capitulos[i] || 0,
-      tip: [nombre, `${nf(p.capitulos[i])} M€ · ${pf((100 * (p.capitulos[i] || 0)) / p.importe)} de ${p.politica.toLowerCase()}`] }))
+      vb: pb && pb.capitulos ? pb.capitulos[i] || 0 : null,
+      tip: [nombre, `${nf(p.capitulos[i])} M€ · ${pf((100 * (p.capitulos[i] || 0)) / p.importe)} de ${p.politica.toLowerCase()}`,
+        ...(pb && pb.capitulos ? [`${nf(pb.capitulos[i])} M€ en ${state.base}`] : [])] }))
       .filter((r) => r.v) : [];
     const principales = [...capRows].sort((x, y) => y.v - x.v).slice(0, 3).map((r) => `${pf((100 * r.v) / p.importe)} ${r.label.replace(/^\d\. /, "").toLowerCase()}`);
-    const ys = ccaa.anios.map((x) => x.anio).sort((x, y) => x - y);
-    const serie = ys.map((y) => { const cc = ccaa.anios.find((q) => q.anio === y).comunidades.find((q) => q.comunidad === state.com); const pp = cc && cc.politicas.find((q) => q.codigo === state.pol); return pp ? pp.importe : null; });
+    const ys = [...anios].sort((x, y) => x - y);
+    const serie = ys.map((y) => polDe(comDe(y, state.com), state.pol));
+    const v0 = serie.find((v) => v != null), y0 = ys[serie.findIndex((v) => v != null)];
     const pesos = a.comunidades.map((cc) => { const pp = cc.politicas.find((q) => q.codigo === state.pol); const imp = pp ? pp.importe : 0;
-      return { key: cc.comunidad, label: cc.comunidad, v: ph() ? porHab(imp, cc.comunidad, a.anio) : (100 * imp) / cc.total,
-        tip: [cc.comunidad, `${nf(imp)} M€ · ${pf((100 * imp) / cc.total)} de su presupuesto`, `${ef(porHab(imp, cc.comunidad, a.anio))} por habitante`] }; })
+      const prc = prorr(cc.comunidad, a.anio);
+      return { key: cc.comunidad, label: cc.comunidad + (prc ? " (prorrogado)" : ""), v: ph() ? porHab(imp, cc.comunidad, a.anio) : (100 * imp) / cc.total,
+        tip: [cc.comunidad, `${nf(imp)} M€ · ${pf((100 * imp) / cc.total)} de su presupuesto`, `${ef(porHab(imp, cc.comunidad, a.anio))} por habitante`, ...(prc ? [prorrTxt(prc, a.anio)] : [])] }; })
       .filter((r) => r.v != null).sort((x, y) => y.v - x.v);
     box.replaceChildren(
       el("h4", {}, `${p.politica} en ${state.com} · ${a.anio}: ${nf(p.importe)} M€ (${pf((100 * p.importe) / c.total)} del presupuesto` +
         (pob ? `, ${ef(porHab(p.importe, state.com, a.anio))} por habitante)` : ")")),
-      principales.length ? el("p", {}, `Se reparte así: ${principales.join(", ")}.`) : "",
+      el("p", {}, pb ? `Frente a ${state.base}: ${sgn(pct(p.importe, pb.importe))} (${nfs(p.importe - pb.importe)} M€). ` : "",
+        v0 && y0 < a.anio ? `Desde ${y0}: ${sgn(pct(p.importe, v0))}. ` : "",
+        principales.length ? `Se reparte así: ${principales.join(", ")}.` : ""),
       el("div", { class: "cols" },
         el("div", {}, el("h5", {}, "Por tipo de gasto (capítulos)"), capChart),
-        el("div", {}, el("h5", {}, `Evolución ${ys[0]}–${ys[ys.length - 1]} (${ph() ? "€ por habitante" : "M€"})`), evol)),
+        el("div", {}, el("h5", {}, `Evolución ${ys[0]}–${ys[ys.length - 1]} (${ph() ? "€ por habitante" : "M€"})`), evol,
+          el("p", { class: "note" }, el("span", { class: "hueco", "aria-hidden": "true" }), "Año con el presupuesto prorrogado."))),
       el("h5", {}, ph() ? `${p.politica} por habitante en cada comunidad · ${a.anio}` : `Peso de ${p.politica.toLowerCase()} en el presupuesto de cada comunidad · ${a.anio}`),
       rank
     );
-    if (capRows.length) barras(capChart, capRows, { aria: `Capítulos de ${p.politica}`, labW: 220 });
+    if (capRows.length) barras(capChart, capRows, { aria: `Capítulos de ${p.politica}`, labW: 220, delta: pb && pb.capitulos ? (r) => pct(r.v, r.vb) : null, deltaTit: `frente a ${state.base}` });
     else capChart.replaceChildren(el("p", { class: "note" }, "Sin desglose por capítulos para este año."));
     const serieV = ph() ? serie.map((v, i) => porHab(v, state.com, ys[i])) : serie;
-    lineas(evol, ys.map(String), [{ name: p.politica, color: css("--c1"), vals: serieV }], { H: 200, aria: `Evolución de ${p.politica} en ${state.com}` });
-    barras(rank, pesos, { aria: `${p.politica} por comunidad`, labW: 170, selected: state.com, valFmt: ph() ? ef : pf, onClick: (r) => setCom(r.key) });
+    lineas(evol, ys.map(String), [{ name: p.politica, color: css("--c1"), vals: serieV }], { H: 200, aria: `Evolución de ${p.politica} en ${state.com}`,
+      fmt: ph() ? (v) => ef(v) + " por habitante" : undefined,
+      marca: (x) => { const q = prorr(state.com, +x); return q ? prorrTxt(q, +x) : null; } });
+    barras(rank, pesos, { aria: `${p.politica} por comunidad`, labW: 190, selected: state.com, valFmt: ph() ? ef : pf, onClick: (r) => setCom(r.key) });
   }
 
-  // Desglose económico: capítulo > artículo > concepto, desplegable.
-  function drawEconomica(a, c) {
+  // Desglose económico: capítulo > artículo > concepto, desplegable, con el año de comparación.
+  function drawEconomica(a, c, cb) {
     const box = $("#ccaa-econ");
     if (!c.gastos) { box.hidden = true; return; }
     box.hidden = false;
     const nombres = ccaa.economica || {};
+    const gb = cb && cb.gastos;
     const cods = Object.keys(c.gastos).sort((x, y) => x.replace("t", "~").localeCompare(y.replace("t", "~")));
     const hijos = (cod) => cods.filter((k) => k.length === cod.length + 1 && k.startsWith(cod) && !k.endsWith("t"));
     const tb = el("tbody");
     const fila = (cod, nivel) => {
       const v = c.gastos[cod], hs = hijos(cod), abierto = state.abiertos.has(cod);
+      const vb = gb ? gb[cod] : null;
       const tr = el("tr", { class: (nivel === 0 ? "cap" : "") + (hs.length ? " exp" : "") },
         el("td", { style: `padding-left:${9 + nivel * 18}px` }, hs.length ? (abierto ? "▾ " : "▸ ") : "  ", `${cod}. ${nombres[cod] || ""}`),
-        el("td", { class: "num" }, nf(v)), el("td", { class: "num" }, pf((100 * v) / c.total)));
+        el("td", { class: "num" }, nf(v)), el("td", { class: "num" }, pf((100 * v) / c.total)),
+        ...(gb ? [el("td", { class: "num" }, nf(vb)), varCelda(v, vb)] : []));
       if (hs.length) {
-        const alternar = () => { abierto ? state.abiertos.delete(cod) : state.abiertos.add(cod); drawEconomica(a, c); $(`#ccaa-econ tr[data-cod="${cod}"]`)?.focus(); };
+        const alternar = () => { abierto ? state.abiertos.delete(cod) : state.abiertos.add(cod); drawEconomica(a, c, cb); $(`#ccaa-econ tr[data-cod="${cod}"]`)?.focus(); };
         tr.dataset.cod = cod;
         tr.setAttribute("aria-expanded", abierto ? "true" : "false");
         tr.addEventListener("click", alternar);
@@ -625,10 +798,37 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
     cods.filter((k) => k.length === 1).forEach((k) => fila(k, 0));
     box.replaceChildren(
       el("h4", {}, `Desglose económico del presupuesto de ${state.com} · ${a.anio}`),
-      el("p", { class: "note" }, "En qué se gasta, sea cual sea la política: sueldos, compras, recetas, transferencias a ayuntamientos, inversiones, deuda… Pulsa una fila para desplegar sus partidas."),
+      el("p", { class: "note" }, "En qué se gasta, sea cual sea la política: sueldos, compras, recetas, transferencias a ayuntamientos, inversiones, deuda… Pulsa una fila para desplegar sus partidas." +
+        (gb ? ` Las dos últimas columnas comparan cada partida con ${state.base}.` : "")),
       el("div", { class: "scroll" }, el("table", { class: "tbl econ" },
-        el("thead", {}, el("tr", {}, el("th", {}, "Partida"), el("th", { class: "num" }, "M€"), el("th", { class: "num" }, "% del total"))), tb))
+        el("thead", {}, el("tr", {}, el("th", {}, "Partida"), el("th", { class: "num" }, `M€ ${a.anio}`), el("th", { class: "num" }, "% del total"),
+          ...(gb ? [el("th", { class: "num" }, `M€ ${state.base}`), el("th", { class: "num" }, "Variación")] : []))), tb))
     );
+  }
+  const varCelda = (v, vb) => {
+    const d = v != null && vb ? pct(v, vb) : null;
+    return el("td", { class: "num " + (d == null || Math.abs(d) < 0.05 ? "" : d > 0 ? "var-up" : "var-down") },
+      d != null ? flecha(d) : v && !vb ? "nueva" : !v && vb ? "desaparece" : "—");
+  };
+
+  // Qué políticas suben y cuáles bajan en la comunidad frente al año de comparación.
+  function drawVar() {
+    const box = $("#ccaa-var");
+    const c = comDe(state.anio, state.com), cb = state.base != null ? comDe(state.base, state.com) : null;
+    if (!c || !cb) { box.hidden = true; return; }
+    box.hidden = false;
+    const enPct = selV.value === "pct";
+    const vr = c.politicas.filter((p) => Math.max(p.importe, polDe(cb, p.codigo) || 0) >= c.total * 0.005).map((p) => {
+      const vb = polDe(cb, p.codigo) || 0, d = enPct ? pct(p.importe, vb) : p.importe - vb;
+      return { key: p.codigo, label: p.politica, v: d, color: css(d >= 0 ? "--c2" : "--c1"),
+        tip: [p.politica, `${nf(p.importe)} M€ en ${state.anio}`, `${nf(vb)} M€ en ${state.base}`, `${nfs(p.importe - vb)} M€ (${sgn(pct(p.importe, vb))})`] };
+    }).filter((r) => r.v != null).sort((x, y) => y.v - x.v);
+    const pa = prorr(state.com, state.anio);
+    $("#ccaa-var-tit").textContent = `Qué sube y qué baja en ${state.com}: ${state.anio} frente a ${state.base}`;
+    $("#ccaa-var-nota").textContent = `Variación de cada política, en ${enPct ? "porcentaje" : "millones de euros"}. ` +
+      (pa && pa.base <= state.base ? `Ojo: ${state.com} no tiene presupuesto nuevo desde ${pa.base}, así que las diferencias son solo ajustes de la prórroga. ` : "") +
+      "Euros corrientes, sin descontar la inflación. Se omiten las políticas de menos del 0,5 % del presupuesto.";
+    barras("#ch-ccaa-var", vr, { aria: `Variación de cada política de ${state.com}`, labW: 260, valFmt: enPct ? sgn : (v) => nfs(v) + " M€" });
   }
 
   // Evolución de la comunidad: lo que recibe frente a lo que dedica a sanidad, educación y servicios sociales.
@@ -637,44 +837,50 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
       ...(cofog ? cofog.comunidades.map((a) => a.anio) : [])])].sort((a, b) => a - b);
     const xs = ys.map(String);
     const fEa = (y) => { const a = entregas.anios.find((q) => q.anio === y); const f = a && a.filas.find((q) => q.comunidad === state.com); return f ? f.total : null; };
-    const fPres = (y) => { const a = ccaa.anios.find((q) => q.anio === y); const c = a && a.comunidades.find((q) => q.comunidad === state.com); return c ? spfDe(c) : null; };
+    const fPres = (y) => { const c = comDe(y, state.com); return c ? spfDe(c) : null; };
     const fEje = (y) => { const a = cofog && cofog.comunidades.find((q) => q.anio === y); const c = a && a.filas.find((q) => q.comunidad === state.com); return c ? (c.divisiones["07"] || 0) + (c.divisiones["09"] || 0) + (c.divisiones["10"] || 0) : null; };
     const conv = (f) => ys.map((y) => (ph() ? porHab(f(y), state.com, y) : f(y)));
     const fmtV = (v) => (ph() ? ef(v) + " por habitante" : nf(v) + " M€");
     const series = [
       { name: "Entregas a cuenta recibidas", color: css("--c2"), vals: conv(fEa), tip: (x, v) => { const p = fPres(+x), e = fEa(+x); return p ? [`Equivale al ${pf((100 * e) / p)} de su presupuesto en sanidad, educación y servicios sociales`] : []; } },
-      { name: "Presupuesto en sanidad, educación y servicios sociales", color: css("--c3"), vals: conv(fPres) },
+      { name: "Presupuesto en sanidad, educación y servicios sociales", pres: true, color: css("--c3"), vals: conv(fPres) },
       { name: "Gasto ejecutado en sanidad, educación y protección social (IGAE)", color: css("--c3"), dash: true, vals: conv(fEje) },
     ].filter((s) => s.vals.some((v) => v != null));
     $("#ccaa-evol-tit").textContent = `${state.com}: lo que recibe y lo que gasta en servicios básicos${ph() ? " (€ por habitante)" : ""}`;
     leyenda("#leg-ccaa-evol", series);
-    lineas("#ch-ccaa-evol", xs, series, { aria: `Evolución de ${state.com}`, H: 280, fmt: fmtV });
+    lineas("#ch-ccaa-evol", xs, series, { aria: `Evolución de ${state.com}`, H: 280, fmt: fmtV,
+      marca: (x, s) => { if (!s.pres) return null; const q = prorr(state.com, +x); return q ? prorrTxt(q, +x) : null; } });
   }
 
   function drawTabla() {
     const a = caAnio(), ea = eaAnio();
     const enHab = ph();
-    $("#tbl-unidad").textContent = enHab
+    $("#tbl-unidad").textContent = (enHab
       ? `Presupuesto y políticas de ${a.anio} y entregas de ${ea.anio}, en euros por habitante. «Peso» y «Entregas / servicios básicos» siguen en %.`
-      : `Presupuesto ${a.anio} y entregas ${ea.anio} en millones de euros; las políticas, en % del presupuesto.`;
+      : `Presupuesto ${a.anio} y entregas ${ea.anio} en millones de euros; las políticas, en % del presupuesto.`) +
+      (state.base != null ? ` «Variación»: presupuesto total de ${a.anio} frente al de ${state.base}.` : "");
     const data = a.comunidades.map((c) => {
       const pol = (cod) => (c.politicas.find((p) => p.codigo === cod) || {}).importe || 0;
       const e = ea.filas.find((f) => f.comunidad === c.comunidad);
       const v = (m, y = a.anio) => (enHab ? porHab(m, c.comunidad, y) : m);
       const p = (cod) => (enHab ? porHab(pol(cod), c.comunidad, a.anio) : (100 * pol(cod)) / c.total);
-      return { comunidad: c.comunidad, total: v(c.total), entregas: e ? v(e.total, ea.anio) : null, peso: e ? (100 * e.total) / c.total : null,
+      const cb = state.base != null ? comDe(state.base, c.comunidad) : null;
+      return { comunidad: c.comunidad, pr: prorr(c.comunidad, a.anio), total: v(c.total), var: cb ? pct(c.total, cb.total) : null,
+        entregas: e ? v(e.total, ea.anio) : null, peso: e ? (100 * e.total) / c.total : null,
         cob: e && spfDe(c) ? (100 * e.total) / spfDe(c) : null,
         p31: p("31"), p32: p("32"), p23: p("23"), p95: p("95") };
     });
     const fm = enHab ? ef : nf, fp = enHab ? ef : pf;
     const k = state.sortK, dir = state.sortDir;
-    data.sort((x, y) => (typeof x[k] === "string" ? x[k].localeCompare(y[k], "es") : (x[k] ?? -1) - (y[k] ?? -1)) * dir);
+    data.sort((x, y) => (typeof x[k] === "string" ? x[k].localeCompare(y[k], "es") : (x[k] ?? -1e9) - (y[k] ?? -1e9)) * dir);
     const tb = $("#tbl-ccaa tbody");
     tb.replaceChildren(...data.map((r) => el("tr", { class: r.comunidad === state.com ? "sel" : "", onclick: () => { setCom(r.comunidad); $("#ccaa-tit").scrollIntoView({ behavior: "smooth" }); } },
-      el("td", {}, r.comunidad), el("td", { class: "num" }, fm(r.total)), el("td", { class: "num" }, r.entregas == null ? "foral" : fm(r.entregas)),
+      el("td", {}, r.comunidad, r.pr ? tag("prorrogado", prorrTxt(r.pr, a.anio)) : ""), el("td", { class: "num" }, fm(r.total)),
+      el("td", { class: "num " + (r.var == null || Math.abs(r.var) < 0.05 ? "" : r.var > 0 ? "var-up" : "var-down") }, r.var == null ? "—" : flecha(r.var)),
+      el("td", { class: "num" }, r.entregas == null ? "foral" : fm(r.entregas)),
       el("td", { class: "num" }, pf(r.peso)), el("td", { class: "num" }, pf(r.cob)), el("td", { class: "num" }, fp(r.p31)), el("td", { class: "num" }, fp(r.p32)),
       el("td", { class: "num" }, fp(r.p23)), el("td", { class: "num" }, fp(r.p95)))));
-    tb.querySelectorAll("tr").forEach((tr, i) => pulsable(tr, () => tr.click(), `Ver ${data[i].comunidad}`));
+    tb.querySelectorAll("tr").forEach((tr, i) => pulsable(tr, () => tr.click(), `Ver ${data[i].comunidad}${data[i].pr ? " (presupuesto prorrogado)" : ""}`));
     document.querySelectorAll("#tbl-ccaa th").forEach((th) => th.setAttribute("aria-sort",
       th.dataset.k === state.sortK ? (state.sortDir > 0 ? "ascending" : "descending") : "none"));
   }
@@ -725,9 +931,9 @@ function renderHome(d) {
       act.pib ? `${fmt1.format((100 * Math.abs(sal)) / act.pib)} % del PIB · gasto: ${nf(emp)} M€` : `Gasto: ${nf(emp)} M€`));
   }
   if (d.pge) {
-    const col = d.pge.columnas[d.pge.columnas.length - 1];
+    const A = pgeAnios(d.pge), a = A[A.length - 1], col = a.col;
     const pens = d.pge.politicas.find((p) => p.codigo === "21");
-    out.push(tarjeta("presupuesto.html", `Presupuesto del Estado en vigor (${col})`, nf(d.pge.total ? d.pge.total[col] : null) + " M€",
+    out.push(tarjeta("presupuesto.html", `Presupuesto del Estado en vigor (${a.anio}${a.prorr ? `, prorrogado de ${a.base}` : ""})`, nf(d.pge.total ? d.pge.total[col] : null) + " M€",
       pens ? `Pensiones: ${nf(pens.valores[col])} M€, la mayor política` : ""));
   }
   if (d.cofog) {

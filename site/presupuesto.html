@@ -43,11 +43,30 @@
     <p class="badges"><span class="badge" id="badge-act"></span></p>
   </div>
   <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
-  <div class="ctrl"><label>Ejercicio <select id="sel-pge"></select></label></div>
-  <p class="note" id="pge-nota"></p>
-  <div class="card aviso" id="pge-aviso" hidden></div>
-  <div class="chart" id="ch-pge"></div>
-  <div id="pge-detalle" class="detalle" hidden></div>
+  <nav class="subnav" aria-label="Apartados de la página">
+    <a href="#h-politicas">Por política</a><a href="#h-tendencia">Tendencia</a>
+  </nav>
+  <div class="ctrl ctrl-main">
+    <label>Ejercicio <select id="sel-pge"></select></label>
+    <label>Comparar con <select id="sel-pge-base"></select></label>
+  </div>
+  <section aria-labelledby="h-politicas">
+    <h2 id="h-politicas">Por política de gasto</h2>
+    <p class="note" id="pge-nota"></p>
+    <div class="card aviso" id="pge-aviso" hidden></div>
+    <div class="chart" id="ch-pge"></div>
+    <div id="pge-detalle" class="detalle" hidden></div>
+  </section>
+  <section aria-labelledby="h-tendencia">
+    <h2 id="h-tendencia">Tendencia</h2>
+    <h3>Presupuesto total</h3>
+    <p class="note">Créditos iniciales consolidados de cada año. <span class="hueco" aria-hidden="true"></span>Los círculos huecos son años sin presupuesto nuevo, con el anterior prorrogado.</p>
+    <div class="chart" id="ch-pge-total"></div>
+    <h3>Qué políticas suben y cuáles bajan</h3>
+    <div class="ctrl"><label>Variación en <select id="sel-pge-var"><option value="pct">porcentaje</option><option value="eur">millones de euros</option></select></label></div>
+    <p class="note" id="pge-var-nota"></p>
+    <div class="chart" id="ch-pge-var"></div>
+  </section>
   <p class="note"><a href="fuentes.html#f-pge">Sobre esta fuente</a>.</p>
 </main>
 
