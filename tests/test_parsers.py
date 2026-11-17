@@ -111,6 +111,29 @@ def test_funcional_madrid_2026():
     assert san["politica"] == "Sanidad" and san["area"] == "Bienes públicos preferentes"
 
 
+def test_funcional_por_capitulos_andalucia_2026():
+    d = fd.parse_funcional(read("funcional_cap_01_2026.xlsx"))
+    assert d["anio"] == 2026
+    assert d["total"] == pytest.approx(51597.94, abs=0.01)
+    assert d["capitulos"][0] == "Gastos de personal" and len(d["capitulos"]) == 9
+    san = next(p for p in d["politicas"] if p["codigo"] == "31")
+    assert san["importe"] == pytest.approx(15989.27, abs=0.01)
+    assert san["capitulos"][0] == pytest.approx(7580.0, abs=0.01)  # personal
+    for p in d["politicas"]:
+        assert sum(p["capitulos"]) == pytest.approx(p["importe"], abs=0.1)
+
+
+def test_desglose_gastos_andalucia_2026():
+    d = fd.parse_gastos(read("gastos_01_2026.xlsx"))
+    g = {p["codigo"]: p for p in d["partidas"]}
+    assert d["total"] == pytest.approx(51597.94, abs=0.01)
+    assert g["481"]["nombre"] == "Recetas médicas"
+    assert g["481"]["importe"] == pytest.approx(2671.45, abs=0.01)
+    # Los artículos suman su capítulo.
+    assert g["20"]["importe"] + g["29"]["importe"] == pytest.approx(g["2"]["importe"], abs=0.1)
+    assert all(p["importe"] for p in d["partidas"])
+
+
 def test_parse_html_links_and_hidden():
     p = fd.parse_html('<form><input type="hidden" name="__VIEWSTATE" value="abc"></form>'
                       '<a href="/x/entregas-a-cuenta-2026.xlsx">Excel</a>')

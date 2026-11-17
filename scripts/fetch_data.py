@@ -572,6 +572,12 @@ def fetch_entregas(dl: Downloader, max_years: int = YEARS_BACK) -> dict:
 # 4. Presupuestos de las comunidades autónomas por política de gasto
 # --------------------------------------------------------------------------- #
 def parse_funcional(content: bytes) -> dict:
+    """Presupuesto por política de gasto.
+
+    Acepta la «Clasificación funcional» (una columna de importe) y la
+    «Clasificación funcional por capítulos» (una columna por capítulo y un total);
+    en este segundo caso cada política lleva su reparto por capítulos.
+    """
     wb = load_wb(content)
     ws = wb.worksheets[0]
     rows = [list(r) for r in ws.iter_rows(values_only=True)]
@@ -580,41 +586,78 @@ def parse_funcional(content: bytes) -> dict:
         m = re.search(r"Ejercicio\s+(\d{4})", clean(r[0]) if r else "")
         if m:
             anio = int(m.group(1))
-    h = next((i for i, r in enumerate(rows) if r and clean(r[0]).lower().startswith("áreas y pol")), None)
-    if h is None:
+    # El título del documento también empieza por «Áreas y políticas…»: la cabecera
+    # de la tabla es la última fila así antes de los datos.
+    cands = [i for i, r in enumerate(rows[:25]) if r and clean(r[0]).lower().startswith("áreas y pol")]
+    if not cands:
         raise SourceError("Formato inesperado en el Excel de presupuestos autonómicos")
+    h = cands[-1]
+    etiquetas = [(i, clean(v)) for i, v in enumerate(rows[h]) if i > 0 and clean(v) and clean(v) != "None"]
+    col_total = next((i for i, t in etiquetas if t.lower() == "total"), 1)
+    caps = [(i, t) for i, t in etiquetas if i != col_total] if len(etiquetas) > 1 else []
     politicas, total = [], None
     for r in rows[h + 1 :]:
         a = clean(cell(r, 0))
         if not a:
             continue
-        v = num(cell(r, 1))
+        v = num(cell(r, col_total))
         if a.lower().startswith("total"):
             total = v
             break
         m = re.fullmatch(r"(\d{1,2})\.\s*(.+)", a)
         if not m or len(m.group(1)) != 2 or v is None:
             continue
-        politicas.append(
-            {
-                "codigo": m.group(1),
-                "politica": m.group(2).strip(),
-                "area": AREAS_FUNCIONALES.get(m.group(1)[0], "Otras"),
-                # El Excel da miles de euros; lo pasamos a millones.
-                "importe": r2(v / 1000, 2),
-            }
-        )
-    return {"anio": anio, "total": r2(total / 1000, 2) if total is not None else None, "politicas": politicas}
+        p = {
+            "codigo": m.group(1),
+            "politica": m.group(2).strip(),
+            "area": AREAS_FUNCIONALES.get(m.group(1)[0], "Otras"),
+            # El Excel da miles de euros; lo pasamos a millones.
+            "importe": r2(v / 1000, 2),
+        }
+        if caps:
+            p["capitulos"] = [r2((num(cell(r, i)) or 0) / 1000, 2) for i, _ in caps]
+        politicas.append(p)
+    out = {"anio": anio, "total": r2(total / 1000, 2) if total is not None else None, "politicas": politicas}
+    if caps:
+        out["capitulos"] = [t for _, t in caps]
+    return out
+
+
+def parse_gastos(content: bytes) -> dict:
+    """Desglose económico de los gastos: capítulo, artículo, concepto y subconcepto."""
+    wb = load_wb(content)
+    rows = [list(r) for r in wb.worksheets[0].iter_rows(values_only=True)]
+    partidas, total = [], None
+    for r in rows:
+        a = str(cell(r, 0) or "")
+        v = num(cell(r, 1))
+        if clean(a).lower().startswith("total gastos"):
+            total = v
+            break
+        m = re.fullmatch(r"\s*(\d{1,4}|\dt)\.\s*(.+?)\s*", a)
+        if not m or v is None or v == 0:
+            continue
+        partidas.append({"codigo": m.group(1), "nombre": m.group(2), "importe": r2(v / 1000, 2)})
+    if not partidas or total is None:
+        raise SourceError("Formato inesperado en el desglose de gastos autonómico")
+    caps = sum(p["importe"] for p in partidas if len(p["codigo"]) == 1)
+    if abs(caps - total / 1000) > 1:
+        raise SourceError(f"El desglose de gastos no cuadra: capítulos {caps:.0f} frente a total {total / 1000:.0f}")
+    return {"total": r2(total / 1000, 2), "partidas": partidas}
 
 
 class CcaaSession:
     """La aplicación de Hacienda exige abrir sesión antes de descargar."""
 
+    # Tipo de descarga -> prefijo del fichero guardado en raw/.
+    TIPOS = {"FuncionalCapDC": "funcional", "GastosDC": "gastos"}
+
     def __init__(self, dl: Downloader):
         self.dl = dl
         self.ready = False
+        self.clave = None
 
-    def start(self, year: int) -> None:
+    def start(self, year: int, tipo: str) -> None:
         s = self.dl
         s._request("GET", CCAA_BASE + "inicio.aspx")
         page = parse_html(s.html(CCAA_BASE + "SelDescargaDC.aspx"))
@@ -623,22 +666,22 @@ class CcaaSession:
             {
                 "ctl00$MainContent$ano": str(year),
                 "ctl00$MainContent$autonomia": "00",
-                "ctl00$MainContent$tipoDescarga": "../aspx/DescargaFuncionalDC.aspx?cdcdad=",
+                "ctl00$MainContent$tipoDescarga": f"../aspx/Descarga{tipo}.aspx?cdcdad=",
                 "ctl00$MainContent$botonAceptar.x": "5",
                 "ctl00$MainContent$botonAceptar.y": "5",
             }
         )
         s._request("POST", CCAA_BASE + "SelDescargaDC.aspx", data=data)
-        self.ready = True
+        self.ready, self.clave = True, (year, tipo)
 
-    def get(self, code: str, year: int) -> bytes | None:
-        raw = f"funcional_{code}_{year}.xlsx"
+    def get(self, code: str, year: int, tipo: str = "FuncionalCapDC") -> bytes | None:
+        raw = f"{self.TIPOS[tipo]}_{code}_{year}.xlsx"
         if self.dl.offline_dir is not None:
             return self.dl.xlsx("", raw, missing_ok=True)
-        url = f"{CCAA_BASE}DescargaFuncionalDC.aspx?cdcdad={code}&ano={year}"
+        url = f"{CCAA_BASE}Descarga{tipo}.aspx?cdcdad={code}&ano={year}"
         for intento in range(2):
-            if not self.ready:
-                self.start(year)
+            if not self.ready or self.clave != (year, tipo):
+                self.start(year, tipo)
             try:
                 return self.dl.xlsx(url, raw)
             except SourceError:
@@ -657,10 +700,18 @@ def fetch_ccaa(dl: Downloader, years: list[int], previo: dict | None = None, reu
     para no repetir cientos de descargas cada día.
     """
     sess = CcaaSession(dl)
-    guardados = {a["anio"]: a for a in (previo or {}).get("anios", [])}
+    previo = previo or {}
+    guardados = {a["anio"]: a for a in previo.get("anios", [])}
+    capitulos = previo.get("capitulos")
+    economica = dict(previo.get("economica", {}))
+
+    def completo(a):
+        cs = a.get("comunidades", [])
+        return len(cs) >= len(CCAA) and all("gastos" in c and "capitulos" in c["politicas"][0] for c in cs)
+
     out = []
     for y in years:
-        if reuse_before is not None and y < reuse_before and len(guardados.get(y, {}).get("comunidades", [])) >= len(CCAA):
+        if reuse_before is not None and y < reuse_before and completo(guardados.get(y, {})):
             out.append(guardados[y])
             log.info("  CCAA %s: reutilizado", y)
             continue
@@ -676,16 +727,35 @@ def fetch_ccaa(dl: Downloader, years: list[int], previo: dict | None = None, reu
             d = parse_funcional(content)
             if not d["politicas"] or d["total"] is None:
                 continue
+            capitulos = d.get("capitulos") or capitulos
             comunidades.append(
                 {"codigo": code, "comunidad": nombre, "foral": code in FORALES, "total": d["total"], "politicas": d["politicas"]}
             )
+        # Desglose económico (segunda pasada: la aplicación pide abrir sesión por tipo de descarga).
+        for c in comunidades:
+            try:
+                content = sess.get(c["codigo"], y, "GastosDC")
+                g = parse_gastos(content) if content else None
+            except SourceError as e:
+                log.warning("  %s %s (desglose): %s", c["comunidad"], y, e)
+                g = None
+            if g:
+                for p in g["partidas"]:
+                    economica.setdefault(p["codigo"], p["nombre"])
+                c["gastos"] = {p["codigo"]: p["importe"] for p in g["partidas"]}
         if comunidades:
             out.append({"anio": y, "comunidades": comunidades})
-            log.info("  CCAA %s: %d comunidades", y, len(comunidades))
+            log.info("  CCAA %s: %d comunidades, %d con desglose", y, len(comunidades), sum("gastos" in c for c in comunidades))
     if not out:
         raise SourceError("No se pudo descargar ningún presupuesto autonómico")
     out.sort(key=lambda a: a["anio"], reverse=True)
-    return {"fuente": CCAA_BASE + "inicio.aspx", "unidad": "millones de euros", "anios": out}
+    return {
+        "fuente": CCAA_BASE + "inicio.aspx",
+        "unidad": "millones de euros",
+        "capitulos": capitulos,
+        "economica": dict(sorted(economica.items(), key=lambda kv: (kv[0].replace("t", "~"),))),
+        "anios": out,
+    }
 
 
 # --------------------------------------------------------------------------- #

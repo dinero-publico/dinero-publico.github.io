@@ -109,7 +109,7 @@ const trunc = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
 /* ---------- Gráfico de líneas por año reutilizable ---------- */
 function lineas(container, xs, series, opts = {}) {
   const node = typeof container === "string" ? $(container) : container;
-  const W = Math.max(300, node.clientWidth), H = opts.H || 260, m = { t: 10, r: 14, b: 26, l: 58 };
+  const W = Math.max(300, node.clientWidth), H = opts.H || 260, m = { t: 10, r: 22, b: 26, l: 58 };
   const x = d3.scalePoint(xs, [m.l, W - m.r]).padding(0.2);
   const vals = series.flatMap((s) => s.vals.filter((v) => v != null));
   const y = d3.scaleLinear().domain([Math.min(0, d3.min(vals) ?? 0), d3.max(vals) || 1]).nice().range([H - m.b, m.t]);
@@ -443,6 +443,8 @@ function renderCcaa(entregas, ccaa, cofog) {
     anio: ccaa.anios[0].anio,
     com: decodeURIComponent((location.hash.match(/ccaa=([^&]+)/) || [])[1] || "Andalucía"),
     sortK: "total", sortDir: -1,
+    pol: "31",
+    abiertos: new Set(),
   };
   const eaAnio = () => entregas.anios.find((a) => a.anio === state.ea);
   const caAnio = () => ccaa.anios.find((a) => a.anio === state.anio);
@@ -529,14 +531,76 @@ function renderCcaa(entregas, ccaa, cofog) {
     } else {
       box.replaceChildren(el("h4", {}, "Entregas a cuenta"), el("p", { class: "note" }, `${state.com} no recibe entregas a cuenta del sistema común (régimen foral).`));
     }
-    if (!c) { $("#ch-ccaa").replaceChildren(); return; }
+    if (!c) { $("#ch-ccaa").replaceChildren(); $("#ccaa-pol").hidden = true; $("#ccaa-econ").hidden = true; return; }
     const areas = [...new Set(c.politicas.map((p) => p.area))];
     const colores = ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6"].map(css);
     const rows = c.politicas.filter((p) => p.importe > 0).map((p) => ({
-      key: p.codigo, label: p.politica, v: p.importe, color: colores[areas.indexOf(p.area) % colores.length],
-      tip: [p.politica, `${nf(p.importe)} M€ · ${pf((100 * p.importe) / c.total)} del presupuesto`, p.area],
+      key: p.codigo, label: p.politica, v: p.importe, color: p.codigo === state.pol ? css("--sel") : colores[areas.indexOf(p.area) % colores.length],
+      tip: [p.politica, `${nf(p.importe)} M€ · ${pf((100 * p.importe) / c.total)} del presupuesto`, p.area, "Pulsa para ver en qué se gasta"],
     })).sort((x, y) => y.v - x.v);
-    barras("#ch-ccaa", rows, { aria: `Presupuesto de ${state.com} por política`, labW: 300 });
+    if (!rows.some((r) => r.key === state.pol)) state.pol = rows[0].key;
+    barras("#ch-ccaa", rows, { aria: `Presupuesto de ${state.com} por política`, labW: 300, selected: state.pol,
+      onClick: (r) => { state.pol = r.key; drawDetalle(); $("#ccaa-pol").scrollIntoView({ behavior: "smooth", block: "nearest" }); } });
+    drawPolitica(a, c);
+    drawEconomica(a, c);
+  }
+
+  // Detalle de una política: capítulos, evolución y comparación con las demás comunidades.
+  function drawPolitica(a, c) {
+    const box = $("#ccaa-pol");
+    const p = c.politicas.find((x) => x.codigo === state.pol);
+    if (!p) { box.hidden = true; return; }
+    box.hidden = false;
+    const caps = ccaa.capitulos || [];
+    const capChart = el("div", { class: "chart" }), evol = el("div", { class: "chart" }), rank = el("div", { class: "chart" });
+    const capRows = p.capitulos ? caps.map((nombre, i) => ({ key: String(i + 1), label: `${i + 1}. ${nombre}`, v: p.capitulos[i] || 0,
+      tip: [nombre, `${nf(p.capitulos[i])} M€ · ${pf((100 * (p.capitulos[i] || 0)) / p.importe)} de ${p.politica.toLowerCase()}`] }))
+      .filter((r) => r.v) : [];
+    const principales = [...capRows].sort((x, y) => y.v - x.v).slice(0, 3).map((r) => `${pf((100 * r.v) / p.importe)} ${r.label.replace(/^\d\. /, "").toLowerCase()}`);
+    const ys = ccaa.anios.map((x) => x.anio).sort((x, y) => x - y);
+    const serie = ys.map((y) => { const cc = ccaa.anios.find((q) => q.anio === y).comunidades.find((q) => q.comunidad === state.com); const pp = cc && cc.politicas.find((q) => q.codigo === state.pol); return pp ? pp.importe : null; });
+    const pesos = a.comunidades.map((cc) => { const pp = cc.politicas.find((q) => q.codigo === state.pol); return { key: cc.comunidad, label: cc.comunidad, v: pp ? (100 * pp.importe) / cc.total : 0,
+      tip: [cc.comunidad, `${nf(pp ? pp.importe : 0)} M€ · ${pf(pp ? (100 * pp.importe) / cc.total : 0)} de su presupuesto`] }; }).sort((x, y) => y.v - x.v);
+    box.replaceChildren(
+      el("h4", {}, `${p.politica} en ${state.com} · ${a.anio}: ${nf(p.importe)} M€ (${pf((100 * p.importe) / c.total)} del presupuesto)`),
+      principales.length ? el("p", {}, `Se reparte así: ${principales.join(", ")}.`) : "",
+      el("div", { class: "cols" },
+        el("div", {}, el("h5", {}, "Por tipo de gasto (capítulos)"), capChart),
+        el("div", {}, el("h5", {}, `Evolución ${ys[0]}–${ys[ys.length - 1]} (M€)`), evol)),
+      el("h5", {}, `Peso de ${p.politica.toLowerCase()} en el presupuesto de cada comunidad · ${a.anio}`),
+      rank
+    );
+    if (capRows.length) barras(capChart, capRows, { aria: `Capítulos de ${p.politica}`, labW: 220 });
+    else capChart.replaceChildren(el("p", { class: "note" }, "Sin desglose por capítulos para este año."));
+    lineas(evol, ys.map(String), [{ name: p.politica, color: css("--c1"), vals: serie }], { H: 200, aria: `Evolución de ${p.politica} en ${state.com}` });
+    barras(rank, pesos, { aria: `Peso de ${p.politica} por comunidad`, labW: 170, selected: state.com, valFmt: pf, onClick: (r) => setCom(r.key) });
+  }
+
+  // Desglose económico: capítulo > artículo > concepto, desplegable.
+  function drawEconomica(a, c) {
+    const box = $("#ccaa-econ");
+    if (!c.gastos) { box.hidden = true; return; }
+    box.hidden = false;
+    const nombres = ccaa.economica || {};
+    const cods = Object.keys(c.gastos).sort((x, y) => x.replace("t", "~").localeCompare(y.replace("t", "~")));
+    const hijos = (cod) => cods.filter((k) => k.length === cod.length + 1 && k.startsWith(cod) && !k.endsWith("t"));
+    const tb = el("tbody");
+    const fila = (cod, nivel) => {
+      const v = c.gastos[cod], hs = hijos(cod), abierto = state.abiertos.has(cod);
+      const tr = el("tr", { class: (nivel === 0 ? "cap" : "") + (hs.length ? " exp" : "") },
+        el("td", { style: `padding-left:${9 + nivel * 18}px` }, hs.length ? (abierto ? "▾ " : "▸ ") : "  ", `${cod}. ${nombres[cod] || ""}`),
+        el("td", { class: "num" }, nf(v)), el("td", { class: "num" }, pf((100 * v) / c.total)));
+      if (hs.length) tr.addEventListener("click", () => { abierto ? state.abiertos.delete(cod) : state.abiertos.add(cod); drawEconomica(a, c); });
+      tb.append(tr);
+      if (abierto) hs.forEach((h) => fila(h, nivel + 1));
+    };
+    cods.filter((k) => k.length === 1).forEach((k) => fila(k, 0));
+    box.replaceChildren(
+      el("h4", {}, `Desglose económico del presupuesto de ${state.com} · ${a.anio}`),
+      el("p", { class: "note" }, "En qué se gasta, sea cual sea la política: sueldos, compras, recetas, transferencias a ayuntamientos, inversiones, deuda… Pulsa una fila para desplegar sus partidas."),
+      el("div", { class: "scroll" }, el("table", { class: "tbl econ" },
+        el("thead", {}, el("tr", {}, el("th", {}, "Partida"), el("th", { class: "num" }, "M€"), el("th", { class: "num" }, "% del total"))), tb))
+    );
   }
 
   // Evolución de la comunidad: lo que recibe frente a lo que dedica a sanidad, educación y servicios sociales.

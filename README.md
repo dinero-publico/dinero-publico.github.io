@@ -84,7 +84,7 @@ site/                   web estática: index.html, app.js, style.css, vendor/d3.
 - `data/estado.json`: para cada año, los meses publicados y cada partida SEC (`codigo`, `concepto`, `bloque` = recursos/empleos/saldos, `nivel` 0-2, `valores` acumulados en M€).
 - `data/pge.json`: políticas de gasto (capítulos 1 a 8) con sus programas, en M€, para cada ejercicio de la serie (`2025-P` = prorrogado).
 - `data/entregas.json`: entregas a cuenta por comunidad y concepto, en M€, de los últimos ejercicios publicados.
-- `data/ccaa.json`: presupuesto inicial consolidado de cada comunidad por política de gasto, en M€.
+- `data/ccaa.json`: presupuesto inicial consolidado de cada comunidad por política de gasto, en M€. Cada política trae su reparto por `capitulos` (nombres en la raíz del fichero), y cada comunidad su desglose económico en `gastos` (código de capítulo, artículo, concepto o subconcepto → M€; los nombres están en `economica`).
 - `data/cofog.json`: gasto ejecutado por división COFOG (`07` sanidad, `09` educación, `10` protección social…), en M€. `subsectores` tiene la serie anual de la Administración central, regional, local y Seguridad Social (con `transferencias_aapp`, el grupo 01.8); `comunidades`, el detalle por comunidad de cada año.
 - `data/meta.json`: fecha en que cambió cada fuente y último error, si lo hubo.
 
