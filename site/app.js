@@ -889,8 +889,118 @@ function renderMeta(meta, estado) {
   if (b) b.textContent = ult ? `Datos actualizados el ${fecha(ult)}` : "";
 }
 
+/* ---------- Subvenciones: grandes beneficiarios y partidos (BDNS) ---------- */
+const eurM = (v) => (v == null || isNaN(v) ? "—" : (v >= 1e8 ? fmt0 : fmt1).format(v / 1e6) + " M€");
+const sinTildes = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const NIVELES = { ESTADO: "Estado", AUTONOMICA: "Comunidades autónomas", LOCAL: "Entidades locales", OTROS: "Otros" };
+function renderSubvenciones(sub) {
+  const anios = Object.keys(sub.grandes).sort().reverse();
+  const curso = (a) => (sub.en_curso || []).includes(a);
+  const tipoNom = (k) => sub.tipos[k] || k;
+  const tipoDe = (nif) => { if (!nif) return "fisica"; const c = nif[0]; return sub.tipos[c] && !/\d/.test(c) ? c : "otro"; };
+  // Por defecto, el último año completo; el año en curso sigue disponible en el selector.
+  const state = { anio: anios.find((a) => !curso(a)) || anios[0], q: "", tipo: "" };
+  const listas = {};
+  const sel = $("#sel-sub-anio");
+  sel.replaceChildren(...anios.map((a) => el("option", { value: a }, a + (curso(a) ? " (en curso)" : ""))));
+  sel.value = state.anio;
+  sel.addEventListener("change", () => { state.anio = sel.value; draw(); });
+  const selT = $("#sel-sub-tipo");
+  selT.append(...Object.keys(sub.tipos).map((k) => el("option", { value: k }, sub.tipos[k])));
+  selT.addEventListener("change", () => { state.tipo = selT.value; drawBuscar(); });
+  let qt;
+  $("#sub-q").addEventListener("input", (ev) => { clearTimeout(qt); qt = setTimeout(() => { state.q = ev.target.value.trim(); drawBuscar(); }, 200); });
+
+  const prev = (a) => { const p = String(+a - 1); return sub.grandes[p] ? p : null; };
+
+  function draw() {
+    const a = state.anio, g = sub.grandes[a], pa = sub.partidos[a], p = prev(a), gp = p ? sub.grandes[p] : null;
+    $("#sub-tit-anio").textContent = `(${a})`;
+    const nc = $("#sub-curso");
+    nc.hidden = !curso(a);
+    nc.textContent = curso(a) ? `${a} está en curso: las administraciones registran las concesiones durante todo el año y después, así que las cifras aún crecerán y no son comparables con años completos.` : "";
+    const top10 = d3.sum(g.top.slice(0, 10), (b) => b[2]);
+    const kpi = (t, v, s) => el("div", { class: "kpi" }, el("h4", {}, t), el("div", { class: "big" }, v), el("div", { class: "sub muted" }, s));
+    $("#sub-kpis").replaceChildren(
+      kpi(`Ayudas a grandes beneficiarios (${a})`, eurM(g.total), gp && !curso(a) ? `${flecha(pct(g.total, gp.total))} frente a ${p}` : "Ayuda equivalente total"),
+      kpi("Grandes beneficiarios", fmt0.format(g.beneficiarios), "con 100.000 € o más en el año"),
+      kpi("Lo que reciben los diez mayores", pf((100 * top10) / g.total), `${eurM(top10)} del total`),
+      kpi(`Subvenciones a partidos y grupos (${a})`, pa ? eurM(pa.total) : "—", pa ? `${fmt0.format(pa.concesiones)} concesiones` : ""));
+
+    const deltaT = gp && !curso(a) ? (r) => pct(r.v * 1e6, (gp.por_tipo[r.key] || [])[1]) : null;
+    // En pantallas estrechas la etiqueta va sobre la barra: se recorta a lo que cabe (el nombre completo, en el tooltip).
+    const corto = (sel, s) => { const w = $(sel).clientWidth; return w < 560 ? trunc(s, Math.max(20, Math.floor(w / 7.4))) : s; };
+    barras("#ch-sub-tipos", Object.entries(g.por_tipo).map(([k, [n, v]]) => ({
+      key: k, label: tipoNom(k), v: v / 1e6,
+      tip: [tipoNom(k), `${eurM(v)} · ${fmt0.format(n)} beneficiarios`, `${pf((100 * v) / g.total)} del total`,
+        ...(gp && gp.por_tipo[k] ? [`${p}: ${eurM(gp.por_tipo[k][1])} (${sgn(pct(v, gp.por_tipo[k][1]))})`] : [])],
+    })), { aria: `Ayudas a grandes beneficiarios por tipo de entidad en ${a}`, valFmt: (v) => fmt0.format(v) + " M€", delta: deltaT, deltaTit: p ? `frente a ${p}` : "" });
+
+    barras("#ch-sub-top", g.top.slice(0, 25).map((b, i) => ({
+      key: b[0] + i, label: corto("#ch-sub-top", b[1]), v: b[2] / 1e6, color: css(b[0] ? "--c1" : "--muted"),
+      tip: [b[1], `${fmt0.format(b[2])} €`, `${tipoNom(tipoDe(b[0]))}${b[0] ? " · NIF " + b[0] : ""}`],
+    })), { aria: `Los 25 mayores beneficiarios de subvenciones en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€" });
+
+    if (pa) {
+      const ppa = p ? sub.partidos[p] : null;
+      $("#sub-partidos-lead").textContent = `En ${a} se registraron ${fmt0.format(pa.concesiones)} subvenciones a partidos y grupos políticos por ${eurM(pa.total)}` +
+        (ppa && !curso(a) ? ` (${sgn(pct(pa.total, ppa.total))} frente a ${p}).` : ".") + " Quién las concede:";
+      barras("#ch-sub-nivel", Object.entries(pa.por_nivel).map(([k, v]) => ({ key: k, label: NIVELES[k] || k, v: v / 1e6,
+        tip: [NIVELES[k] || k, eurM(v), `${pf((100 * v) / pa.total)} del total`] })), { aria: `Subvenciones a partidos por administración en ${a}`, valFmt: (v) => fmt1.format(v) + " M€" });
+      barras("#ch-sub-partidos", pa.beneficiarios.slice(0, 20).map((b) => ({ key: b[0] || b[1], label: corto("#ch-sub-partidos", b[1]), v: b[2] / 1e6,
+        tip: [b[1], `${fmt0.format(b[2])} €`, `${fmt0.format(b[3])} concesiones${b[0] ? " · NIF " + b[0] : ""}`] })),
+        { aria: `Partidos y grupos que más subvenciones recibieron en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€" });
+    }
+    $("#sub-lista").href = DATA + g.lista;
+    $("#sub-lista").textContent = g.lista;
+    drawBuscar();
+  }
+
+  async function lista(a) {
+    if (!listas[a]) listas[a] = getJSON(sub.grandes[a].lista).then((d) => d.beneficiarios.map((b, i) => [...b, i + 1, sinTildes(b[0] + " " + b[1])]));
+    return listas[a];
+  }
+
+  async function drawBuscar() {
+    const a = state.anio, g = sub.grandes[a], q = sinTildes(state.q), t = state.tipo;
+    const res = $("#sub-res"), tb = $("#tbl-sub tbody");
+    let filas, total = null;
+    if (!q && !t) {
+      filas = g.top.map((b, i) => [...b, i + 1]);
+      res.textContent = `Los ${fmt0.format(filas.length)} mayores de ${fmt0.format(g.beneficiarios)} grandes beneficiarios de ${a}. Escribe un nombre o un NIF, o elige un tipo, para buscar en la lista completa.`;
+    } else {
+      res.textContent = "Cargando la lista completa…";
+      let todos;
+      try { todos = await lista(a); } catch (e) { res.replaceChildren(el("span", { class: "err" }, "No se pudo cargar la lista completa.")); return; }
+      if (a !== state.anio || sinTildes(state.q) !== q || state.tipo !== t) return; // ya hay otra búsqueda
+      const palabras = q.split(/\s+/).filter(Boolean);
+      const hall = todos.filter((b) => (!t || tipoDe(b[0]) === t) && palabras.every((w) => b[4].includes(w)));
+      total = d3.sum(hall, (b) => b[2]);
+      filas = hall.slice(0, 200);
+      res.textContent = hall.length
+        ? `${fmt0.format(hall.length)} ${hall.length === 1 ? "beneficiario" : "beneficiarios"} en ${a}, con ${eurM(total)} en total` + (hall.length > filas.length ? `. Se muestran los ${filas.length} mayores.` : ".")
+        : `Ningún gran beneficiario de ${a} coincide con la búsqueda. Solo figuran quienes recibieron 100.000 € o más en el año.`;
+    }
+    tb.replaceChildren(...filas.map((b) => el("tr", {},
+      el("td", { class: "num muted" }, fmt0.format(b[3])), el("td", { class: "wrap-cell" }, b[1]), el("td", {}, b[0] || "—"),
+      el("td", { class: "muted" }, tipoNom(tipoDe(b[0]))), el("td", { class: "num" }, fmt0.format(b[2])))));
+  }
+
+  // Evolución: una fila por año, del más reciente al más antiguo.
+  $("#tbl-sub-evol tbody").replaceChildren(...anios.map((a) => {
+    const g = sub.grandes[a], p = prev(a), v = p && !curso(a) ? pct(g.total, sub.grandes[p].total) : null;
+    return el("tr", {}, el("td", {}, a, curso(a) ? tag("en curso", "Año sin cerrar: las cifras aún crecerán") : ""),
+      el("td", { class: "num" }, fmt0.format(g.beneficiarios)), el("td", { class: "num" }, nf(g.total / 1e6)),
+      el("td", { class: "num " + (v == null || Math.abs(v) < 0.05 ? "" : v > 0 ? "var-up" : "var-down") }, v == null ? "—" : flecha(v)),
+      el("td", { class: "num" }, sub.partidos[a] ? fmt1.format(sub.partidos[a].total / 1e6) : "—"));
+  }));
+
+  draw();
+  onResize(draw);
+}
+
 /* ---------- Informe de comprobaciones de la herramienta de datos (página de fuentes) ---------- */
-const NOMBRE_FUENTE = { estado: "Ejecución del Estado", pge: "Presupuestos del Estado", entregas: "Entregas a cuenta", ccaa: "Presupuestos autonómicos", cofog: "Gasto por función (COFOG)", poblacion: "Población" };
+const NOMBRE_FUENTE = { estado: "Ejecución del Estado", pge: "Presupuestos del Estado", entregas: "Entregas a cuenta", ccaa: "Presupuestos autonómicos", cofog: "Gasto por función (COFOG)", poblacion: "Población", subvenciones: "Subvenciones (BDNS)" };
 function renderInforme(inf) {
   const res = $("#informe-resumen"), ul = $("#informe-lista");
   if (!res) return;
@@ -974,6 +1084,7 @@ addEventListener("scroll", hideTip, { passive: true });
     presupuesto: ["pge", "cofog", "entregas"],
     "quien-gasta": ["cofog"],
     comunidades: ["entregas", "ccaa", "cofog", "poblacion"],
+    subvenciones: ["subvenciones"],
     fuentes: ["estado", "informe"],
   };
   const pagina = document.body.dataset.page;
@@ -987,6 +1098,7 @@ addEventListener("scroll", hideTip, { passive: true });
   if (pagina === "presupuesto") run(() => (d.pge ? renderPge(d.pge, d.cofog, d.entregas) : fail("#ch-pge", "presupuesto")), "#ch-pge", "presupuesto");
   if (pagina === "quien-gasta") run(() => (d.cofog ? renderFunciones(d.cofog) : fail("#ch-fun", "gasto por función")), "#ch-fun", "gasto por función");
   if (pagina === "comunidades") run(() => (d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog, d.poblacion) : fail("#ch-ea", "comunidades")), "#ch-ea", "comunidades");
+  if (pagina === "subvenciones") run(() => (d.subvenciones ? renderSubvenciones(d.subvenciones) : fail("#sub-kpis", "subvenciones")), "#sub-kpis", "subvenciones");
   if (pagina === "fuentes") renderInforme(d.informe);
   renderMeta(d.meta || {}, d.estado);
 })();

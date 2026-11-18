@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Fuentes, metodología y bibliografía · Dinero Público</title>
-<meta name="description" content="De dónde salen los datos de Dinero Público: IGAE, SEPG, Financiación Autonómica, SGCIEF e INE. Cómo se procesan, notas de interpretación, glosario, marco legal y descarga de los datos.">
+<meta name="description" content="De dónde salen los datos de Dinero Público: IGAE, SEPG, Financiación Autonómica, SGCIEF, Base de Datos Nacional de Subvenciones e INE. Cómo se procesan, notas de interpretación, glosario, marco legal y descarga de los datos.">
 <link rel="canonical" href="https://dinero-publico.github.io/fuentes.html">
 <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#161614" media="(prefers-color-scheme: dark)">
@@ -12,7 +12,7 @@
 <meta property="og:locale" content="es_ES">
 <meta property="og:site_name" content="Dinero Público">
 <meta property="og:title" content="Fuentes, metodología y bibliografía · Dinero Público">
-<meta property="og:description" content="De dónde salen los datos de Dinero Público: IGAE, SEPG, Financiación Autonómica, SGCIEF e INE. Cómo se procesan, notas de interpretación, glosario, marco legal y descarga de los datos.">
+<meta property="og:description" content="De dónde salen los datos de Dinero Público: IGAE, SEPG, Financiación Autonómica, SGCIEF, Base de Datos Nacional de Subvenciones e INE. Cómo se procesan, notas de interpretación, glosario, marco legal y descarga de los datos.">
 <meta property="og:url" content="https://dinero-publico.github.io/fuentes.html">
 <meta name="twitter:card" content="summary">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect x=%221%22 y=%229%22 width=%223%22 height=%226%22 fill=%22%232f6db5%22/%3E%3Crect x=%226%22 y=%225%22 width=%223%22 height=%2210%22 fill=%22%232f6db5%22/%3E%3Crect x=%2211%22 y=%221%22 width=%223%22 height=%2214%22 fill=%22%23d1803a%22/%3E%3C/svg%3E">
@@ -76,6 +76,11 @@
   {
    "@type": "DataDownload",
    "encodingFormat": "application/json",
+   "contentUrl": "https://dinero-publico.github.io/datos/v1/subvenciones.json"
+  },
+  {
+   "@type": "DataDownload",
+   "encodingFormat": "application/json",
    "contentUrl": "https://dinero-publico.github.io/datos/v1/meta.json"
   }
  ]
@@ -94,6 +99,7 @@
       <li><a href="presupuesto.html">Presupuesto</a></li>
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
+      <li><a href="subvenciones.html">Subvenciones</a></li>
       <li><a href="fuentes.html" aria-current="page">Fuentes</a></li>
       </ul>
     </nav>
@@ -103,7 +109,7 @@
 <main id="main" class="wrap">
   <div class="pagehead">
     <h1>Fuentes y metodología</h1>
-    <p class="lead">Todos los datos proceden de publicaciones oficiales del Ministerio de Hacienda y del INE. Se descargan automáticamente cada día, sin retoques manuales, y la web solo cambia cuando hay datos nuevos.</p>
+    <p class="lead">Todos los datos proceden de publicaciones oficiales del Ministerio de Hacienda (incluida la Base de Datos Nacional de Subvenciones de la IGAE) y del INE. Se descargan automáticamente cada día, sin retoques manuales, y la web solo cambia cuando hay datos nuevos.</p>
     <p class="badges"><span class="badge" id="badge-act"></span></p>
   </div>
   <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
@@ -186,6 +192,19 @@
       </dl>
       <p><a href="https://www.ine.es/jaxiT3/Tabla.htm?t=56940" rel="noopener">Ir a la fuente oficial</a></p>
     </article>
+    <article class="card fuente" id="f-subvenciones">
+      <h3>Subvenciones y ayudas públicas</h3>
+      <p class="org">Intervención General de la Administración del Estado (Base de Datos Nacional de Subvenciones)</p>
+      <p>«Grandes beneficiarios»: quienes recibieron en un año ayudas por 100.000 € o más de cualquier administración (Estado, comunidades, entidades locales), con su importe total. Y todas las concesiones a partidos y grupos políticos.</p>
+      <dl>
+        <dt>Periodicidad</dt><dd>Continua: las administraciones registran las concesiones a medida que las conceden. El año en curso está incompleto.</dd>
+        <dt>Años en la web</dt><dd>Los que ofrece la BDNS (retira las concesiones a los cuatro años); los anteriores se conservan de descargas previas.</dd>
+        <dt>Cómo se obtiene</dt><dd>API pública del Sistema Nacional de Publicidad de Subvenciones (infosubvenciones.es). Origen de los datos: Intervención General de la Administración del Estado.</dd>
+        <dt>Datos personales</dt><dd>Dinero Público disocia a las personas físicas: no publica su nombre ni su NIF, solo cuentan en los totales como «persona física».</dd>
+        <dt>Estado</dt><dd data-fuente="subvenciones">—</dd>
+      </dl>
+      <p><a href="https://www.infosubvenciones.es/bdnstrans/GE/es/grandesbeneficiarios" rel="noopener">Ir a la fuente oficial</a> · <a href="https://www.infosubvenciones.es/bdnstrans/GE/es/avisolegal" rel="noopener">aviso legal</a></p>
+    </article>
     </div>
   </section>
 
@@ -193,7 +212,7 @@
     <h2 id="proceso">Cómo se procesan los datos</h2>
     <p>La obtención de los datos y la web están separadas: los datos los prepara una <a href="https://github.com/dinero-publico/datos">herramienta propia de código abierto</a> y se publican en <a href="https://dinero-publico.github.io/datos/">dinero-publico.github.io/datos</a>. Esta web solo los lee.</p>
     <ol class="pasos">
-      <li><strong>Descarga.</strong> Cada día a las 07:17 UTC, un proceso automático (GitHub Actions) descarga los mismos Excel y datos que cualquier persona puede bajar de las páginas oficiales, y guarda una copia de los originales. No existe una API pública de Hacienda.</li>
+      <li><strong>Descarga.</strong> Cada día a las 07:17 UTC, un proceso automático (GitHub Actions) descarga los mismos Excel y datos que cualquier persona puede bajar de las páginas oficiales, y guarda una copia de los originales. Hacienda no ofrece una API pública salvo para las subvenciones (la de la BDNS), que es la que se usa para ellas.</li>
       <li><strong>Transformación.</strong> Cada fichero se lee y se convierte a JSON con una estructura común (importes en millones de euros). Si una fuente cambia de formato o no responde, se conservan sus últimos datos válidos y se avisa en esta página.</li>
       <li><strong>Análisis.</strong> Se calculan datos que no vienen tal cual en las fuentes (el año en que rige cada presupuesto del Estado y qué presupuestos autonómicos están prorrogados) y se comprueba la coherencia de cada fuente: que las partidas sumen sus totales, que estén todas las comunidades y años… El resultado se publica en el <a href="#comprobaciones">informe de comprobaciones</a>.</li>
       <li><strong>Publicación.</strong> Si hay datos nuevos se guardan en el repositorio de datos, de modo que su historial de cambios es también el historial de los datos.</li>
@@ -219,6 +238,7 @@
       <li>La financiación autonómica <strong>no es finalista</strong>: las comunidades deciden en qué la gastan. Las comparaciones con sanidad, educación y servicios sociales indican a qué equivale lo recibido, no que esté reservado por ley para esos servicios.</li>
       <li>El gasto por función (COFOG) es gasto ejecutado en contabilidad nacional. Sumar administraciones duplicaría las transferencias entre ellas; por eso se muestran aparte.</li>
       <li>Los <strong>euros por habitante</strong> usan la población residente a 1 de enero de cada año (el último año es provisional). Si un año aún no tiene población publicada, se usa la del último año disponible.</li>
+      <li>Las <strong>subvenciones</strong> de la BDNS son las que registra cada administración concedente; la IGAE no garantiza que estén todas ni que no cambien. El importe de los grandes beneficiarios es la <em>ayuda equivalente</em>: en préstamos, avales o ventajas fiscales es solo el valor de la ayuda, no el dinero prestado o avalado. Una misma entidad puede recibir dinero que luego reparte a otros (por ejemplo, una comunidad autónoma que gestiona fondos europeos), así que los beneficiarios no se pueden sumar como si fueran destinatarios finales.</li>
       <li>Navarra y País Vasco (<strong>régimen foral</strong>) recaudan casi todos sus impuestos y asumen competencias que en el resto paga el Estado, así que su presupuesto por habitante es mucho mayor y no es directamente comparable con el de las comunidades de régimen común.</li>
     </ul>
   </section>
@@ -236,6 +256,8 @@
       <dt>Entregas a cuenta</dt><dd>Pagos mensuales a cuenta de lo que corresponde a cada comunidad por el sistema de financiación; se ajustan dos años después en la liquidación.</dd>
       <dt>Fondo de Garantía de Servicios Públicos Fundamentales</dt><dd>Fondo del sistema de financiación que reparte recursos para que todas las comunidades puedan prestar sanidad, educación y servicios sociales en condiciones similares. Un valor negativo indica que la comunidad aporta más de lo que recibe.</dd>
       <dt>Fondo de Suficiencia Global</dt><dd>Cubre la diferencia entre las necesidades de financiación de cada comunidad y sus recursos tributarios.</dd>
+      <dt>Gran beneficiario</dt><dd>Persona o entidad que recibe en un año subvenciones y ayudas públicas cuya ayuda equivalente suma 100.000 € o más. La BDNS publica su lista y su importe total por año.</dd>
+      <dt>Ayuda equivalente</dt><dd>Valor de la ayuda en euros. En una subvención es su importe; en un préstamo o un aval, la ventaja que supone frente a las condiciones de mercado.</dd>
       <dt>Régimen foral</dt><dd>Sistema propio de País Vasco (Concierto Económico) y Navarra (Convenio Económico): recaudan sus impuestos y pagan al Estado un cupo o aportación por los servicios que este presta.</dd>
     </dl>
   </section>
@@ -248,6 +270,8 @@
       <li>Ley 22/2009, de 18 de diciembre, por la que se regula el sistema de financiación de las Comunidades Autónomas de régimen común y Ciudades con Estatuto de Autonomía. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2009-20375" rel="noopener">BOE-A-2009-20375</a>.</li>
       <li>Ley 12/2002, de 23 de mayo, por la que se aprueba el Concierto Económico con la Comunidad Autónoma del País Vasco. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2002-9969" rel="noopener">BOE-A-2002-9969</a>.</li>
       <li>Ley 28/1990, de 26 de diciembre, por la que se aprueba el Convenio Económico entre el Estado y la Comunidad Foral de Navarra. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-1990-31117" rel="noopener">BOE-A-1990-31117</a>.</li>
+      <li>Ley 38/2003, de 17 de noviembre, General de Subvenciones (art. 18 y 20, publicidad y BDNS). <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2003-20977" rel="noopener">BOE-A-2003-20977</a>.</li>
+      <li>Real Decreto 130/2019, de 8 de marzo, por el que se regula la Base de Datos Nacional de Subvenciones y la publicidad de las subvenciones y demás ayudas públicas. <a href="https://www.boe.es/buscar/act.php?id=BOE-A-2019-4671" rel="noopener">BOE-A-2019-4671</a>.</li>
       <li>Reglamento (UE) n.º 549/2013 del Parlamento Europeo y del Consejo, relativo al Sistema Europeo de Cuentas Nacionales y Regionales de la Unión Europea (SEC 2010). <a href="https://eur-lex.europa.eu/eli/reg/2013/549/oj" rel="noopener">EUR-Lex</a>.</li>
       <li>Eurostat (2019). <cite>Manual on sources and methods for the compilation of COFOG statistics</cite>. <a href="https://ec.europa.eu/eurostat/web/products-manuals-and-guidelines/-/ks-gq-19-010" rel="noopener">Eurostat</a>.</li>
       <li>IGAE. <cite>Informe sobre la clasificación funcional del gasto público (COFOG)</cite>. <a href="https://www.igae.pap.hacienda.gob.es/sitios/igae/es-ES/Contabilidad/ContabilidadNacional/Publicaciones/Paginas/iacogof.aspx" rel="noopener">IGAE</a>.</li>
@@ -265,6 +289,7 @@
       <li><a href="/datos/v1/ccaa.json" download>ccaa.json</a> — Presupuestos autonómicos por política, capítulo y partida</li>
       <li><a href="/datos/v1/cofog.json" download>cofog.json</a> — Gasto por función (COFOG)</li>
       <li><a href="/datos/v1/poblacion.json" download>poblacion.json</a> — Población a 1 de enero</li>
+      <li><a href="/datos/v1/subvenciones.json" download>subvenciones.json</a> — Grandes beneficiarios de subvenciones (resumen y mayores beneficiarios por año) y subvenciones a partidos; la lista completa de cada año está en <code>subvenciones-AAAA.json</code></li>
       <li><a href="/datos/v1/meta.json" download>meta.json</a> — Fechas de actualización de cada fuente</li>
       <li><a href="/datos/v1/informe.json" download>informe.json</a> — Resultado de las comprobaciones</li>
     </ul>
@@ -285,9 +310,10 @@
       <li><a href="presupuesto.html">Presupuesto</a></li>
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
+      <li><a href="subvenciones.html">Subvenciones</a></li>
       <li><a href="fuentes.html">Fuentes</a></li>
     </ul></nav>
-    <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
+    <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local, Base de Datos Nacional de Subvenciones) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
     <p>Proyecto independiente, sin relación con ninguna administración. <a href="https://github.com/dinero-publico/dinero-publico.github.io">Código abierto</a> con licencia MIT.</p>
   </div>
 </footer>
