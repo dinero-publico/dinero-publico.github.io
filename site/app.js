@@ -1,6 +1,7 @@
 /* Dinero Público — web estática. Los datos los prepara la herramienta del repositorio
    dinero-publico/datos y se publican en /datos/v1/ (mismo dominio). */
 "use strict";
+document.documentElement.classList.add("js");
 
 const DATA = "/datos/v1/";
 const fmt0 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0 });
@@ -85,6 +86,7 @@ function barras(container, rows, opts = {}) {
   const node = typeof container === "string" ? $(container) : container;
   const W = Math.max(300, node.clientWidth);
   const narrow = W < 560;
+  const vf = opts.valFmt || nf;
   const rh = narrow ? 38 : 26;
   const labW = narrow ? 0 : Math.min(opts.labW || 260, W * 0.42);
   const valW = 74;
@@ -117,9 +119,30 @@ function barras(container, rows, opts = {}) {
     .on("click", (ev, r) => opts.onClick && opts.onClick(r));
   if (opts.onClick) g.each(function (r) {
     const d = opts.delta ? opts.delta(r) : null;
-    pulsable(this, () => opts.onClick(r), `${r.label}: ${(opts.valFmt || nf)(r.v)}${d != null ? `, ${sgn(d)}${opts.deltaTit ? " " + opts.deltaTit : ""}` : ""}`);
+    pulsable(this, () => opts.onClick(r), `${r.label}: ${vf(r.v)}${d != null ? `, ${sgn(d)}${opts.deltaTit ? " " + opts.deltaTit : ""}` : ""}`);
   });
-  node.replaceChildren(svg.node());
+  const nombre = (r) => (r.tip && r.tip[0]) || r.label;
+  svg.attr("aria-label", resumenAria(opts.aria, rows.map((r) => `${nombre(r)}: ${vf(r.v)}`)));
+  node.replaceChildren(svg.node(), tablaDatos(node,
+    ["Concepto", "Importe", ...(opts.delta ? [opts.deltaTit ? `Variación ${opts.deltaTit}` : "Variación"] : [])],
+    rows.map((r) => [nombre(r), vf(r.v), ...(opts.delta ? [sgn(opts.delta(r))] : [])]),
+    opts.aria, opts.valFmt ? null : "millones de euros"));
+}
+
+/* Texto alternativo de un gráfico: su título y los primeros valores (el resto, en la tabla de debajo). */
+const resumenAria = (tit, items) => `${tit || "Gráfico"}. ${items.slice(0, 3).join("; ")}${items.length > 3 ? `; y ${items.length - 3} más en la tabla de datos.` : "."}`;
+
+/* Los datos de cada gráfico, en una tabla desplegable debajo: cifras exactas y alternativa al dibujo (WCAG 1.1.1). */
+function tablaDatos(node, cab, filas, titulo, unidad) {
+  const prev = node.querySelector(":scope > details.datos-tabla");
+  const d = el("details", { class: "datos-tabla" },
+    el("summary", {}, "Ver los datos en una tabla" + (unidad ? ` (${unidad})` : "")),
+    el("div", { class: "scroll" }, el("table", { class: "tbl" },
+      ...(titulo ? [el("caption", { class: "sr-only" }, titulo)] : []),
+      el("thead", {}, el("tr", {}, ...cab.map((c, i) => el("th", { scope: "col", class: i ? "num" : "" }, c)))),
+      el("tbody", {}, ...filas.map((f) => el("tr", {}, ...f.map((v, i) => (i ? el("td", { class: "num" }, v) : el("th", { scope: "row" }, v)))))))));
+  d.open = !!(prev && prev.open); // al redibujar (cambio de año, de tamaño…) se mantiene abierta si lo estaba
+  return d;
 }
 const trunc = (s, n) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
 
@@ -159,7 +182,12 @@ function lineas(container, xs, series, opts = {}) {
       })
       .on("mouseleave", hideTip);
   }
-  node.replaceChildren(svg.node());
+  const vfmt = (v) => (v == null ? "—" : opts.fmt ? opts.fmt(v) : nf(v));
+  const ult = xs.length - 1;
+  svg.attr("aria-label", resumenAria(opts.aria, series.map((s) => `${s.name}: ${vfmt(s.vals[ult])} en ${xs[ult]}`)));
+  node.replaceChildren(svg.node(), tablaDatos(node, ["Año", ...series.map((s) => s.name)],
+    xs.map((x, i) => [x + (opts.marca && series.some((s) => opts.marca(x, s)) ? " (prorrogado)" : ""), ...series.map((s) => vfmt(s.vals[i]))]),
+    opts.aria, opts.fmt ? null : "millones de euros"));
 }
 function leyenda(sel, series) {
   $(sel).replaceChildren(...series.map((s) => el("span", {},
@@ -195,7 +223,10 @@ function apiladas(container, rows, claves, opts = {}) {
         ...claves.filter((c) => r.parts[c.k]).map((c) => `${c.name}: ${nf(r.parts[c.k])} M€ (${pf((100 * r.parts[c.k]) / tot)})`)]))
       .on("mouseleave", hideTip);
   });
-  node.replaceChildren(svg.node());
+  const tot = (r) => d3.sum(claves, (c) => Math.max(0, r.parts[c.k] || 0));
+  svg.attr("aria-label", resumenAria(opts.aria, rows.map((r) => `${r.label}: ${nf(tot(r))}`)));
+  node.replaceChildren(svg.node(), tablaDatos(node, ["Concepto", ...claves.map((c) => c.name), "Total"],
+    rows.map((r) => [r.label, ...claves.map((c) => nf(r.parts[c.k] || 0)), nf(tot(r))]), opts.aria, "millones de euros"));
 }
 
 /* ---------- Estado ---------- */
@@ -552,7 +583,7 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
     ea: entregas.anios[0].anio,
     anio: anios[0],
     base: anios[1] ?? null,
-    com: decodeURIComponent((location.hash.match(/ccaa=([^&]+)/) || [])[1] || "Andalucía"),
+    com: new URLSearchParams(location.search).get("ccaa") || decodeURIComponent((location.hash.match(/ccaa=([^&]+)/) || [])[1] || "Andalucía"),
     sortK: "total", sortDir: -1,
     pol: "31",
     abiertos: new Set(),
@@ -587,8 +618,8 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
 
   function setCom(c) {
     state.com = c;
-    history.replaceState(null, "", "#ccaa=" + encodeURIComponent(c));
     all();
+    guardarUrl();
   }
 
   function drawEa() {
@@ -690,7 +721,7 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
     if (!rows.some((r) => r.key === state.pol)) state.pol = rows[0].key;
     barras("#ch-ccaa", rows, { aria: `Presupuesto de ${state.com} por política`, labW: 300, selected: state.pol,
       delta: cb ? (r) => pct(r.v, r.vb) : null, deltaTit: cb ? `frente a ${state.base}` : "",
-      onClick: (r) => { state.pol = r.key; drawDetalle(); $("#ccaa-pol").scrollIntoView({ behavior: "smooth", block: "nearest" }); } });
+      onClick: (r) => { state.pol = r.key; drawDetalle(); $("#ccaa-pol").scrollIntoView({ behavior: suave(), block: "nearest" }); } });
     drawPolitica(a, c, cb);
     drawEconomica(a, c, cb);
     drawVar();
@@ -847,7 +878,7 @@ function renderCcaa(entregas, ccaa, cofog, pob) {
     const k = state.sortK, dir = state.sortDir;
     data.sort((x, y) => (typeof x[k] === "string" ? x[k].localeCompare(y[k], "es") : (x[k] ?? -1e9) - (y[k] ?? -1e9)) * dir);
     const tb = $("#tbl-ccaa tbody");
-    tb.replaceChildren(...data.map((r) => el("tr", { class: r.comunidad === state.com ? "sel" : "", onclick: () => { setCom(r.comunidad); $("#ccaa-tit").scrollIntoView({ behavior: "smooth" }); } },
+    tb.replaceChildren(...data.map((r) => el("tr", { class: r.comunidad === state.com ? "sel" : "", onclick: () => { setCom(r.comunidad); $("#ccaa-tit").scrollIntoView({ behavior: suave() }); } },
       el("td", {}, r.comunidad, r.pr ? tag("prorrogado", prorrTxt(r.pr, a.anio)) : ""), el("td", { class: "num" }, fm(r.total)),
       el("td", { class: "num " + (r.var == null || Math.abs(r.var) < 0.05 ? "" : r.var > 0 ? "var-up" : "var-down") }, r.var == null ? "—" : flecha(r.var)),
       el("td", { class: "num" }, r.entregas == null ? "foral" : fm(r.entregas)),
@@ -911,7 +942,7 @@ function renderSubvenciones(sub) {
   const tipoNom = (k) => sub.tipos[k] || k;
   const tipoDe = (nif) => { if (!nif) return "fisica"; const c = nif[0]; return sub.tipos[c] && !/\d/.test(c) ? c : "otro"; };
   // Por defecto, el último año completo; el año en curso sigue disponible en el selector.
-  const state = { anio: anios.find((a) => !curso(a)) || anios[0], q: "", tipo: "", motivo: "por_finalidad", abierto: null };
+  const state = { anio: anios.find((a) => !curso(a)) || anios[0], q: "", tipo: "", motivo: "por_finalidad", abierto: null, porPag: 25 };
   const listas = {}, motivos = {};
   const selM = $("#sel-sub-motivo");
   selM.addEventListener("change", () => { state.motivo = selM.value; drawMotivos(); });
@@ -978,7 +1009,7 @@ function renderSubvenciones(sub) {
     state.q = nif;
     state.abierto = nif;
     drawBuscar();
-    $("#h-sub-buscar").scrollIntoView({ behavior: "smooth" });
+    $("#h-sub-buscar").scrollIntoView({ behavior: suave() });
   }
 
   function drawMotivos() {
@@ -999,6 +1030,7 @@ function renderSubvenciones(sub) {
     $("#tbl-sub-conv tbody").replaceChildren(...m.convocatorias.map(([num, tit, eur, n]) => el("tr", {},
       el("td", { class: "wrap-cell" }, el("a", { href: BDNS_CONV + num, rel: "noopener", target: "_blank" }, tit || `Convocatoria ${num}`)),
       el("td", { class: "num" }, fmt0.format(eur)), el("td", { class: "num" }, fmt0.format(n)))));
+    verMas($("#tbl-sub-conv tbody"), 10);
   }
 
   async function motivosDe(a) {
@@ -1038,7 +1070,8 @@ function renderSubvenciones(sub) {
     return listas[a];
   }
 
-  async function drawBuscar() {
+  // El buscador se pagina: todas las coincidencias, de 25 en 25 (o 50, 100), en vez de una lista interminable.
+  async function drawBuscar(pag = 0) {
     const a = state.anio, g = sub.grandes[a], q = sinTildes(state.q), t = state.tipo;
     const res = $("#sub-res"), tb = $("#tbl-sub tbody");
     let filas, total = null;
@@ -1053,11 +1086,19 @@ function renderSubvenciones(sub) {
       const palabras = q.split(/\s+/).filter(Boolean);
       const hall = todos.filter((b) => (!t || tipoDe(b[0]) === t) && palabras.every((w) => b[4].includes(w)));
       total = d3.sum(hall, (b) => b[2]);
-      filas = hall.slice(0, 200);
+      filas = hall;
       res.textContent = hall.length
-        ? `${fmt0.format(hall.length)} ${hall.length === 1 ? "beneficiario" : "beneficiarios"} en ${a}, con ${eurM(total)} en total` + (hall.length > filas.length ? `. Se muestran los ${filas.length} mayores.` : ".")
+        ? `${fmt0.format(hall.length)} ${hall.length === 1 ? "beneficiario" : "beneficiarios"} en ${a}, con ${eurM(total)} en total.`
         : `Ningún gran beneficiario de ${a} coincide con la búsqueda. Solo figuran quienes recibieron 100.000 € o más en el año.`;
     }
+    // Página: la pedida o, si hay un desglose abierto, la de ese beneficiario.
+    const n = state.porPag, paginas = Math.max(1, Math.ceil(filas.length / n));
+    if (state.abierto) { const k = filas.findIndex((b) => b[0] === state.abierto); if (k >= 0) pag = Math.floor(k / n); }
+    pag = Math.min(Math.max(0, pag), paginas - 1);
+    const ini = pag * n;
+    if (paginas > 1) res.textContent += ` Se muestran del ${fmt0.format(ini + 1)} al ${fmt0.format(Math.min(ini + n, filas.length))}.`;
+    paginador(paginas, pag, filas.length);
+    filas = filas.slice(ini, ini + n);
     const conMotivo = !!g.motivos;
     tb.replaceChildren(...filas.map((b) => {
       const tr = el("tr", {},
@@ -1074,6 +1115,24 @@ function renderSubvenciones(sub) {
       const i = filas.findIndex((b) => b[0] === state.abierto);
       if (i >= 0) detalle(tb.children[i], filas[i]);
     }
+  }
+
+  // Controles de página debajo de la tabla del buscador.
+  function paginador(paginas, pag, total) {
+    let nav = $("#sub-pag");
+    if (!nav) { nav = el("nav", { id: "sub-pag", class: "paginas", "aria-label": "Páginas de resultados" }); $("#tbl-sub").closest(".scroll").after(nav); }
+    nav.hidden = total <= 25;
+    const ir = (p) => { state.abierto = null; drawBuscar(p).then(() => { const r = $("#sub-res"); r.tabIndex = -1; r.focus({ preventScroll: true }); r.scrollIntoView({ behavior: suave(), block: "start" }); }); };
+    const selN = el("select", { "aria-label": "Filas por página" }, ...[25, 50, 100].map((k) => new Option(k, k)));
+    selN.value = state.porPag;
+    selN.addEventListener("change", () => { state.porPag = +selN.value; ir(0); });
+    nav.replaceChildren(
+      ...(paginas > 1 ? [
+        el("button", { class: "btn", type: "button", onclick: () => ir(pag - 1), ...(pag === 0 ? { disabled: "" } : {}) }, "← Anterior"),
+        el("span", { class: "pag-txt" }, `Página ${fmt0.format(pag + 1)} de ${fmt0.format(paginas)}`),
+        el("button", { class: "btn", type: "button", onclick: () => ir(pag + 1), ...(pag >= paginas - 1 ? { disabled: "" } : {}) }, "Siguiente →"),
+      ] : []),
+      el("label", {}, "Filas por página", selN));
   }
 
   // Evolución: una fila por año, del más reciente al más antiguo.
@@ -1166,7 +1225,110 @@ async function getJSON(name) {
 
 addEventListener("scroll", hideTip, { passive: true });
 
+/* Desplazamiento suave salvo que el sistema pida reducir el movimiento (WCAG 2.3.3). */
+const suave = () => (matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+
+/* Tablas largas: muestra las n primeras filas y un botón para ver el resto (sin quitar ningún dato). */
+function verMas(tbody, n = 10) {
+  const caja = tbody.closest(".scroll") || tbody.closest("table");
+  let b = caja.nextElementSibling;
+  if (!b || !b.classList.contains("btn-mas")) { b = el("button", { type: "button", class: "btn btn-mas", "aria-expanded": "false" }); caja.after(b); }
+  const filas = [...tbody.children], resto = filas.length - n;
+  if (resto <= 3) { filas.forEach((f) => (f.hidden = false)); b.hidden = true; return; }
+  const poner = (todo) => {
+    filas.forEach((f, i) => (f.hidden = !todo && i >= n));
+    b.setAttribute("aria-expanded", String(todo));
+    b.textContent = todo ? `Ver solo las ${n} primeras` : `Ver las ${resto} restantes`;
+  };
+  b.hidden = false;
+  poner(false);
+  b.onclick = () => {
+    const todo = b.getAttribute("aria-expanded") !== "true";
+    poner(todo);
+    if (todo) { filas[n].tabIndex = -1; filas[n].focus(); }
+  };
+}
+
+/* ---------- Barra lateral: índice con el apartado visible, panel en el móvil y altura de lo fijo ---------- */
+const ESTRECHO = matchMedia("(max-width: 1099px)");
+let fijo = 0;
+function medirFijo() {
+  const lado = $(".lado"), cab = $(".site");
+  fijo = lado && ESTRECHO.matches ? lado.querySelector(".lado-btn").offsetHeight + 1
+    : cab && getComputedStyle(cab).position === "sticky" ? cab.offsetHeight : 0;
+  document.documentElement.style.setProperty("--fijo", fijo + "px");
+}
+function barraLateral() {
+  medirFijo();
+  addEventListener("resize", medirFijo);
+  const lado = $(".lado");
+  if (!lado) return;
+  const btn = lado.querySelector(".lado-btn"), actual = lado.querySelector(".lado-actual");
+  btn.prepend(el("span", { class: "sr-only" }, "Índice y ajustes: "));
+  const abrir = (si) => { lado.classList.toggle("abierta", si); btn.setAttribute("aria-expanded", String(si)); };
+  btn.addEventListener("click", () => abrir(!lado.classList.contains("abierta")));
+  lado.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && lado.classList.contains("abierta")) { abrir(false); btn.focus(); } });
+  document.addEventListener("click", (ev) => { if (lado.classList.contains("abierta") && !lado.contains(ev.target)) abrir(false); });
+  lado.addEventListener("focusout", (ev) => { if (ESTRECHO.matches && ev.relatedTarget && !lado.contains(ev.relatedTarget)) abrir(false); });
+  ESTRECHO.addEventListener("change", () => abrir(false));
+  // Al elegir un apartado en el móvil se cierra el panel.
+  lado.querySelectorAll(".indice a").forEach((a) => a.addEventListener("click", () => { if (ESTRECHO.matches) abrir(false); }));
+
+  // Marca en el índice el apartado que se está leyendo.
+  const enlaces = [...lado.querySelectorAll(".indice a")].map((a) => ({ a, t: document.getElementById(decodeURIComponent(a.hash.slice(1))) })).filter((x) => x.t);
+  let pendiente = false;
+  const marcar = () => {
+    pendiente = false;
+    const vis = enlaces.filter((x) => !x.t.closest("[hidden]"));
+    let cur = null;
+    for (const x of vis) if (x.t.getBoundingClientRect().top <= fijo + 60) cur = x;
+    if (vis.length && innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = vis[vis.length - 1];
+    for (const x of enlaces) { if (x === cur) x.a.setAttribute("aria-current", "location"); else x.a.removeAttribute("aria-current"); }
+    actual.textContent = cur ? cur.a.textContent : "Índice y ajustes";
+  };
+  addEventListener("scroll", () => { if (!pendiente) { pendiente = true; requestAnimationFrame(marcar); } }, { passive: true });
+  addEventListener("resize", marcar);
+  marcar();
+  return marcar;
+}
+
+/* Línea «Viendo: …» con lo elegido en los ajustes, para saberlo sin volver arriba. */
+function viendo() {
+  const txt = [...document.querySelectorAll(".ajustes select")]
+    .filter((s) => !s.closest("[hidden]") && !s.disabled && s.selectedIndex >= 0)
+    .map((s) => (s.dataset.viendo || "{v}").replace("{v}", s.options[s.selectedIndex].text)).join(" · ");
+  const v = $("#viendo"), m = $(".viendo-mini");
+  if (v) v.textContent = txt ? "Viendo: " + txt : "";
+  if (m) m.textContent = txt;
+}
+
+/* Lo elegido (año, comunidad, agrupación, búsqueda…) se guarda en la dirección (?anio=2025&…) para compartirlo o recargar sin perderlo. */
+function guardarUrl() {
+  const p = new URLSearchParams(location.search);
+  document.querySelectorAll("[data-url]").forEach((e) => {
+    const k = e.dataset.url;
+    if (e.closest("[hidden]") || e.disabled || !e.value) p.delete(k); else p.set(k, e.value);
+  });
+  const q = p.toString(), h = /^#ccaa=/.test(location.hash) ? "" : location.hash; // «#ccaa=» era el formato anterior
+  history.replaceState(history.state, "", location.pathname + (q ? "?" + q : "") + h);
+  viendo();
+}
+function aplicarUrl() {
+  const p = new URLSearchParams(location.search);
+  document.querySelectorAll("[data-url]").forEach((e) => {
+    const v = p.get(e.dataset.url);
+    if (v == null || e.value === v) return;
+    if (e.tagName === "SELECT" && ![...e.options].some((o) => o.value === v)) return;
+    e.value = v;
+    e.dispatchEvent(new Event(e.tagName === "INPUT" ? "input" : "change", { bubbles: true }));
+  });
+}
+let ut;
+document.addEventListener("change", (ev) => { if (ev.target.matches("[data-url]")) guardarUrl(); else viendo(); });
+document.addEventListener("input", (ev) => { if (ev.target.matches("input[data-url]")) { clearTimeout(ut); ut = setTimeout(guardarUrl, 400); } });
+
 (async function main() {
+  const marcar = barraLateral();
   // Cada página carga solo los datos que necesita.
   const PAGINAS = {
     inicio: ["estado", "pge", "cofog", "entregas", "poblacion"],
@@ -1191,4 +1353,9 @@ addEventListener("scroll", hideTip, { passive: true });
   if (pagina === "subvenciones") run(() => (d.subvenciones ? renderSubvenciones(d.subvenciones) : fail("#sub-kpis", "subvenciones")), "#sub-kpis", "subvenciones");
   if (pagina === "fuentes") renderInforme(d.informe);
   renderMeta(d.meta || {}, d.estado);
+  aplicarUrl();
+  viendo();
+  // Con los datos ya dibujados, la página ha cambiado de altura: se vuelve al apartado pedido y se recalcula el índice.
+  if (location.hash.length > 1 && !/^#ccaa=/.test(location.hash)) { const t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) t.scrollIntoView(); }
+  if (marcar) marcar();
 })();

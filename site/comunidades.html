@@ -37,21 +37,41 @@
   </div>
 </header>
 
-<main id="main" class="wrap">
+<div class="wrap con-lado">
+<aside class="lado" aria-label="Índice y ajustes de la página">
+  <button type="button" class="lado-btn" aria-expanded="false" aria-controls="lado-panel">
+    <span class="lado-ico" aria-hidden="true"></span>
+    <span class="lado-btn-txt"><span class="lado-actual">Índice y ajustes</span><span class="viendo-mini"></span></span>
+  </button>
+  <div class="lado-panel" id="lado-panel">
+    <nav class="indice" aria-labelledby="indice-tit">
+      <p class="lado-tit" id="indice-tit">En esta página</p>
+      <ol>
+        <li><a href="#reparto">Reparto a las comunidades</a></li>
+        <li><a href="#ccaa-tit">En qué gasta cada comunidad</a></li>
+        <li><a href="#ccaa-evol-tit">Lo que recibe y lo que gasta</a></li>
+        <li><a href="#comparativa">Comparativa</a></li>
+      </ol>
+    </nav>
+      <div class="ajustes" role="group" aria-labelledby="ajustes-tit">
+        <p class="lado-tit" id="ajustes-tit">Ajustes</p>
+        <label>Comunidad <select id="sel-ccaa" data-viendo="{v}" data-url="ccaa"></select></label>
+        <label>Año del presupuesto <select id="sel-ccaa-anio" data-viendo="presupuesto {v}" data-url="anio"></select></label>
+        <label>Comparar con el año <select id="sel-ccaa-base" data-viendo="frente a {v}" data-url="base"></select></label>
+        <label>Año de las entregas a cuenta <select id="sel-ea" data-viendo="entregas {v}" data-url="entregas"></select></label>
+        <label>Mostrar importes <select id="sel-modo" data-viendo="{v}" data-url="modo"><option value="abs">en millones de euros y %</option><option value="ph">en euros por habitante</option></select></label>
+        <p class="viendo" id="viendo"></p>
+      </div>
+    <p class="lado-ayuda"><a href="fuentes.html">Fuentes y metodología</a><br><a href="fuentes.html#glosario">Glosario</a> · <a href="fuentes.html#accesibilidad">Accesibilidad</a></p>
+  </div>
+</aside>
+<main id="main">
   <div class="pagehead">
     <h1>Comunidades autónomas</h1>
     <p class="lead">Lo que cada comunidad recibe del sistema de financiación, en qué lo gasta partida a partida y cómo se compara con las demás.</p>
     <p class="badges"><span class="badge" id="badge-act"></span></p>
   </div>
   <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
-  <nav class="subnav" aria-label="Apartados de la página">
-    <a href="#reparto">Reparto</a><a href="#ccaa-tit">En qué gasta</a><a href="#ccaa-evol-tit">Evolución</a><a href="#comparativa">Comparativa</a>
-  </nav>
-
-  <div class="ctrl ctrl-main">
-    <label>Comparar <select id="sel-modo"><option value="abs">en millones de euros y %</option><option value="ph">en euros por habitante</option></select></label>
-    <label>Año de las entregas <select id="sel-ea"></select></label>
-  </div>
 
   <section aria-labelledby="reparto">
     <h2 id="reparto">Reparto a las comunidades</h2>
@@ -63,11 +83,6 @@
 
   <section aria-labelledby="ccaa-tit">
     <h2 id="ccaa-tit">¿En qué gasta cada comunidad?</h2>
-    <div class="ctrl">
-      <label>Comunidad <select id="sel-ccaa"></select></label>
-      <label>Año del presupuesto <select id="sel-ccaa-anio"></select></label>
-      <label>Comparar con <select id="sel-ccaa-base"></select></label>
-    </div>
     <div class="cols">
       <div class="card" id="ccaa-resumen"></div>
       <div class="card" id="ccaa-ea"></div>
@@ -108,6 +123,7 @@
     <p class="note"><a href="fuentes.html#f-ccaa">Sobre estas fuentes</a> y <a href="fuentes.html#notas">notas de interpretación</a>.</p>
   </section>
 </main>
+</div>
 
 <footer class="foot">
   <div class="wrap">

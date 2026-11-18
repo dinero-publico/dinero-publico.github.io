@@ -37,17 +37,39 @@
   </div>
 </header>
 
-<main id="main" class="wrap">
+<div class="wrap con-lado">
+<aside class="lado" aria-label="Índice y ajustes de la página">
+  <button type="button" class="lado-btn" aria-expanded="false" aria-controls="lado-panel">
+    <span class="lado-ico" aria-hidden="true"></span>
+    <span class="lado-btn-txt"><span class="lado-actual">Índice y ajustes</span><span class="viendo-mini"></span></span>
+  </button>
+  <div class="lado-panel" id="lado-panel">
+    <nav class="indice" aria-labelledby="indice-tit">
+      <p class="lado-tit" id="indice-tit">En esta página</p>
+      <ol>
+        <li><a href="#h-sub-tipos">Por tipo de entidad</a></li>
+        <li><a href="#h-sub-motivos">¿Para qué se dan?</a></li>
+        <li><a href="#h-sub-top">Los mayores beneficiarios</a></li>
+        <li><a href="#h-sub-buscar">Buscar un beneficiario</a></li>
+        <li><a href="#h-sub-partidos">Partidos y grupos políticos</a></li>
+        <li><a href="#h-sub-evol">Evolución</a></li>
+      </ol>
+    </nav>
+      <div class="ajustes" role="group" aria-labelledby="ajustes-tit">
+        <p class="lado-tit" id="ajustes-tit">Ajustes</p>
+        <label>Año <select id="sel-sub-anio" data-viendo="{v}" data-url="anio"></select></label>
+        <p class="viendo" id="viendo"></p>
+      </div>
+    <p class="lado-ayuda"><a href="fuentes.html">Fuentes y metodología</a><br><a href="fuentes.html#glosario">Glosario</a> · <a href="fuentes.html#accesibilidad">Accesibilidad</a></p>
+  </div>
+</aside>
+<main id="main">
   <div class="pagehead">
     <h1>¿Quién recibe subvenciones públicas? <span class="muted" id="sub-tit-anio"></span></h1>
     <p class="lead">Empresas, ayuntamientos, universidades, asociaciones y partidos que recibieron del Estado, las comunidades o los ayuntamientos ayudas por 100.000 € o más en un año, según la Base de Datos Nacional de Subvenciones.</p>
     <p class="badges"><span class="badge" id="badge-act"></span></p>
   </div>
   <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
-  <nav class="subnav" aria-label="En esta página">
-    <a href="#h-sub-tipos">Por tipo de entidad</a><a href="#h-sub-motivos">Para qué</a><a href="#h-sub-top">Mayores beneficiarios</a><a href="#h-sub-buscar">Buscador</a><a href="#h-sub-partidos">Partidos políticos</a><a href="#h-sub-evol">Evolución</a>
-  </nav>
-  <div class="ctrl"><label>Año <select id="sel-sub-anio"></select></label></div>
   <p class="note" id="sub-curso" hidden></p>
   <div class="kpis" id="sub-kpis"></div>
 
@@ -60,7 +82,7 @@
   <section aria-labelledby="h-sub-motivos" id="sub-motivos">
     <h2 id="h-sub-motivos">¿Para qué se dan?</h2>
     <p id="sub-motivos-lead"></p>
-    <div class="ctrl"><label>Agrupar por <select id="sel-sub-motivo">
+    <div class="ctrl"><label>Agrupar por <select id="sel-sub-motivo" data-url="motivo">
       <option value="por_finalidad">Finalidad</option>
       <option value="por_administracion">Administración que la concede</option>
       <option value="por_procedimiento">Procedimiento de concesión</option>
@@ -85,8 +107,8 @@
   <section aria-labelledby="h-sub-buscar">
     <h2 id="h-sub-buscar">Buscar un beneficiario</h2>
     <div class="ctrl">
-      <label>Nombre o NIF <input type="search" id="sub-q" autocomplete="off" placeholder="p. ej. universidad, B12345678…"></label>
-      <label>Tipo <select id="sel-sub-tipo"><option value="">Todos</option></select></label>
+      <label>Nombre o NIF <input type="search" id="sub-q" data-url="q" autocomplete="off" placeholder="p. ej. universidad, B12345678…"></label>
+      <label>Tipo <select id="sel-sub-tipo" data-url="tipo"><option value="">Todos</option></select></label>
     </div>
     <p class="note" id="sub-res" aria-live="polite"></p>
     <div class="scroll"><table class="tbl" id="tbl-sub">
@@ -114,6 +136,7 @@
     <p class="note">La BDNS solo ofrece los últimos años: retira cada concesión a los cuatro años, y las de personas físicas al año siguiente. Variaciones en euros corrientes. <a href="fuentes.html#f-subvenciones">Sobre esta fuente</a>.</p>
   </section>
 </main>
+</div>
 
 <footer class="foot">
   <div class="wrap">

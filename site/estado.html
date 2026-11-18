@@ -37,7 +37,25 @@
   </div>
 </header>
 
-<main id="main" class="wrap">
+<div class="wrap con-lado">
+<aside class="lado" aria-label="Índice y ajustes de la página">
+  <button type="button" class="lado-btn" aria-expanded="false" aria-controls="lado-panel">
+    <span class="lado-ico" aria-hidden="true"></span>
+    <span class="lado-btn-txt"><span class="lado-actual">Índice y ajustes</span><span class="viendo-mini"></span></span>
+  </button>
+  <div class="lado-panel" id="lado-panel">
+    <nav class="indice" aria-labelledby="indice-tit">
+      <p class="lado-tit" id="indice-tit">En esta página</p>
+      <ol>
+        <li><a href="#h-evol">Evolución mensual</a></li>
+        <li><a href="#h-desglose">En qué gasta y de dónde ingresa</a></li>
+        <li><a href="#estado-anual-tit">Año a año</a></li>
+      </ol>
+    </nav>
+    <p class="lado-ayuda"><a href="fuentes.html">Fuentes y metodología</a><br><a href="fuentes.html#glosario">Glosario</a> · <a href="fuentes.html#accesibilidad">Accesibilidad</a></p>
+  </div>
+</aside>
+<main id="main">
   <div class="pagehead">
     <h1>Ejecución del Estado <span class="muted" id="estado-periodo"></span></h1>
     <p class="lead" id="lead">Cargando datos…</p>
@@ -76,6 +94,7 @@
     <div class="chart" id="ch-anual"></div>
   </section>
 </main>
+</div>
 
 <footer class="foot">
   <div class="wrap">

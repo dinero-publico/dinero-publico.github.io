@@ -37,20 +37,36 @@
   </div>
 </header>
 
-<main id="main" class="wrap">
+<div class="wrap con-lado">
+<aside class="lado" aria-label="Índice y ajustes de la página">
+  <button type="button" class="lado-btn" aria-expanded="false" aria-controls="lado-panel">
+    <span class="lado-ico" aria-hidden="true"></span>
+    <span class="lado-btn-txt"><span class="lado-actual">Índice y ajustes</span><span class="viendo-mini"></span></span>
+  </button>
+  <div class="lado-panel" id="lado-panel">
+    <nav class="indice" aria-labelledby="indice-tit">
+      <p class="lado-tit" id="indice-tit">En esta página</p>
+      <ol>
+        <li><a href="#h-politicas">Por política de gasto</a></li>
+        <li><a href="#h-tendencia">Tendencia</a></li>
+      </ol>
+    </nav>
+      <div class="ajustes" role="group" aria-labelledby="ajustes-tit">
+        <p class="lado-tit" id="ajustes-tit">Ajustes</p>
+        <label>Ejercicio <select id="sel-pge" data-viendo="{v}" data-url="ejercicio"></select></label>
+        <label>Comparar con <select id="sel-pge-base" data-viendo="frente a {v}" data-url="base"></select></label>
+        <p class="viendo" id="viendo"></p>
+      </div>
+    <p class="lado-ayuda"><a href="fuentes.html">Fuentes y metodología</a><br><a href="fuentes.html#glosario">Glosario</a> · <a href="fuentes.html#accesibilidad">Accesibilidad</a></p>
+  </div>
+</aside>
+<main id="main">
   <div class="pagehead">
     <h1>Presupuesto por política de gasto <span class="muted" id="pge-etq"></span></h1>
     <p class="lead">Lo que los Presupuestos Generales del Estado asignan a cada política: pensiones, deuda, defensa, sanidad… Pulsa una política para ver sus programas.</p>
     <p class="badges"><span class="badge" id="badge-act"></span></p>
   </div>
   <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
-  <nav class="subnav" aria-label="Apartados de la página">
-    <a href="#h-politicas">Por política</a><a href="#h-tendencia">Tendencia</a>
-  </nav>
-  <div class="ctrl ctrl-main">
-    <label>Ejercicio <select id="sel-pge"></select></label>
-    <label>Comparar con <select id="sel-pge-base"></select></label>
-  </div>
   <section aria-labelledby="h-politicas">
     <h2 id="h-politicas">Por política de gasto</h2>
     <p class="note" id="pge-nota"></p>
@@ -70,6 +86,7 @@
   </section>
   <p class="note"><a href="fuentes.html#f-pge">Sobre esta fuente</a>.</p>
 </main>
+</div>
 
 <footer class="foot">
   <div class="wrap">
