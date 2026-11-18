@@ -45,7 +45,7 @@
   </div>
   <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
   <nav class="subnav" aria-label="En esta página">
-    <a href="#h-sub-tipos">Por tipo de entidad</a><a href="#h-sub-top">Mayores beneficiarios</a><a href="#h-sub-buscar">Buscador</a><a href="#h-sub-partidos">Partidos políticos</a><a href="#h-sub-evol">Evolución</a>
+    <a href="#h-sub-tipos">Por tipo de entidad</a><a href="#h-sub-motivos">Para qué</a><a href="#h-sub-top">Mayores beneficiarios</a><a href="#h-sub-buscar">Buscador</a><a href="#h-sub-partidos">Partidos políticos</a><a href="#h-sub-evol">Evolución</a>
   </nav>
   <div class="ctrl"><label>Año <select id="sel-sub-anio"></select></label></div>
   <p class="note" id="sub-curso" hidden></p>
@@ -57,8 +57,28 @@
     <p class="note" id="sub-tipos-nota">El tipo de entidad sale de la primera letra de su NIF. Los ayuntamientos, las universidades y las propias comunidades autónomas también reciben subvenciones, sobre todo del Estado y de fondos europeos.</p>
   </section>
 
+  <section aria-labelledby="h-sub-motivos" id="sub-motivos">
+    <h2 id="h-sub-motivos">¿Para qué se dan?</h2>
+    <p id="sub-motivos-lead"></p>
+    <div class="ctrl"><label>Agrupar por <select id="sel-sub-motivo">
+      <option value="por_finalidad">Finalidad</option>
+      <option value="por_administracion">Administración que la concede</option>
+      <option value="por_procedimiento">Procedimiento de concesión</option>
+      <option value="por_instrumento">Tipo de ayuda (subvención, préstamo…)</option>
+    </select></label></div>
+    <div class="chart" id="ch-sub-motivos"></div>
+    <p class="note" id="sub-motivos-nota"></p>
+    <h3>Las convocatorias que más reparten</h3>
+    <p class="note">Cada convocatoria es la norma o resolución que da las ayudas; el título es el oficial. Enlaza a su ficha en la BDNS.</p>
+    <div class="scroll"><table class="tbl" id="tbl-sub-conv">
+      <thead><tr><th scope="col">Convocatoria</th><th class="num" scope="col">Importe (€)</th><th class="num" scope="col">Beneficiarios</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
   <section aria-labelledby="h-sub-top">
     <h2 id="h-sub-top">Los mayores beneficiarios</h2>
+    <p class="note">Pulsa en un beneficiario para ver de qué convocatorias viene su dinero.</p>
     <div class="chart" id="ch-sub-top"></div>
   </section>
 
@@ -70,7 +90,7 @@
     </div>
     <p class="note" id="sub-res" aria-live="polite"></p>
     <div class="scroll"><table class="tbl" id="tbl-sub">
-      <thead><tr><th class="num" scope="col">Puesto</th><th scope="col">Beneficiario</th><th scope="col">NIF</th><th scope="col">Tipo</th><th class="num" scope="col">Importe (€)</th></tr></thead>
+      <thead><tr><th class="num" scope="col">Puesto</th><th scope="col">Beneficiario</th><th scope="col">NIF</th><th scope="col">Tipo</th><th class="num" scope="col">Importe (€)</th><th scope="col" aria-label="De dónde viene"></th></tr></thead>
       <tbody></tbody>
     </table></div>
     <p class="note">Importe: ayuda equivalente total recibida en el año de todas las administraciones. En préstamos y garantías es solo su parte de ayuda, no el capital prestado. Lista completa del año en <a id="sub-lista" href="/datos/v1/subvenciones.json">JSON</a>.</p>

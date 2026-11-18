@@ -893,18 +893,32 @@ function renderMeta(meta, estado) {
 const eurM = (v) => (v == null || isNaN(v) ? "—" : (v >= 1e8 ? fmt0 : fmt1).format(v / 1e6) + " M€");
 const sinTildes = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const NIVELES = { ESTADO: "Estado", AUTONOMICA: "Comunidades autónomas", LOCAL: "Entidades locales", OTROS: "Otros" };
+const INSTRUMENTOS = {
+  "SUBVENCIÓN Y ENTREGA DINERARIA SIN CONTRAPRESTACIÓN": "Subvención", "PRÉSTAMO": "Préstamo", "GARANTÍA": "Garantía",
+  "VENTAJA FISCAL": "Ventaja fiscal", "APORTACIÓN DE FINANCIACIÓN RIESGO": "Aportación de financiación de riesgo", "OTROS INSTRUMENTOS DE AYUDA": "Otros instrumentos",
+};
+const instrCorto = (s) => INSTRUMENTOS[(s || "").toUpperCase()] || s;
+const BDNS_CONV = "https://www.infosubvenciones.es/bdnstrans/GE/es/convocatorias/";
+const NOTA_MOTIVO = {
+  por_finalidad: "La finalidad es la que declara cada convocatoria en la BDNS (la política de gasto a la que se dirige).",
+  por_administracion: "Quién concede la ayuda. Incluye los fondos europeos que reparte cada administración.",
+  por_procedimiento: "Concurrencia competitiva: quienes la solicitan compiten según unos criterios publicados. Concesión directa: una ley, un real decreto o un convenio fija a quién se da (artículo 22 de la Ley General de Subvenciones).",
+  por_instrumento: "Es la ayuda equivalente: en préstamos y garantías cuenta solo la parte de ayuda, no el dinero prestado o avalado.",
+};
 function renderSubvenciones(sub) {
   const anios = Object.keys(sub.grandes).sort().reverse();
   const curso = (a) => (sub.en_curso || []).includes(a);
   const tipoNom = (k) => sub.tipos[k] || k;
   const tipoDe = (nif) => { if (!nif) return "fisica"; const c = nif[0]; return sub.tipos[c] && !/\d/.test(c) ? c : "otro"; };
   // Por defecto, el último año completo; el año en curso sigue disponible en el selector.
-  const state = { anio: anios.find((a) => !curso(a)) || anios[0], q: "", tipo: "" };
-  const listas = {};
+  const state = { anio: anios.find((a) => !curso(a)) || anios[0], q: "", tipo: "", motivo: "por_finalidad", abierto: null };
+  const listas = {}, motivos = {};
+  const selM = $("#sel-sub-motivo");
+  selM.addEventListener("change", () => { state.motivo = selM.value; drawMotivos(); });
   const sel = $("#sel-sub-anio");
   sel.replaceChildren(...anios.map((a) => el("option", { value: a }, a + (curso(a) ? " (en curso)" : ""))));
   sel.value = state.anio;
-  sel.addEventListener("change", () => { state.anio = sel.value; draw(); });
+  sel.addEventListener("change", () => { state.anio = sel.value; state.abierto = null; draw(); });
   const selT = $("#sel-sub-tipo");
   selT.append(...Object.keys(sub.tipos).map((k) => el("option", { value: k }, sub.tipos[k])));
   selT.addEventListener("change", () => { state.tipo = selT.value; drawBuscar(); });
@@ -937,9 +951,11 @@ function renderSubvenciones(sub) {
     })), { aria: `Ayudas a grandes beneficiarios por tipo de entidad en ${a}`, valFmt: (v) => fmt0.format(v) + " M€", delta: deltaT, deltaTit: p ? `frente a ${p}` : "" });
 
     barras("#ch-sub-top", g.top.slice(0, 25).map((b, i) => ({
-      key: b[0] + i, label: corto("#ch-sub-top", b[1]), v: b[2] / 1e6, color: css(b[0] ? "--c1" : "--muted"),
-      tip: [b[1], `${fmt0.format(b[2])} €`, `${tipoNom(tipoDe(b[0]))}${b[0] ? " · NIF " + b[0] : ""}`],
-    })), { aria: `Los 25 mayores beneficiarios de subvenciones en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€" });
+      key: b[0] + i, nif: b[0], label: corto("#ch-sub-top", b[1]), v: b[2] / 1e6, color: css(b[0] ? "--c1" : "--muted"),
+      tip: [b[1], `${fmt0.format(b[2])} €`, `${tipoNom(tipoDe(b[0]))}${b[0] ? " · NIF " + b[0] : ""}`, ...(b[0] && g.motivos ? ["Pulsa para ver de dónde viene"] : [])],
+    })), { aria: `Los 25 mayores beneficiarios de subvenciones en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€",
+      onClick: (r) => { if (r.nif) verBeneficiario(r.nif); } });
+    drawMotivos();
 
     if (pa) {
       const ppa = p ? sub.partidos[p] : null;
@@ -954,6 +970,67 @@ function renderSubvenciones(sub) {
     $("#sub-lista").href = DATA + g.lista;
     $("#sub-lista").textContent = g.lista;
     drawBuscar();
+  }
+
+  // Lleva al buscador con ese beneficiario y su desglose abierto.
+  function verBeneficiario(nif) {
+    $("#sub-q").value = nif;
+    state.q = nif;
+    state.abierto = nif;
+    drawBuscar();
+    $("#h-sub-buscar").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function drawMotivos() {
+    const a = state.anio, m = sub.grandes[a].motivos, sec = $("#sub-motivos");
+    sec.hidden = !m;
+    if (!m) return;
+    $("#sub-motivos-lead").textContent = `Para saber para qué son, se han consultado una a una las concesiones de los ${fmt0.format(m.beneficiarios)} mayores beneficiarios de ${a}: ` +
+      `${eurM(m.importe)}, el ${pf(100 * m.cobertura)} de lo que recibieron todos los grandes beneficiarios.` +
+      (m.mrr ? ` De ellos, ${eurM(m.mrr)} (${pf((100 * m.mrr) / m.importe)}) son fondos europeos de recuperación (MRR).` : "");
+    const k = state.motivo, nom = (x) => (k === "por_administracion" ? NIVELES[x] || x : k === "por_instrumento" ? instrCorto(x) : x);
+    barras("#ch-sub-motivos", Object.entries(m[k]).map(([x, v]) => ({ key: x, label: nom(x), v: v / 1e6,
+      color: /^Sin /.test(x) ? css("--muted") : null,
+      tip: [nom(x), `${fmt0.format(v)} €`, `${pf((100 * v) / m.importe)} de lo consultado`] })),
+      { aria: `Ayudas de los mayores beneficiarios de ${a} agrupadas`, labW: 300, valFmt: (v) => fmt1.format(v) + " M€" });
+    const sin = m.por_finalidad["Sin clasificar (convocatorias pequeñas)"];
+    $("#sub-motivos-nota").textContent = NOTA_MOTIVO[k] +
+      (sin && k !== "por_administracion" && k !== "por_instrumento" ? ` «Sin clasificar» (${eurM(sin)}) son convocatorias pequeñas de las que no se ha pedido el detalle; su título sí aparece en el desglose de cada beneficiario.` : "");
+    $("#tbl-sub-conv tbody").replaceChildren(...m.convocatorias.map(([num, tit, eur, n]) => el("tr", {},
+      el("td", { class: "wrap-cell" }, el("a", { href: BDNS_CONV + num, rel: "noopener", target: "_blank" }, tit || `Convocatoria ${num}`)),
+      el("td", { class: "num" }, fmt0.format(eur)), el("td", { class: "num" }, fmt0.format(n)))));
+  }
+
+  async function motivosDe(a) {
+    const f = (sub.grandes[a].motivos || {}).fichero;
+    if (!f) return null;
+    if (!motivos[a]) motivos[a] = getJSON(f);
+    return motivos[a];
+  }
+
+  // Desglose de un beneficiario: sus convocatorias, con el título oficial y lo que dice la BDNS de cada una.
+  async function detalle(tr, b) {
+    const sig = tr.nextElementSibling;
+    if (sig && sig.classList.contains("detalle")) { sig.remove(); tr.querySelector("button").setAttribute("aria-expanded", "false"); state.abierto = null; return; }
+    tr.querySelector("button").setAttribute("aria-expanded", "true");
+    state.abierto = b[0];
+    const td = el("td", { colspan: "6" }, el("p", { class: "muted" }, "Cargando…"));
+    tr.after(el("tr", { class: "detalle" }, td));
+    let m;
+    try { m = await motivosDe(state.anio); } catch (e) { td.replaceChildren(el("p", { class: "err" }, "No se pudo cargar el desglose.")); return; }
+    const x = m && m.beneficiarios[b[0]];
+    if (!x) { td.replaceChildren(el("p", { class: "muted" }, `Solo se ha consultado el desglose de los ${fmt0.format(sub.grandes[state.anio].motivos.beneficiarios)} mayores beneficiarios del año.`)); return; }
+    const suma = d3.sum(x.c, (c) => c[2]);
+    td.replaceChildren(
+      el("p", { class: "note" }, `${fmt0.format(d3.sum(x.c, (c) => c[3]))} concesiones en ${fmt0.format(x.c.length)} ${x.c.length === 1 ? "convocatoria" : "convocatorias"}, que suman ${fmt0.format(suma)} €` +
+        (Math.abs(suma - b[2]) > 1 ? ` (el total del año en la lista de grandes beneficiarios es ${fmt0.format(b[2])} €; la BDNS se actualiza continuamente).` : ".")),
+      el("ul", { class: "conv-lista" }, ...x.c.map(([num, instr, eur, n]) => {
+        const c = m.convocatorias[num] || {}, org = c.organo || [];
+        const datos = [c.finalidad, org[1] || NIVELES[org[0]] || org[0], instrCorto(instr), c.tipo ? c.tipo.split(" - ")[0] : null, c.mrr ? "Fondos MRR" : null, n > 1 ? `${fmt0.format(n)} concesiones` : null].filter(Boolean);
+        return el("li", {}, el("span", { class: "conv-imp" }, fmt0.format(eur) + " €"), " ",
+          num ? el("a", { href: BDNS_CONV + num, rel: "noopener", target: "_blank" }, c.titulo || `Convocatoria ${num}`) : "Sin convocatoria",
+          el("div", { class: "muted conv-datos" }, datos.join(" · ")));
+      })));
   }
 
   async function lista(a) {
@@ -981,9 +1058,22 @@ function renderSubvenciones(sub) {
         ? `${fmt0.format(hall.length)} ${hall.length === 1 ? "beneficiario" : "beneficiarios"} en ${a}, con ${eurM(total)} en total` + (hall.length > filas.length ? `. Se muestran los ${filas.length} mayores.` : ".")
         : `Ningún gran beneficiario de ${a} coincide con la búsqueda. Solo figuran quienes recibieron 100.000 € o más en el año.`;
     }
-    tb.replaceChildren(...filas.map((b) => el("tr", {},
-      el("td", { class: "num muted" }, fmt0.format(b[3])), el("td", { class: "wrap-cell" }, b[1]), el("td", {}, b[0] || "—"),
-      el("td", { class: "muted" }, tipoNom(tipoDe(b[0]))), el("td", { class: "num" }, fmt0.format(b[2])))));
+    const conMotivo = !!g.motivos;
+    tb.replaceChildren(...filas.map((b) => {
+      const tr = el("tr", {},
+        el("td", { class: "num muted" }, fmt0.format(b[3])), el("td", { class: "wrap-cell" }, b[1]), el("td", {}, b[0] || "—"),
+        el("td", { class: "muted" }, tipoNom(tipoDe(b[0]))), el("td", { class: "num" }, fmt0.format(b[2])), el("td", {}));
+      if (conMotivo && b[0]) {
+        const bt = el("button", { class: "btn-link", type: "button", "aria-expanded": "false", onclick: () => detalle(tr, b) }, "¿De dónde?");
+        bt.title = `Ver de qué convocatorias viene el dinero de ${b[1]}`;
+        tr.lastChild.append(bt);
+      }
+      return tr;
+    }));
+    if (state.abierto) {
+      const i = filas.findIndex((b) => b[0] === state.abierto);
+      if (i >= 0) detalle(tb.children[i], filas[i]);
+    }
   }
 
   // Evolución: una fila por año, del más reciente al más antiguo.

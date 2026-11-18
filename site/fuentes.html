@@ -195,11 +195,12 @@
     <article class="card fuente" id="f-subvenciones">
       <h3>Subvenciones y ayudas públicas</h3>
       <p class="org">Intervención General de la Administración del Estado (Base de Datos Nacional de Subvenciones)</p>
-      <p>«Grandes beneficiarios»: quienes recibieron en un año ayudas por 100.000 € o más de cualquier administración (Estado, comunidades, entidades locales), con su importe total. Y todas las concesiones a partidos y grupos políticos.</p>
+      <p>«Grandes beneficiarios»: quienes recibieron en un año ayudas por 100.000 € o más de cualquier administración (Estado, comunidades, entidades locales), con su importe total. Para los 1.000 mayores de cada año, cada una de sus concesiones con la convocatoria de la que sale (el motivo). Y todas las concesiones a partidos y grupos políticos.</p>
       <dl>
         <dt>Periodicidad</dt><dd>Continua: las administraciones registran las concesiones a medida que las conceden. El año en curso está incompleto.</dd>
         <dt>Años en la web</dt><dd>Los que ofrece la BDNS (retira las concesiones a los cuatro años); los anteriores se conservan de descargas previas.</dd>
         <dt>Cómo se obtiene</dt><dd>API pública del Sistema Nacional de Publicidad de Subvenciones (infosubvenciones.es). Origen de los datos: Intervención General de la Administración del Estado.</dd>
+        <dt>Motivo de las ayudas</dt><dd>La BDNS no permite sumar todas las concesiones por finalidad, así que se consultan una a una las de los 1.000 mayores beneficiarios de cada año (en torno a la mitad del dinero). De cada convocatoria se muestran el título oficial y lo que la BDNS dice de ella: finalidad, administración que la concede, procedimiento y si son fondos europeos de recuperación. Se pide ese detalle para las convocatorias que suman el 98 % de lo que recibe cada beneficiario; el resto figura como «sin clasificar», con su título.</dd>
         <dt>Datos personales</dt><dd>Dinero Público disocia a las personas físicas: no publica su nombre ni su NIF, solo cuentan en los totales como «persona física».</dd>
         <dt>Estado</dt><dd data-fuente="subvenciones">—</dd>
       </dl>
@@ -257,6 +258,9 @@
       <dt>Fondo de Garantía de Servicios Públicos Fundamentales</dt><dd>Fondo del sistema de financiación que reparte recursos para que todas las comunidades puedan prestar sanidad, educación y servicios sociales en condiciones similares. Un valor negativo indica que la comunidad aporta más de lo que recibe.</dd>
       <dt>Fondo de Suficiencia Global</dt><dd>Cubre la diferencia entre las necesidades de financiación de cada comunidad y sus recursos tributarios.</dd>
       <dt>Gran beneficiario</dt><dd>Persona o entidad que recibe en un año subvenciones y ayudas públicas cuya ayuda equivalente suma 100.000 € o más. La BDNS publica su lista y su importe total por año.</dd>
+      <dt>Convocatoria</dt><dd>Norma o resolución que establece unas ayudas: a quién se dirigen, para qué y con qué dinero. En la BDNS cada una tiene un código.</dd>
+      <dt>Concurrencia competitiva / concesión directa</dt><dd>En concurrencia competitiva, quienes solicitan la ayuda compiten según criterios publicados. En la concesión directa, una ley, un real decreto o un convenio fija a quién se da (art. 22 de la Ley General de Subvenciones).</dd>
+      <dt>Fondos MRR</dt><dd>Mecanismo de Recuperación y Resiliencia: fondos europeos Next Generation EU que España reparte con el Plan de Recuperación, Transformación y Resiliencia.</dd>
       <dt>Ayuda equivalente</dt><dd>Valor de la ayuda en euros. En una subvención es su importe; en un préstamo o un aval, la ventaja que supone frente a las condiciones de mercado.</dd>
       <dt>Régimen foral</dt><dd>Sistema propio de País Vasco (Concierto Económico) y Navarra (Convenio Económico): recaudan sus impuestos y pagan al Estado un cupo o aportación por los servicios que este presta.</dd>
     </dl>
@@ -289,7 +293,7 @@
       <li><a href="/datos/v1/ccaa.json" download>ccaa.json</a> — Presupuestos autonómicos por política, capítulo y partida</li>
       <li><a href="/datos/v1/cofog.json" download>cofog.json</a> — Gasto por función (COFOG)</li>
       <li><a href="/datos/v1/poblacion.json" download>poblacion.json</a> — Población a 1 de enero</li>
-      <li><a href="/datos/v1/subvenciones.json" download>subvenciones.json</a> — Grandes beneficiarios de subvenciones (resumen y mayores beneficiarios por año) y subvenciones a partidos; la lista completa de cada año está en <code>subvenciones-AAAA.json</code></li>
+      <li><a href="/datos/v1/subvenciones.json" download>subvenciones.json</a> — Grandes beneficiarios de subvenciones (resumen y mayores beneficiarios por año) y subvenciones a partidos; la lista completa de cada año está en <code>subvenciones-AAAA.json</code> y el motivo de las ayudas de los mayores beneficiarios, en <code>subvenciones-motivos-AAAA.json</code></li>
       <li><a href="/datos/v1/meta.json" download>meta.json</a> — Fechas de actualización de cada fuente</li>
       <li><a href="/datos/v1/informe.json" download>informe.json</a> — Resultado de las comprobaciones</li>
     </ul>
