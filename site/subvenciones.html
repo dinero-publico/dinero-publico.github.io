@@ -31,6 +31,7 @@
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
       <li><a href="subvenciones.html" aria-current="page">Subvenciones</a></li>
+      <li><a href="buscar.html">Buscar</a></li>
       <li><a href="fuentes.html">Fuentes</a></li>
       </ul>
     </nav>
@@ -96,26 +97,28 @@
       <thead><tr><th scope="col">Convocatoria</th><th class="num" scope="col">Importe (€)</th><th class="num" scope="col">Beneficiarios</th></tr></thead>
       <tbody></tbody>
     </table></div>
+    <p class="note"><a id="sub-conv-mas" href="buscar.html?d=convocatorias">Buscar entre todas las convocatorias</a></p>
   </section>
 
   <section aria-labelledby="h-sub-top">
     <h2 id="h-sub-top">Los mayores beneficiarios</h2>
-    <p class="note">Pulsa en un beneficiario para ver de qué convocatorias viene su dinero.</p>
+    <p class="note">Pulsa en un beneficiario para abrirlo en el buscador y ver de qué convocatorias viene su dinero.</p>
     <div class="chart" id="ch-sub-top"></div>
   </section>
 
   <section aria-labelledby="h-sub-buscar">
     <h2 id="h-sub-buscar">Buscar un beneficiario</h2>
-    <div class="ctrl">
-      <label>Nombre o NIF <input type="search" id="sub-q" data-url="q" autocomplete="off" placeholder="p. ej. universidad, B12345678…"></label>
-      <label>Tipo <select id="sel-sub-tipo" data-url="tipo"><option value="">Todos</option></select></label>
-    </div>
-    <p class="note" id="sub-res" aria-live="polite"></p>
-    <div class="scroll"><table class="tbl" id="tbl-sub">
-      <thead><tr><th class="num" scope="col">Puesto</th><th scope="col">Beneficiario</th><th scope="col">NIF</th><th scope="col">Tipo</th><th class="num" scope="col">Importe (€)</th><th scope="col" aria-label="De dónde viene"></th></tr></thead>
-      <tbody></tbody>
-    </table></div>
-    <p class="note">Importe: ayuda equivalente total recibida en el año de todas las administraciones. En préstamos y garantías es solo su parte de ayuda, no el capital prestado. Lista completa del año en <a id="sub-lista" href="/datos/v1/subvenciones.json">JSON</a>.</p>
+    <p class="note" id="sub-buscar-lead">Esta página resume la lista de grandes beneficiarios. Para consultarla fila a fila (buscar por nombre o NIF, filtrar por tipo e importe, ordenar, descargarla y ver de dónde viene el dinero de cada uno) está el buscador.</p>
+    <form class="bus-form bus-mini" role="search" action="buscar.html">
+      <input type="hidden" name="d" value="beneficiarios">
+      <input type="hidden" name="anio" id="sub-buscar-anio">
+      <label for="sub-q">Nombre o NIF</label>
+      <div class="bus-caja">
+        <input type="search" id="sub-q" name="q" autocomplete="off" placeholder="p. ej. universidad, B12345678…">
+        <button class="btn" type="submit">Buscar</button>
+      </div>
+    </form>
+    <ul class="bus-enlaces" id="sub-buscar-enlaces"></ul>
   </section>
 
   <section aria-labelledby="h-sub-partidos">
@@ -124,7 +127,7 @@
     <div class="chart" id="ch-sub-nivel"></div>
     <h3>Por partido o grupo</h3>
     <div class="chart" id="ch-sub-partidos"></div>
-    <p class="note">Concesiones registradas en la BDNS a partidos, federaciones, coaliciones y grupos políticos (en el Congreso, los parlamentos autonómicos y los ayuntamientos), agrupadas por NIF. Incluyen las de funcionamiento y las de gastos electorales. Un mismo partido puede aparecer con varios NIF (por ejemplo, sus grupos municipales).</p>
+    <p class="note">Concesiones registradas en la BDNS a partidos, federaciones, coaliciones y grupos políticos (en el Congreso, los parlamentos autonómicos y los ayuntamientos), agrupadas por NIF. Incluyen las de funcionamiento y las de gastos electorales. Un mismo partido puede aparecer con varios NIF (por ejemplo, sus grupos municipales). <a id="sub-par-mas" href="buscar.html?d=partidos">Lista completa de partidos y grupos, con buscador</a>.</p>
   </section>
 
   <section aria-labelledby="h-sub-evol">
@@ -147,6 +150,7 @@
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
       <li><a href="subvenciones.html">Subvenciones</a></li>
+      <li><a href="buscar.html">Buscar</a></li>
       <li><a href="fuentes.html">Fuentes</a></li>
     </ul></nav>
     <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local, Base de Datos Nacional de Subvenciones) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>

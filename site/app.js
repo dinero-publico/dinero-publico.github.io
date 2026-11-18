@@ -937,29 +937,28 @@ const NOTA_MOTIVO = {
   por_instrumento: "Es la ayuda equivalente: en préstamos y garantías cuenta solo la parte de ayuda, no el dinero prestado o avalado.",
 };
 function renderSubvenciones(sub) {
+  // Los enlaces antiguos con búsqueda (?q=…&tipo=…) llevan ahora al buscador.
+  const viejo = new URLSearchParams(location.search);
+  if (viejo.get("q") || viejo.get("tipo")) {
+    const p = { d: "beneficiarios" };
+    for (const k of ["anio", "q", "tipo"]) if (viejo.get(k)) p[k] = viejo.get(k);
+    location.replace(enlaceBuscar(p));
+    return;
+  }
   const anios = Object.keys(sub.grandes).sort().reverse();
   const curso = (a) => (sub.en_curso || []).includes(a);
   const tipoNom = (k) => sub.tipos[k] || k;
-  const tipoDe = (nif) => { if (!nif) return "fisica"; const c = nif[0]; return sub.tipos[c] && !/\d/.test(c) ? c : "otro"; };
-  // Algunos organismos internacionales figuran en la BDNS con un NIF ficticio («NO»): no se pueden consultar por NIF.
-  const nifReal = (nif) => !!nif && nif.length >= 8 && /\d/.test(nif);
+  const tipoDe = (nif) => tipoNif(sub.tipos, nif);
   // El desglose «¿De dónde?» existe para los primeros puestos de la lista de cada año (los 1.000 mayores).
   const corte = (g) => (g.motivos ? g.motivos.puestos || 1000 : 0);
-  const conDesglose = (g, nif, puesto) => nifReal(nif) && puesto <= corte(g);
   // Por defecto, el último año completo; el año en curso sigue disponible en el selector.
-  const state = { anio: anios.find((a) => !curso(a)) || anios[0], q: "", tipo: "", motivo: "por_finalidad", abierto: null, porPag: 25 };
-  const listas = {}, motivos = {};
+  const state = { anio: anios.find((a) => !curso(a)) || anios[0], motivo: "por_finalidad" };
   const selM = $("#sel-sub-motivo");
   selM.addEventListener("change", () => { state.motivo = selM.value; drawMotivos(); });
   const sel = $("#sel-sub-anio");
   sel.replaceChildren(...anios.map((a) => el("option", { value: a }, a + (curso(a) ? " (en curso)" : ""))));
   sel.value = state.anio;
-  sel.addEventListener("change", () => { state.anio = sel.value; state.abierto = null; draw(); });
-  const selT = $("#sel-sub-tipo");
-  selT.append(...Object.keys(sub.tipos).map((k) => el("option", { value: k }, sub.tipos[k])));
-  selT.addEventListener("change", () => { state.tipo = selT.value; drawBuscar(); });
-  let qt;
-  $("#sub-q").addEventListener("input", (ev) => { clearTimeout(qt); qt = setTimeout(() => { state.q = ev.target.value.trim(); drawBuscar(); }, 200); });
+  sel.addEventListener("change", () => { state.anio = sel.value; draw(); });
 
   const prev = (a) => { const p = String(+a - 1); return sub.grandes[p] ? p : null; };
 
@@ -988,9 +987,9 @@ function renderSubvenciones(sub) {
 
     barras("#ch-sub-top", g.top.slice(0, 25).map((b, i) => ({
       key: b[0] + i, nif: b[0], label: corto("#ch-sub-top", b[1]), v: b[2] / 1e6, color: css(b[0] ? "--c1" : "--muted"),
-      tip: [b[1], `${fmt0.format(b[2])} €`, `${tipoNom(tipoDe(b[0]))}${b[0] ? " · NIF " + b[0] : ""}`, ...(conDesglose(g, b[0], i + 1) ? ["Pulsa para ver de dónde viene"] : [])],
+      tip: [b[1], `${fmt0.format(b[2])} €`, `${tipoNom(tipoDe(b[0]))}${b[0] ? " · NIF " + b[0] : ""}`, ...(nifReal(b[0]) ? [g.motivos && i < corte(g) ? "Pulsa para ver de dónde viene" : "Pulsa para abrirlo en el buscador"] : [])],
     })), { aria: `Los 25 mayores beneficiarios de subvenciones en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€",
-      onClick: (r) => { if (nifReal(r.nif)) verBeneficiario(r.nif); } });
+      onClick: (r) => { if (nifReal(r.nif)) location.href = enlaceBuscar({ d: "beneficiarios", anio: a, q: r.nif, abrir: `${a}:${r.nif}` }); } });
     drawMotivos();
 
     if (pa) {
@@ -1003,18 +1002,18 @@ function renderSubvenciones(sub) {
         tip: [b[1], `${fmt0.format(b[2])} €`, `${fmt0.format(b[3])} concesiones${b[0] ? " · NIF " + b[0] : ""}`] })),
         { aria: `Partidos y grupos que más subvenciones recibieron en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€" });
     }
-    $("#sub-lista").href = DATA + g.lista;
-    $("#sub-lista").textContent = g.lista;
-    drawBuscar();
-  }
-
-  // Lleva al buscador con ese beneficiario y su desglose abierto.
-  function verBeneficiario(nif) {
-    $("#sub-q").value = nif;
-    state.q = nif;
-    state.abierto = nif;
-    drawBuscar();
-    $("#h-sub-buscar").scrollIntoView({ behavior: suave() });
+    // Enlaces al buscador con el año elegido.
+    $("#sub-buscar-anio").value = a;
+    $("#sub-conv-mas").href = enlaceBuscar({ d: "convocatorias", anio: a });
+    $("#sub-conv-mas").textContent = `Buscar entre todas las convocatorias de ${a}`;
+    $("#sub-par-mas").href = enlaceBuscar({ d: "partidos", anio: a });
+    const li = (href, txt) => el("li", {}, el("a", { href }, txt));
+    $("#sub-buscar-enlaces").replaceChildren(
+      li(enlaceBuscar({ d: "beneficiarios", anio: a }), `Ver los ${fmt0.format(g.beneficiarios)} grandes beneficiarios de ${a}, de mayor a menor`),
+      li(enlaceBuscar({ d: "beneficiarios", anio: a, tipo: "P" }), `Solo ayuntamientos y entidades locales`),
+      li(enlaceBuscar({ d: "beneficiarios", anio: a, min: "10000000" }), `Solo quienes recibieron 10 millones de € o más`),
+      li(enlaceBuscar({ d: "beneficiarios", anio: "todos" }), "Todos los años a la vez"),
+      li(DATA + g.lista, `Descargar la lista completa de ${a} (JSON)`));
   }
 
   function drawMotivos() {
@@ -1038,109 +1037,6 @@ function renderSubvenciones(sub) {
     verMas($("#tbl-sub-conv tbody"), 10);
   }
 
-  async function motivosDe(a) {
-    const f = (sub.grandes[a].motivos || {}).fichero;
-    if (!f) return null;
-    if (!motivos[a]) motivos[a] = getJSON(f);
-    return motivos[a];
-  }
-
-  // Desglose de un beneficiario: sus convocatorias, con el título oficial y lo que dice la BDNS de cada una.
-  async function detalle(tr, b) {
-    const sig = tr.nextElementSibling;
-    if (sig && sig.classList.contains("detalle")) { sig.remove(); tr.querySelector("button").setAttribute("aria-expanded", "false"); state.abierto = null; return; }
-    tr.querySelector("button").setAttribute("aria-expanded", "true");
-    state.abierto = b[0];
-    const td = el("td", { colspan: "6" }, el("p", { class: "muted" }, "Cargando…"));
-    tr.after(el("tr", { class: "detalle" }, td));
-    let m;
-    try { m = await motivosDe(state.anio); } catch (e) { td.replaceChildren(el("p", { class: "err" }, "No se pudo cargar el desglose.")); return; }
-    const x = m && m.beneficiarios[b[0]];
-    if (!x || !x.c.length) { td.replaceChildren(el("p", { class: "muted" }, "La BDNS no devuelve concesiones de este beneficiario para este año, así que no hay desglose.")); return; }
-    const suma = d3.sum(x.c, (c) => c[2]);
-    td.replaceChildren(
-      el("p", { class: "note" }, `${fmt0.format(d3.sum(x.c, (c) => c[3]))} concesiones en ${fmt0.format(x.c.length)} ${x.c.length === 1 ? "convocatoria" : "convocatorias"}, que suman ${fmt0.format(suma)} €` +
-        (Math.abs(suma - b[2]) > 1 ? ` (el total del año en la lista de grandes beneficiarios es ${fmt0.format(b[2])} €; la BDNS se actualiza continuamente).` : ".")),
-      el("ul", { class: "conv-lista" }, ...x.c.map(([num, instr, eur, n]) => {
-        const c = m.convocatorias[num] || {}, org = c.organo || [];
-        const datos = [c.finalidad, org[1] || NIVELES[org[0]] || org[0], instrCorto(instr), c.tipo ? c.tipo.split(" - ")[0] : null, c.mrr ? "Fondos MRR" : null, n > 1 ? `${fmt0.format(n)} concesiones` : null].filter(Boolean);
-        return el("li", {}, el("span", { class: "conv-imp" }, fmt0.format(eur) + " €"), " ",
-          num ? el("a", { href: BDNS_CONV + num, rel: "noopener", target: "_blank" }, c.titulo || `Convocatoria ${num}`) : "Sin convocatoria",
-          el("div", { class: "muted conv-datos" }, datos.join(" · ")));
-      })));
-  }
-
-  async function lista(a) {
-    if (!listas[a]) listas[a] = getJSON(sub.grandes[a].lista).then((d) => d.beneficiarios.map((b, i) => [...b, i + 1, sinTildes(b[0] + " " + b[1])]));
-    return listas[a];
-  }
-
-  // El buscador se pagina: todas las coincidencias, de 25 en 25 (o 50, 100), en vez de una lista interminable.
-  async function drawBuscar(pag = 0) {
-    const a = state.anio, g = sub.grandes[a], q = sinTildes(state.q), t = state.tipo;
-    const res = $("#sub-res"), tb = $("#tbl-sub tbody");
-    let filas, total = null;
-    if (!q && !t) {
-      filas = g.top.map((b, i) => [...b, i + 1]);
-      res.textContent = `Los ${fmt0.format(filas.length)} mayores de ${fmt0.format(g.beneficiarios)} grandes beneficiarios de ${a}. Escribe un nombre o un NIF, o elige un tipo, para buscar en la lista completa.`;
-    } else {
-      res.textContent = "Cargando la lista completa…";
-      let todos;
-      try { todos = await lista(a); } catch (e) { res.replaceChildren(el("span", { class: "err" }, "No se pudo cargar la lista completa.")); return; }
-      if (a !== state.anio || sinTildes(state.q) !== q || state.tipo !== t) return; // ya hay otra búsqueda
-      const palabras = q.split(/\s+/).filter(Boolean);
-      const hall = todos.filter((b) => (!t || tipoDe(b[0]) === t) && palabras.every((w) => b[4].includes(w)));
-      total = d3.sum(hall, (b) => b[2]);
-      filas = hall;
-      res.textContent = hall.length
-        ? `${fmt0.format(hall.length)} ${hall.length === 1 ? "beneficiario" : "beneficiarios"} en ${a}, con ${eurM(total)} en total.`
-        : `Ningún gran beneficiario de ${a} coincide con la búsqueda. Solo figuran quienes recibieron 100.000 € o más en el año.`;
-    }
-    // Página: la pedida o, si hay un desglose abierto, la de ese beneficiario.
-    const n = state.porPag, paginas = Math.max(1, Math.ceil(filas.length / n));
-    if (state.abierto) { const k = filas.findIndex((b) => b[0] === state.abierto); if (k >= 0) pag = Math.floor(k / n); }
-    pag = Math.min(Math.max(0, pag), paginas - 1);
-    const ini = pag * n;
-    if (paginas > 1) res.textContent += ` Se muestran del ${fmt0.format(ini + 1)} al ${fmt0.format(Math.min(ini + n, filas.length))}.`;
-    paginador(paginas, pag, filas.length);
-    filas = filas.slice(ini, ini + n);
-    if (g.motivos && filas.some((b) => b[3] > corte(g)))
-      res.textContent += ` «¿De dónde?» solo está en los ${fmt0.format(corte(g))} mayores del año: son los únicos cuyas concesiones se consultan una a una.`;
-    tb.replaceChildren(...filas.map((b) => {
-      const tr = el("tr", {},
-        el("td", { class: "num muted" }, fmt0.format(b[3])), el("td", { class: "wrap-cell" }, b[1]), el("td", {}, b[0] || "—"),
-        el("td", { class: "muted" }, tipoNom(tipoDe(b[0]))), el("td", { class: "num" }, fmt0.format(b[2])), el("td", {}));
-      if (g.motivos && conDesglose(g, b[0], b[3])) {
-        const bt = el("button", { class: "btn-link", type: "button", "aria-expanded": "false", onclick: () => detalle(tr, b) }, "¿De dónde?");
-        bt.title = `Ver de qué convocatorias viene el dinero de ${b[1]}`;
-        tr.lastChild.append(bt);
-      }
-      return tr;
-    }));
-    if (state.abierto) {
-      const i = filas.findIndex((b) => b[0] === state.abierto);
-      if (i >= 0) detalle(tb.children[i], filas[i]);
-    }
-  }
-
-  // Controles de página debajo de la tabla del buscador.
-  function paginador(paginas, pag, total) {
-    let nav = $("#sub-pag");
-    if (!nav) { nav = el("nav", { id: "sub-pag", class: "paginas", "aria-label": "Páginas de resultados" }); $("#tbl-sub").closest(".scroll").after(nav); }
-    nav.hidden = total <= 25;
-    const ir = (p) => { state.abierto = null; drawBuscar(p).then(() => { const r = $("#sub-res"); r.tabIndex = -1; r.focus({ preventScroll: true }); r.scrollIntoView({ behavior: suave(), block: "start" }); }); };
-    const selN = el("select", { "aria-label": "Filas por página" }, ...[25, 50, 100].map((k) => new Option(k, k)));
-    selN.value = state.porPag;
-    selN.addEventListener("change", () => { state.porPag = +selN.value; ir(0); });
-    nav.replaceChildren(
-      ...(paginas > 1 ? [
-        el("button", { class: "btn", type: "button", onclick: () => ir(pag - 1), ...(pag === 0 ? { disabled: "" } : {}) }, "← Anterior"),
-        el("span", { class: "pag-txt" }, `Página ${fmt0.format(pag + 1)} de ${fmt0.format(paginas)}`),
-        el("button", { class: "btn", type: "button", onclick: () => ir(pag + 1), ...(pag >= paginas - 1 ? { disabled: "" } : {}) }, "Siguiente →"),
-      ] : []),
-      el("label", {}, "Filas por página", selN));
-  }
-
   // Evolución: una fila por año, del más reciente al más antiguo.
   $("#tbl-sub-evol tbody").replaceChildren(...anios.map((a) => {
     const g = sub.grandes[a], p = prev(a), v = p && !curso(a) ? pct(g.total, sub.grandes[p].total) : null;
@@ -1152,6 +1048,607 @@ function renderSubvenciones(sub) {
 
   draw();
   onResize(draw);
+}
+
+/* ---------- Buscador: los datos fila a fila, separados de los resúmenes ----------
+   Cada «conjunto» dice cómo cargar sus filas, qué filtros tiene, qué columnas muestra y qué detalle abre.
+   El motor común (renderBuscar) busca, filtra con recuentos, ordena, pagina, descarga en CSV y guarda todo en la dirección. */
+const nifReal = (nif) => !!nif && nif.length >= 8 && /\d/.test(nif); // la BDNS usa «NO» para algunos organismos internacionales
+const tipoNif = (tipos, nif) => { if (!nif) return "fisica"; const c = nif[0]; return tipos[c] && !/\d/.test(c) ? c : "otro"; };
+const enlaceBuscar = (p) => "buscar.html?" + new URLSearchParams(p).toString();
+const habDe = (pob, com, y) => {
+  const t = pob && pob.territorios[com];
+  if (!t) return null;
+  const ys = Object.keys(t).map(Number).filter((x) => x <= y).sort((a, b) => b - a);
+  return ys.length ? t[ys[0]] : null;
+};
+
+function conjuntosBusqueda(cargar) {
+  const subv = () => cargar("subvenciones.json");
+  const aniosSub = (sub) => Object.keys(sub.grandes).sort().reverse();
+  const enCurso = (sub, a) => (sub.en_curso || []).includes(a);
+  const ultimoCompleto = (sub, anios = aniosSub(sub)) => anios.find((a) => !enCurso(sub, a)) || anios[0];
+  const etqAnio = (sub, a) => a + (enCurso(sub, a) ? " (en curso)" : "");
+  const donde = (e) => (e.anio === "todos" ? " en todos los años" : e.anio ? ` en ${e.anio}` : "");
+  const eur = (v) => (v == null ? "—" : fmt0.format(v));
+  const mill = (v) => (v == null || isNaN(v) ? "—" : fmt1.format(v));
+  const varCls = (v) => (v == null || Math.abs(v) < 0.05 ? "" : v > 0 ? "var-up" : "var-down");
+  const fuenteSub = el("a", { href: "fuentes.html#f-subvenciones" }, "Base de Datos Nacional de Subvenciones");
+
+  return {
+    beneficiarios: {
+      nombre: "Beneficiarios de subvenciones", uno: "beneficiario", varios: "beneficiarios",
+      ayuda: "Nombre o NIF, entero o en parte: «universidad», «ayuntamiento de soria», «B12345678»… Da igual las tildes y las mayúsculas.",
+      resumen: ["subvenciones.html", "Resumen de las subvenciones"],
+      base: async () => ({ sub: await subv() }),
+      filtros: ({ sub }) => [
+        { k: "anio", tit: "Año", carga: true, def: ultimoCompleto(sub), opciones: [...aniosSub(sub).map((a) => [a, etqAnio(sub, a)]), ["todos", "Todos los años"]] },
+        { k: "tipo", tit: "Tipo de entidad", faceta: (r) => r.tipo, nombre: (v) => sub.tipos[v] || v },
+        { k: "min", tit: "Importe en el año", opciones: [["", "Cualquiera (desde 100.000 €)"], ["1000000", "1 millón de € o más"], ["10000000", "10 millones de € o más"], ["100000000", "100 millones de € o más"]], test: (r, v) => r.importe >= +v },
+      ],
+      async filas({ sub }, e) {
+        const anios = e.anio === "todos" ? aniosSub(sub) : [e.anio];
+        const listas = await Promise.all(anios.map((a) => cargar(sub.grandes[a].lista)));
+        return listas.flatMap((l, j) => l.beneficiarios.map(([nif, nom, imp], i) => ({
+          _id: `${anios[j]}:${nif || nom}`, anio: anios[j], puesto: i + 1, nombre: nom, nif: nif || "", tipo: tipoNif(sub.tipos, nif), importe: imp, _t: sinTildes(`${nif} ${nom}`),
+        })));
+      },
+      columnas: ({ sub }, e) => [
+        ...(e.anio === "todos" ? [{ k: "anio", tit: "Año", orden: -1 }] : []),
+        { k: "puesto", tit: "Puesto", num: true, orden: 1, fmt: eur, muted: true, title: "Puesto en la lista de su año, de mayor a menor importe" },
+        { k: "nombre", tit: "Beneficiario", wrap: true, orden: 1, resalta: true },
+        { k: "nif", tit: "NIF", resalta: true },
+        { k: "tipo", tit: "Tipo", muted: true, fmt: (v) => sub.tipos[v] || v },
+        { k: "importe", tit: "Importe (€)", num: true, orden: -1, fmt: eur },
+      ],
+      orden: "importe:-1",
+      donde,
+      suma: (rs) => `${eurM(d3.sum(rs, (r) => r.importe))} en total`,
+      aviso: ({ sub }, e, vis) => {
+        const sin = vis.find((r) => { const g = sub.grandes[r.anio]; return g.motivos && r.puesto > (g.motivos.puestos || 1000); });
+        return sin ? `«¿De dónde?» solo está en los ${fmt0.format(sub.grandes[sin.anio].motivos.puestos || 1000)} mayores de cada año: son los únicos cuyas concesiones se consultan una a una.` : "";
+      },
+      sinResultados: (ctx, e) => (e.anio !== "todos" ? [["Buscar en todos los años", { anio: "todos" }]] : []),
+      notas: ({ sub }, e) => [
+        el("p", {}, "Solo figuran quienes recibieron 100.000 € o más en el año sumando todas las administraciones; las personas físicas no aparecen (la BDNS las anonimiza). Importe: ayuda equivalente; en préstamos y garantías es solo su parte de ayuda, no el capital prestado."),
+        el("p", {}, "Lista completa en JSON: ", ...aniosSub(sub).flatMap((a, i) => [i ? ", " : "", el("a", { href: DATA + sub.grandes[a].lista }, a)]), ". Fuente: ", fuenteSub.cloneNode(true), "."),
+      ],
+      detalle: {
+        etiqueta: "¿De dónde?",
+        titulo: (r) => `Ver de qué convocatorias viene el dinero de ${r.nombre}`,
+        tiene: ({ sub }, r) => { const g = sub.grandes[r.anio]; return !!(g.motivos && nifReal(r.nif) && r.puesto <= (g.motivos.puestos || 1000)); },
+        async pinta({ sub }, r) {
+          const m = await cargar(sub.grandes[r.anio].motivos.fichero), x = m.beneficiarios[r.nif];
+          const otros = el("p", { class: "note" }, el("a", { href: enlaceBuscar({ d: "beneficiarios", anio: "todos", q: r.nif }) }, "Ver este beneficiario en todos los años"));
+          if (!x || !x.c.length) return [el("p", { class: "muted" }, "La BDNS no devuelve concesiones de este beneficiario para este año, así que no hay desglose."), otros];
+          const suma = d3.sum(x.c, (c) => c[2]);
+          return [
+            el("p", { class: "note" }, `${fmt0.format(d3.sum(x.c, (c) => c[3]))} concesiones en ${fmt0.format(x.c.length)} ${x.c.length === 1 ? "convocatoria" : "convocatorias"}, que suman ${fmt0.format(suma)} €` +
+              (Math.abs(suma - r.importe) > 1 ? ` (el total del año en la lista de grandes beneficiarios es ${fmt0.format(r.importe)} €; la BDNS se actualiza continuamente).` : ".")),
+            el("ul", { class: "conv-lista" }, ...x.c.map(([num, instr, imp, n]) => {
+              const c = m.convocatorias[num] || {}, org = c.organo || [];
+              const datos = [c.finalidad, org[1] || NIVELES[org[0]] || org[0], instrCorto(instr), c.tipo ? c.tipo.split(" - ")[0] : null, c.mrr ? "Fondos MRR" : null, n > 1 ? `${fmt0.format(n)} concesiones` : null].filter(Boolean);
+              return el("li", {}, el("span", { class: "conv-imp" }, fmt0.format(imp) + " €"), " ",
+                num ? el("a", { href: BDNS_CONV + num, rel: "noopener", target: "_blank" }, c.titulo || `Convocatoria ${num}`) : "Sin convocatoria",
+                el("div", { class: "muted conv-datos" }, datos.join(" · ")));
+            })),
+            otros,
+          ];
+        },
+      },
+    },
+
+    convocatorias: {
+      nombre: "Convocatorias de subvenciones", uno: "convocatoria", varios: "convocatorias",
+      ayuda: "Título, órgano o número de la convocatoria: «vivienda», «PERTE», «consejería de educación»…",
+      resumen: ["subvenciones.html#h-sub-motivos", "Para qué se dan las subvenciones"],
+      base: async () => ({ sub: await subv() }),
+      filtros: ({ sub }) => {
+        const anios = aniosSub(sub).filter((a) => sub.grandes[a].motivos);
+        return [
+          { k: "anio", tit: "Año", carga: true, def: ultimoCompleto(sub, anios), opciones: anios.map((a) => [a, etqAnio(sub, a)]) },
+          { k: "nivel", tit: "Administración", faceta: (r) => r.nivel, nombre: (v) => NIVELES[v] || v },
+          { k: "admin", tit: "Ministerio, comunidad o entidad", faceta: (r) => r.admin, alfa: true },
+          { k: "finalidad", tit: "Finalidad", faceta: (r) => r.finalidad },
+          { k: "mrr", tit: "Fondos europeos de recuperación", opciones: [["", "Con y sin fondos MRR"], ["si", "Solo con fondos MRR"], ["no", "Sin fondos MRR"]], test: (r, v) => (v === "si") === r.mrr },
+        ];
+      },
+      async filas({ sub }, e) {
+        const g = sub.grandes[e.anio];
+        const [m, l] = await Promise.all([cargar(g.motivos.fichero), cargar(g.lista)]);
+        const puesto = new Map(l.beneficiarios.map((b, i) => [b[0], [b[1], i + 1]]));
+        const agg = new Map();
+        for (const [nif, x] of Object.entries(m.beneficiarios)) for (const [num, instr, imp, n] of x.c) {
+          let a = agg.get(num);
+          if (!a) agg.set(num, (a = { imp: 0, n: 0, bens: [] }));
+          a.imp += imp; a.n += n;
+          a.bens.push([nif, (puesto.get(nif) || [nif])[0], imp, n, instr]);
+        }
+        return [...agg].map(([num, a]) => {
+          const c = m.convocatorias[num] || {}, org = c.organo || [];
+          const titulo = c.titulo || (num ? `Convocatoria ${num}` : "Sin convocatoria");
+          const admin = org[1] || NIVELES[org[0]] || org[0] || "Sin dato";
+          const finalidad = c.finalidad || "Sin clasificar (convocatoria pequeña)";
+          return { _id: num || "sin", num, titulo, nivel: org[0] || "Sin dato", admin, organo: org[2] || "", finalidad, proc: c.tipo || "", mrr: !!c.mrr,
+            importe: a.imp, beneficiarios: a.bens.length, concesiones: a.n, _anio: e.anio, _bens: a.bens.sort((x, y) => y[2] - x[2]), _t: sinTildes([num, titulo, admin, org[2], finalidad].join(" ")) };
+        });
+      },
+      columnas: () => [
+        { k: "titulo", tit: "Convocatoria", wrap: true, orden: 1, resalta: true, enlace: (r) => (r.num ? BDNS_CONV + r.num : null) },
+        { k: "admin", tit: "Quién la concede", wrap: true, orden: 1, resalta: true },
+        { k: "finalidad", tit: "Finalidad", wrap: true, orden: 1, muted: true },
+        { k: "beneficiarios", tit: "Beneficiarios", num: true, orden: -1, fmt: eur },
+        { k: "importe", tit: "Importe (€)", num: true, orden: -1, fmt: eur },
+      ],
+      orden: "importe:-1",
+      donde,
+      suma: (rs) => `${eurM(d3.sum(rs, (r) => r.importe))} en total`,
+      aviso: ({ sub }, e) => `Beneficiarios e importe cuentan solo lo que recibieron de cada convocatoria los ${fmt0.format(sub.grandes[e.anio].motivos.puestos || 1000)} mayores beneficiarios de ${e.anio}, que son los que se consultan uno a uno (el ${pf(100 * sub.grandes[e.anio].motivos.cobertura)} del dinero de todos los grandes beneficiarios).`,
+      notas: () => [el("p", {}, "El título es el oficial de la convocatoria y enlaza a su ficha en la BDNS. La finalidad y el procedimiento solo se piden para las convocatorias que más reparten; el resto figura como «Sin clasificar». Fuente: ", fuenteSub.cloneNode(true), ".")],
+      detalle: {
+        etiqueta: "Quién la recibe",
+        titulo: (r) => `Ver quién recibió dinero de ${r.titulo}`,
+        tiene: () => true,
+        async pinta(ctx, r) {
+          const datos = [r.organo && `${r.admin} · ${r.organo}`, r.proc && `Procedimiento: ${r.proc}`, r.mrr && "Con fondos europeos de recuperación (MRR)", `${fmt0.format(r.concesiones)} concesiones`].filter(Boolean);
+          const tb = el("tbody", {}, ...r._bens.map(([nif, nom, imp, n, instr]) => el("tr", {},
+            el("td", { class: "wrap-cell" }, el("a", { href: enlaceBuscar({ d: "beneficiarios", anio: r._anio, q: nif, abrir: `${r._anio}:${nif}` }) }, nom)),
+            el("td", {}, nif), el("td", { class: "muted" }, instrCorto(instr)), el("td", { class: "num" }, fmt0.format(n)), el("td", { class: "num" }, fmt0.format(imp)))));
+          const caja = el("div", { class: "scroll" }, el("table", { class: "tbl" },
+            el("thead", {}, el("tr", {}, ...["Beneficiario", "NIF", "Tipo de ayuda", "Concesiones", "Importe (€)"].map((t, i) => el("th", { scope: "col", class: i > 2 ? "num" : "" }, t)))), tb));
+          const out = el("div", {}, el("p", { class: "note" }, datos.join(" · ")), caja);
+          verMas(tb, 10);
+          return [out];
+        },
+      },
+    },
+
+    partidos: {
+      nombre: "Subvenciones a partidos y grupos políticos", uno: "partido o grupo", varios: "partidos y grupos",
+      ayuda: "Nombre o NIF: «partido popular», «grupo municipal», «PSOE»…",
+      resumen: ["subvenciones.html#h-sub-partidos", "Resumen de las subvenciones a partidos"],
+      base: async () => ({ sub: await subv() }),
+      filtros: ({ sub }) => {
+        const anios = Object.keys(sub.partidos).sort().reverse();
+        return [{ k: "anio", tit: "Año", carga: true, def: ultimoCompleto(sub, anios), opciones: [...anios.map((a) => [a, etqAnio(sub, a)]), ["todos", "Todos los años"]] }];
+      },
+      filas: ({ sub }, e) => (e.anio === "todos" ? Object.keys(sub.partidos).sort().reverse() : [e.anio]).flatMap((a) =>
+        sub.partidos[a].beneficiarios.map(([nif, nom, imp, n]) => ({ _id: `${a}:${nif || nom}`, anio: a, nombre: nom, nif: nif || "", concesiones: n, importe: imp, _t: sinTildes(`${nif} ${nom}`) }))),
+      columnas: (ctx, e) => [
+        ...(e.anio === "todos" ? [{ k: "anio", tit: "Año", orden: -1 }] : []),
+        { k: "nombre", tit: "Partido o grupo", wrap: true, orden: 1, resalta: true },
+        { k: "nif", tit: "NIF", resalta: true },
+        { k: "concesiones", tit: "Concesiones", num: true, orden: -1, fmt: eur },
+        { k: "importe", tit: "Importe (€)", num: true, orden: -1, fmt: eur },
+      ],
+      orden: "importe:-1",
+      donde,
+      suma: (rs) => `${eurM(d3.sum(rs, (r) => r.importe))} en total`,
+      sinResultados: (ctx, e) => (e.anio !== "todos" ? [["Buscar en todos los años", { anio: "todos" }]] : []),
+      notas: () => [el("p", {}, "Todas las concesiones registradas a partidos, federaciones, coaliciones y grupos políticos (Congreso, parlamentos autonómicos y ayuntamientos), sumadas por NIF, sin umbral mínimo. Un mismo partido puede aparecer con varios NIF (por ejemplo, sus grupos municipales). Fuente: ", fuenteSub.cloneNode(true), ".")],
+    },
+
+    programas: {
+      nombre: "Programas del Presupuesto del Estado", uno: "programa", varios: "programas",
+      ayuda: "Nombre o código del programa o de su política: «becas», «investigación», «421M»…",
+      resumen: ["presupuesto.html", "Presupuesto por políticas"],
+      base: async () => { const pge = await cargar("pge.json"); return { pge, A: pgeAnios(pge) }; },
+      filtros: ({ A }) => {
+        const origen = (q) => (q.prorr ? q.base : q.anio);
+        const idx = (col) => A.findIndex((a) => a.col === col);
+        return [
+          { k: "ejercicio", tit: "Ejercicio", carga: true, def: A[A.length - 1].col, opciones: A.map((a) => [a.col, pgeEtq(a)]).reverse(), reinicia: ["base"] },
+          { k: "base", tit: "Comparar con", carga: true,
+            def: (e) => { const k = idx(e.ejercicio); for (let j = k - 1; j >= 0; j--) if (origen(A[j]) !== origen(A[k])) return A[j].col; return k > 0 ? A[k - 1].col : "no"; },
+            opciones: (e) => [...A.slice(0, Math.max(0, idx(e.ejercicio))).map((a) => [a.col, pgeEtq(a)]).reverse(), ["no", "Sin comparar"]] },
+          { k: "politica", tit: "Política de gasto", faceta: (r) => r.pol },
+        ];
+      },
+      filas: ({ pge }, e) => pge.politicas.flatMap((p) => p.programas.map((pr) => {
+        const v = pr.valores[e.ejercicio], b = e.base !== "no" ? pr.valores[e.base] : null;
+        return { _id: pr.codigo, pol: `${p.codigo} ${p.politica}`, codigo: pr.codigo, programa: pr.programa, importe: v, base: b, var: pct(v, b), _serie: pr.valores,
+          _t: sinTildes(`${pr.codigo} ${pr.programa} ${p.codigo} ${p.politica}`) };
+      }).filter((r) => r.importe != null || r.base != null)),
+      columnas: ({ A }, e) => {
+        const etq = (c) => { const a = A.find((q) => q.col === c); return a ? String(a.anio) : c; };
+        return [
+          { k: "codigo", tit: "Código", orden: 1, resalta: true },
+          { k: "programa", tit: "Programa", wrap: true, orden: 1, resalta: true },
+          { k: "pol", tit: "Política", wrap: true, orden: 1, muted: true },
+          { k: "importe", tit: `${etq(e.ejercicio)} (M€)`, num: true, orden: -1, fmt: mill },
+          ...(e.base !== "no" ? [{ k: "base", tit: `${etq(e.base)} (M€)`, num: true, orden: -1, fmt: mill },
+            { k: "var", tit: "Variación", num: true, orden: -1, fmt: sgn, cls: (r) => varCls(r.var) }] : []),
+        ];
+      },
+      orden: "importe:-1",
+      donde: (e) => "",
+      suma: (rs, e) => `${nf(d3.sum(rs, (r) => r.importe))} M€ en total`,
+      notas: () => [el("p", {}, "Créditos iniciales consolidados (capítulos 1 a 8), en millones de euros. «—»: el programa no existía ese año. En los años sin presupuesto nuevo se repiten los créditos del prorrogado. ",
+        el("a", { href: "fuentes.html#f-pge" }, "Sobre esta fuente"), ".")],
+      detalle: {
+        etiqueta: "Serie",
+        titulo: (r) => `Ver ${r.programa} en todos los ejercicios`,
+        tiene: () => true,
+        pinta: ({ A }, r) => [el("div", { class: "scroll" }, el("table", { class: "tbl" },
+          el("thead", {}, el("tr", {}, el("th", { scope: "col" }, "Ejercicio"), el("th", { scope: "col", class: "num" }, "Millones de euros"))),
+          el("tbody", {}, ...A.slice().reverse().map((a) => el("tr", {}, el("td", {}, pgeEtq(a)), el("td", { class: "num" }, mill(r._serie[a.col])))))))],
+      },
+    },
+
+    comunidades: {
+      nombre: "Gasto de las comunidades por política", uno: "partida", varios: "partidas",
+      ayuda: "Comunidad o política, o las dos: «sanidad», «galicia educacion», «vivienda»…",
+      resumen: ["comunidades.html#ccaa-tit", "En qué gasta cada comunidad"],
+      base: async () => { const [ccaa, pob] = await Promise.all([cargar("ccaa.json"), cargar("poblacion.json").catch(() => null)]); return { ccaa, pob }; },
+      filtros: ({ ccaa }) => {
+        const anios = ccaa.anios.map((a) => String(a.anio)).sort().reverse();
+        return [
+          { k: "anio", tit: "Año del presupuesto", carga: true, def: anios[0], opciones: anios.map((a) => [a, a]) },
+          { k: "com", tit: "Comunidad", faceta: (r) => r.com, alfa: true },
+          { k: "area", tit: "Área de gasto", faceta: (r) => r.area },
+          { k: "pol", tit: "Política", faceta: (r) => r.pol, alfa: true },
+        ];
+      },
+      filas: ({ ccaa, pob }, e) => {
+        const y = +e.anio, A = ccaa.anios.find((a) => a.anio === y), P = ccaa.anios.find((a) => a.anio === y - 1);
+        const ant = new Map();
+        if (P) P.comunidades.forEach((c) => c.politicas.forEach((p) => ant.set(`${c.comunidad}|${p.codigo}`, p.importe)));
+        return A.comunidades.flatMap((c) => {
+          const h = habDe(pob, c.comunidad, y), pr = ((ccaa.prorrogados || {})[c.comunidad] || {})[y] || null;
+          return c.politicas.map((p) => {
+            const b = ant.get(`${c.comunidad}|${p.codigo}`);
+            return { _id: `${c.codigo}-${p.codigo}`, com: c.comunidad, pol: p.politica, polCod: p.codigo, area: p.area || "Sin área", importe: p.importe,
+              ph: h ? (p.importe * 1e6) / h : null, peso: c.total ? (100 * p.importe) / c.total : null, var: b != null ? pct(p.importe, b) : null,
+              _caps: p.capitulos, _pr: pr, _anio: y, _t: sinTildes(`${c.comunidad} ${p.codigo} ${p.politica} ${p.area}`) };
+          });
+        });
+      },
+      columnas: (ctx, e) => [
+        { k: "com", tit: "Comunidad", orden: 1, resalta: true },
+        { k: "pol", tit: "Política", wrap: true, orden: 1, resalta: true },
+        { k: "importe", tit: "Importe (M€)", num: true, orden: -1, fmt: mill },
+        { k: "ph", tit: "€ por habitante", num: true, orden: -1, fmt: eur },
+        { k: "peso", tit: "% de su presupuesto", num: true, orden: -1, fmt: pf },
+        { k: "var", tit: `Variación frente a ${+e.anio - 1}`, num: true, orden: -1, fmt: sgn, cls: (r) => varCls(r.var) },
+      ],
+      orden: "importe:-1",
+      donde,
+      suma: (rs) => `${nf(d3.sum(rs, (r) => r.importe))} M€ en total`,
+      notas: () => [el("p", {}, "Presupuestos iniciales consolidados de cada comunidad, en millones de euros, por política de gasto. Euros por habitante con la población del INE a 1 de enero. Un presupuesto prorrogado repite cifras del año anterior: se indica en el detalle. ",
+        el("a", { href: "fuentes.html#f-ccaa" }, "Sobre esta fuente"), ".")],
+      detalle: {
+        etiqueta: "Por capítulos",
+        titulo: (r) => `Ver ${r.pol} de ${r.com} por capítulos de gasto`,
+        tiene: () => true,
+        pinta: ({ ccaa }, r) => [
+          ...(r._pr ? [el("p", { class: "note" }, prorrTxt(r._pr, r._anio))] : []),
+          el("div", { class: "scroll" }, el("table", { class: "tbl" },
+            el("thead", {}, el("tr", {}, el("th", { scope: "col" }, "Capítulo"), el("th", { scope: "col", class: "num" }, "Millones de euros"))),
+            el("tbody", {}, ...ccaa.capitulos.map((cap, i) => [cap, (r._caps || [])[i]]).filter(([, v]) => v).map(([cap, v], i) => el("tr", {}, el("td", {}, cap), el("td", { class: "num" }, mill(v))))))),
+          el("p", { class: "note" }, el("a", { href: `comunidades.html?${new URLSearchParams({ ccaa: r.com, anio: r._anio })}#ccaa-tit` }, `Ver todo el presupuesto de ${r.com}`)),
+        ],
+      },
+    },
+  };
+}
+
+function renderBuscar() {
+  const cache = {};
+  const cargar = (f) => (cache[f] ||= getJSON(f).catch((e) => { delete cache[f]; throw e; }));
+  const C = conjuntosBusqueda(cargar), ids = Object.keys(C);
+  const FIJOS = ["d", "q", "orden", "pag", "n", "abrir"], TAM = [25, 50, 100];
+  const leer = () => {
+    const p = new URLSearchParams(location.search), f = {};
+    for (const [k, v] of p) if (!FIJOS.includes(k)) f[k] = v;
+    return { d: ids.includes(p.get("d")) ? p.get("d") : ids[0], q: (p.get("q") || "").trim(), f, orden: p.get("orden") || "",
+      pag: Math.max(0, (parseInt(p.get("pag"), 10) || 1) - 1), n: TAM.includes(+p.get("n")) ? +p.get("n") : 25, abrir: p.get("abrir") };
+  };
+  let st = leer(), def = null, ctx = null, filtros = [], filas = [], ok = [], gen = 0, words = [];
+  const filasCache = {}, sels = {};
+  const inp = $("#bus-q"), res = $("#bus-res");
+
+  const ops = (fl, e) => (typeof fl.opciones === "function" ? fl.opciones(e) : fl.opciones || []);
+  // Valor efectivo de cada filtro: lo elegido (si es válido) o su valor por defecto, que puede depender de los anteriores.
+  const efectivos = () => {
+    const e = {};
+    for (const fl of filtros) {
+      const dv = typeof fl.def === "function" ? fl.def(e) : fl.def ?? "";
+      const v = st.f[fl.k];
+      e[fl.k] = v == null || (fl.opciones && !ops(fl, e).some((o) => o[0] === v)) ? dv : v;
+    }
+    return e;
+  };
+  const nomOp = (fl, v, e) => (fl.nombre ? fl.nombre(v) : (ops(fl, e).find((o) => o[0] === v) || [, v])[1]);
+  const activo = (fl, e) => !fl.carga && e[fl.k] !== "";
+  const pasa = (fl, r, v) => (fl.faceta ? String(fl.faceta(r)) === v : fl.test(r, v));
+
+  function guardar(push) {
+    const p = new URLSearchParams({ d: st.d });
+    if (st.q) p.set("q", st.q);
+    for (const fl of filtros) if (st.f[fl.k] != null && st.f[fl.k] !== "") p.set(fl.k, st.f[fl.k]);
+    if (st.orden && st.orden !== def.orden) p.set("orden", st.orden);
+    if (st.pag) p.set("pag", st.pag + 1);
+    if (st.n !== 25) p.set("n", st.n);
+    if (st.abrir) p.set("abrir", st.abrir);
+    history[push ? "pushState" : "replaceState"](null, "", "?" + p);
+  }
+
+  async function abrirConjunto(push) {
+    const g = ++gen;
+    def = C[st.d];
+    document.querySelectorAll("#bus-conjuntos a").forEach((a) => {
+      if (new URLSearchParams(a.search).get("d") === st.d) a.setAttribute("aria-current", "true"); else a.removeAttribute("aria-current");
+    });
+    $("#bus-d").value = st.d;
+    $("#bus-q-lab").textContent = `Buscar en ${def.nombre.toLowerCase()}`;
+    $("#bus-ayuda").textContent = def.ayuda;
+    inp.value = st.q;
+    document.title = `Buscar: ${def.nombre} · Dinero Público`;
+    res.textContent = "Cargando los datos…";
+    try { ctx = await def.base(); } catch (err) { if (g === gen) fallo(err); return; }
+    if (g !== gen) return;
+    filtros = def.filtros(ctx);
+    await recargar(push, g);
+  }
+
+  // Carga (o toma de la caché) las filas según los filtros que cambian los datos: año, ejercicio…
+  async function recargar(push, g = ++gen) {
+    const e = efectivos(), clave = st.d + "|" + filtros.filter((f) => f.carga).map((f) => e[f.k]).join("|");
+    res.textContent = e.anio === "todos" ? "Cargando los datos de todos los años…" : "Cargando los datos…";
+    try {
+      filas = await (filasCache[clave] ||= Promise.resolve().then(() => def.filas(ctx, e)));
+    } catch (err) { delete filasCache[clave]; if (g === gen) fallo(err); return; }
+    if (g !== gen) return;
+    pintarFiltros(e);
+    aplicar(push);
+  }
+
+  function fallo(err) {
+    console.error(err);
+    res.replaceChildren(el("span", { class: "err" }, "No se pudieron cargar los datos. Prueba a recargar la página."));
+  }
+
+  function pintarFiltros(e) {
+    const caja = $("#bus-filtros");
+    caja.replaceChildren(...filtros.map((fl) => {
+      const s = el("select", { id: `bus-f-${fl.k}` });
+      if (!fl.faceta) { s.append(...ops(fl, e).map(([v, t]) => new Option(t, v))); s.value = e[fl.k]; }
+      s.addEventListener("change", () => cambiarFiltro(fl, s.value));
+      sels[fl.k] = s;
+      return el("label", {}, fl.tit, s);
+    }));
+  }
+
+  function cambiarFiltro(fl, v) {
+    st.f[fl.k] = v;
+    (fl.reinicia || []).forEach((k) => delete st.f[k]);
+    st.pag = 0; st.abrir = null;
+    if (fl.carga) recargar(false); else aplicar();
+  }
+
+  function aplicar(push = false) {
+    const e = efectivos();
+    words = sinTildes(st.q).split(/\s+/).filter(Boolean);
+    const act = filtros.filter((fl) => activo(fl, e));
+    const enQ = words.length ? filas.map((r) => words.every((w) => r._t.includes(w))) : null;
+    ok = filas.filter((r, i) => (!enQ || enQ[i]) && act.every((fl) => pasa(fl, r, e[fl.k])));
+
+    // Facetas: cada opción con cuántos resultados daría, contando la búsqueda y los demás filtros. Las vacías no se ofrecen.
+    for (const fl of filtros.filter((x) => x.faceta)) {
+      const otros = act.filter((x) => x !== fl), cuenta = new Map();
+      filas.forEach((r, i) => {
+        if ((enQ && !enQ[i]) || !otros.every((x) => pasa(x, r, e[x.k]))) return;
+        const v = String(fl.faceta(r));
+        cuenta.set(v, (cuenta.get(v) || 0) + 1);
+      });
+      const vals = [...cuenta.keys()];
+      if (e[fl.k] && !cuenta.has(e[fl.k])) vals.push(e[fl.k]);
+      const nom = (v) => nomOp(fl, v, e);
+      vals.sort(fl.alfa ? (a, b) => nom(a).localeCompare(nom(b), "es") : (a, b) => (cuenta.get(b) || 0) - (cuenta.get(a) || 0) || nom(a).localeCompare(nom(b), "es"));
+      const s = sels[fl.k];
+      s.replaceChildren(new Option(`Todos (${fmt0.format(d3.sum(cuenta.values()))})`, ""), ...vals.map((v) => new Option(`${nom(v)} (${fmt0.format(cuenta.get(v) || 0)})`, v)));
+      s.value = e[fl.k];
+    }
+
+    // Orden
+    const cols = def.columnas(ctx, e);
+    const [ok0, d0] = (st.orden || def.orden).split(":");
+    const col = cols.find((c) => c.k === ok0 && c.orden) || cols.find((c) => c.k === def.orden.split(":")[0]);
+    const dir = +d0 === 1 || +d0 === -1 ? +d0 : col.orden;
+    ok.sort((a, b) => {
+      const x = a[col.k], y = b[col.k], vx = x == null || x === "" || Number.isNaN(x), vy = y == null || y === "" || Number.isNaN(y);
+      if (vx || vy) return vx - vy; // los vacíos, siempre al final
+      return (typeof x === "number" ? x - y : String(x).localeCompare(String(y), "es")) * dir;
+    });
+    const selO = $("#bus-orden");
+    selO.replaceChildren(...cols.filter((c) => c.orden).flatMap((c) => {
+      const t = c.tit.replace(/ \(.*\)$/, "");
+      return c.num ? [new Option(`${t}: de mayor a menor`, `${c.k}:-1`), new Option(`${t}: de menor a mayor`, `${c.k}:1`)]
+        : [new Option(`${t}: de la A a la Z`, `${c.k}:1`), new Option(`${t}: de la Z a la A`, `${c.k}:-1`)];
+    }));
+    selO.value = `${col.k}:${dir}`;
+
+    // Página: la pedida o, si hay un detalle abierto, la de esa fila.
+    const n = st.n, paginas = Math.max(1, Math.ceil(ok.length / n));
+    if (st.abrir) { const k = ok.findIndex((r) => r._id === st.abrir); if (k >= 0) st.pag = Math.floor(k / n); else st.abrir = null; }
+    st.pag = Math.min(Math.max(0, st.pag), paginas - 1);
+    const ini = st.pag * n, vis = ok.slice(ini, ini + n);
+
+    // Resumen del resultado
+    const dn = def.donde ? def.donde(e) : "";
+    if (ok.length) {
+      res.textContent = `${fmt0.format(ok.length)} ${ok.length === 1 ? def.uno : def.varios}${dn}` + (def.suma ? `, con ${def.suma(ok, e)}` : "") + "." +
+        (paginas > 1 ? ` Se muestran del ${fmt0.format(ini + 1)} al ${fmt0.format(Math.min(ini + n, ok.length))}.` : "");
+    } else {
+      res.replaceChildren(`Ningún resultado${st.q ? ` para «${st.q}»` : ""}${dn}${act.length ? " con estos filtros" : ""}. `,
+        ...(def.sinResultados ? def.sinResultados(ctx, e) : []).map(([t, cambios]) => el("button", { type: "button", class: "btn-link", onclick: () => { Object.assign(st.f, cambios); st.pag = 0; recargar(false); } }, t)),
+        ...(act.length ? [" ", el("button", { type: "button", class: "btn-link", onclick: limpiar }, "Quitar los filtros")] : []));
+    }
+    const av = $("#bus-aviso"), avTxt = def.aviso && ok.length ? def.aviso(ctx, e, vis) : "";
+    av.textContent = avTxt; av.hidden = !avTxt;
+
+    // Filtros activos, quitables uno a uno
+    const chips = [];
+    if (st.q) chips.push([`Texto: «${st.q}»`, () => { st.q = ""; inp.value = ""; st.pag = 0; aplicar(); }]);
+    for (const fl of act) chips.push([`${fl.tit}: ${nomOp(fl, e[fl.k], e)}`, () => cambiarFiltro(fl, "")]);
+    const quitar = (fn) => () => { fn(); res.focus({ preventScroll: true }); };
+    $("#bus-activos").replaceChildren(...(chips.length ? [el("span", { class: "muted" }, "Buscando por:"),
+      ...chips.map(([t, fn]) => el("button", { type: "button", class: "chip", "aria-label": `Quitar ${t}`, onclick: quitar(fn) }, t, el("span", { "aria-hidden": "true", class: "chip-x" }, "×"))),
+      ...(chips.length > 1 ? [el("button", { type: "button", class: "btn-link", onclick: quitar(() => { st.q = ""; inp.value = ""; limpiar(); }) }, "Quitar todo")] : [])] : []));
+    $("#bus-limpiar").hidden = !act.length;
+    const mini = $(".viendo-mini");
+    if (mini) mini.textContent = filtros.filter((fl) => fl.carga || activo(fl, e)).map((fl) => nomOp(fl, e[fl.k], e)).join(" · ");
+
+    // Tabla
+    $("#bus-cap").textContent = `${def.nombre}${dn}: resultados`;
+    const conDet = !!def.detalle;
+    $("#bus-tbl thead").replaceChildren(el("tr", {}, ...cols.map((c) => {
+      const th = el("th", { scope: "col", class: c.num ? "num" : "" });
+      if (c.title) th.title = c.title;
+      if (!c.orden) { th.append(c.tit); return th; }
+      const es = c.k === col.k;
+      if (es) th.setAttribute("aria-sort", dir > 0 ? "ascending" : "descending");
+      th.append(el("button", { type: "button", class: "th-orden", "data-k": c.k, onclick: () => { st.orden = `${c.k}:${es ? -dir : c.orden}`; st.pag = 0; aplicar(); const b = $(`.th-orden[data-k="${c.k}"]`); if (b) b.focus(); } },
+        c.tit, el("span", { class: "th-flecha", "aria-hidden": "true" }, es ? (dir > 0 ? "▲" : "▼") : "↕")));
+      return th;
+    }), ...(conDet ? [el("th", { scope: "col" }, el("span", { class: "sr-only" }, "Detalle"))] : [])));
+    const tb = $("#bus-tbl tbody");
+    tb.replaceChildren(...vis.map((r) => {
+      const tr = el("tr", {}, ...cols.map((c) => celda(c, r)));
+      if (conDet) {
+        const td = el("td", {});
+        if (def.detalle.tiene(ctx, r)) {
+          const b = el("button", { class: "btn-link", type: "button", "aria-expanded": "false" }, def.detalle.etiqueta);
+          b.title = def.detalle.titulo(r);
+          b.onclick = () => detalle(tr, r, b);
+          td.append(b);
+        }
+        tr.append(td);
+      }
+      return tr;
+    }));
+    paginador(paginas);
+    const csv = $("#bus-csv");
+    csv.disabled = !ok.length;
+    csv.textContent = ok.length > 1 ? `Descargar los ${fmt0.format(ok.length)} resultados (CSV)` : "Descargar resultados (CSV)";
+    guardar(push);
+    if (st.abrir) { const i = vis.findIndex((r) => r._id === st.abrir); if (i >= 0) { const tr = tb.children[i]; const b = tr.querySelector(".btn-link"); if (b) detalle(tr, vis[i], b, true); } }
+  }
+
+  function celda(c, r) {
+    const v = r[c.k];
+    const txt = c.fmt ? c.fmt(v, r) : v == null || v === "" ? "—" : String(v);
+    const td = el("td", { class: [c.num && "num", c.wrap && "wrap-cell", c.muted && "muted", c.cls && c.cls(r)].filter(Boolean).join(" ") });
+    const cont = c.resalta ? resaltar(txt, words) : [txt];
+    const href = c.enlace && c.enlace(r);
+    td.append(href ? el("a", { href, rel: "noopener", target: "_blank" }, ...cont) : el("span", {}, ...cont));
+    return td;
+  }
+
+  async function detalle(tr, r, b, sinGuardar) {
+    const sig = tr.nextElementSibling;
+    if (sig && sig.classList.contains("detalle")) {
+      sig.remove(); b.setAttribute("aria-expanded", "false");
+      if (st.abrir === r._id) { st.abrir = null; guardar(); }
+      return;
+    }
+    b.setAttribute("aria-expanded", "true");
+    st.abrir = r._id;
+    if (!sinGuardar) guardar();
+    const td = el("td", { colspan: String(tr.children.length) }, el("p", { class: "muted" }, "Cargando…"));
+    tr.after(el("tr", { class: "detalle" }, td));
+    try { td.replaceChildren(...(await def.detalle.pinta(ctx, r))); }
+    catch (err) { console.error(err); td.replaceChildren(el("p", { class: "err" }, "No se pudo cargar el detalle.")); }
+  }
+
+  function paginador(paginas) {
+    const nav = $("#bus-pag"), pag = st.pag;
+    nav.hidden = ok.length <= TAM[0];
+    const ir = (p) => { st.pag = p; st.abrir = null; aplicar(); res.focus({ preventScroll: true }); res.scrollIntoView({ behavior: suave(), block: "start" }); };
+    const boton = (txt, p, off, lab) => el("button", { class: "btn", type: "button", onclick: () => ir(p), ...(off ? { disabled: "" } : {}), ...(lab ? { "aria-label": lab } : {}) }, txt);
+    const selN = el("select", {}, ...TAM.map((k) => new Option(k, k)));
+    selN.value = st.n;
+    selN.addEventListener("change", () => { st.n = +selN.value; ir(0); });
+    nav.replaceChildren(
+      ...(paginas > 1 ? [
+        ...(paginas > 2 ? [boton("«", 0, pag === 0, "Primera página")] : []),
+        boton("← Anterior", pag - 1, pag === 0),
+        el("span", { class: "pag-txt" }, `Página ${fmt0.format(pag + 1)} de ${fmt0.format(paginas)}`),
+        boton("Siguiente →", pag + 1, pag >= paginas - 1),
+        ...(paginas > 2 ? [boton("»", paginas - 1, pag >= paginas - 1, "Última página")] : []),
+      ] : []),
+      el("label", {}, "Filas por página", selN));
+  }
+
+  function limpiar() {
+    const cambiaDatos = filtros.some((fl) => fl.carga && st.f[fl.k] != null);
+    st.f = {}; st.pag = 0; st.abrir = null;
+    if (cambiaDatos) recargar(false); else aplicar();
+  }
+
+  // Descarga lo encontrado (todas las páginas), con punto y coma y coma decimal para que lo abra bien una hoja de cálculo en español.
+  $("#bus-csv").addEventListener("click", () => {
+    const e = efectivos(), cols = def.columnas(ctx, e);
+    const esc = (v) => {
+      if (v == null || (typeof v === "number" && isNaN(v))) return "";
+      if (typeof v === "number") return String(Math.round(v * 100) / 100).replace(".", ",");
+      const s = String(v);
+      return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    };
+    const valor = (c, r) => (typeof r[c.k] === "number" ? r[c.k] : c.fmt ? c.fmt(r[c.k], r) : r[c.k]);
+    const lineas = [cols.map((c) => esc(c.tit)).join(";"), ...ok.map((r) => cols.map((c) => esc(valor(c, r))).join(";"))];
+    const sufijo = filtros.filter((fl) => fl.carga).map((fl) => e[fl.k]).join("-");
+    const a = el("a", { href: URL.createObjectURL(new Blob(["﻿" + lineas.join("\r\n")], { type: "text/csv;charset=utf-8" })), download: `dinero-publico-${st.d}${sufijo ? "-" + sufijo : ""}.csv` });
+    document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+
+  // Notas de la fuente y enlace al resumen, que cambian con el conjunto.
+  const notas = () => {
+    const e = efectivos();
+    $("#bus-notas").replaceChildren(...(def.notas ? def.notas(ctx, e) : []).map((n) => (n.classList ? (n.classList.add("note"), n) : n)),
+      el("p", { class: "note" }, "Resumen con gráficos: ", el("a", { href: def.resumen[0] }, def.resumen[1]), "."));
+  };
+
+  $("#bus-form").addEventListener("submit", (ev) => { ev.preventDefault(); clearTimeout(qt); st.q = inp.value.trim(); st.pag = 0; st.abrir = null; aplicar(); res.focus({ preventScroll: true }); });
+  let qt;
+  inp.addEventListener("input", () => { clearTimeout(qt); qt = setTimeout(() => { if (inp.value.trim() === st.q) return; st.q = inp.value.trim(); st.pag = 0; st.abrir = null; aplicar(); }, 250); });
+  $("#bus-orden").addEventListener("change", (ev) => { st.orden = ev.target.value; st.pag = 0; aplicar(); });
+  $("#bus-limpiar").addEventListener("click", limpiar);
+  $("#bus-conjuntos").addEventListener("click", (ev) => {
+    const a = ev.target.closest("a");
+    if (!a || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
+    ev.preventDefault();
+    const d = new URLSearchParams(a.search).get("d");
+    if (d === st.d) return;
+    // Se conserva el texto buscado: «universidad» en beneficiarios sirve también en convocatorias.
+    st = { d, q: st.q, f: {}, orden: "", pag: 0, n: st.n, abrir: null };
+    abrirConjunto(true).then(notas);
+  });
+  addEventListener("popstate", () => { st = leer(); abrirConjunto(false).then(notas); });
+  return abrirConjunto(false).then(notas);
+}
+
+/* Marca en un texto las palabras buscadas (sin distinguir tildes ni mayúsculas). */
+function resaltar(txt, words) {
+  if (!words.length) return [txt];
+  const base = sinTildes(txt);
+  if (base.length !== txt.length) return [txt];
+  const m = [];
+  for (const w of words) for (let i = base.indexOf(w); i >= 0; i = base.indexOf(w, i + w.length)) m.push([i, i + w.length]);
+  if (!m.length) return [txt];
+  m.sort((a, b) => a[0] - b[0]);
+  const out = [];
+  let pos = 0;
+  for (const [a, b] of m) {
+    if (b <= pos) continue;
+    const ini = Math.max(a, pos);
+    if (ini > pos) out.push(txt.slice(pos, ini));
+    out.push(el("mark", {}, txt.slice(ini, b)));
+    pos = b;
+  }
+  if (pos < txt.length) out.push(txt.slice(pos));
+  return out;
 }
 
 /* ---------- Informe de comprobaciones de la herramienta de datos (página de fuentes) ---------- */
@@ -1269,8 +1766,8 @@ function barraLateral() {
   addEventListener("resize", medirFijo);
   const lado = $(".lado");
   if (!lado) return;
-  const btn = lado.querySelector(".lado-btn"), actual = lado.querySelector(".lado-actual");
-  btn.prepend(el("span", { class: "sr-only" }, "Índice y ajustes: "));
+  const btn = lado.querySelector(".lado-btn"), actual = lado.querySelector(".lado-actual"), rotulo = actual.textContent;
+  btn.prepend(el("span", { class: "sr-only" }, rotulo + ": "));
   const abrir = (si) => { lado.classList.toggle("abierta", si); btn.setAttribute("aria-expanded", String(si)); };
   btn.addEventListener("click", () => abrir(!lado.classList.contains("abierta")));
   lado.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && lado.classList.contains("abierta")) { abrir(false); btn.focus(); } });
@@ -1290,7 +1787,7 @@ function barraLateral() {
     for (const x of vis) if (x.t.getBoundingClientRect().top <= fijo + 60) cur = x;
     if (vis.length && innerHeight + scrollY >= document.documentElement.scrollHeight - 4) cur = vis[vis.length - 1];
     for (const x of enlaces) { if (x === cur) x.a.setAttribute("aria-current", "location"); else x.a.removeAttribute("aria-current"); }
-    actual.textContent = cur ? cur.a.textContent : "Índice y ajustes";
+    actual.textContent = cur ? cur.a.textContent : rotulo;
   };
   addEventListener("scroll", () => { if (!pendiente) { pendiente = true; requestAnimationFrame(marcar); } }, { passive: true });
   addEventListener("resize", marcar);
@@ -1300,6 +1797,7 @@ function barraLateral() {
 
 /* Línea «Viendo: …» con lo elegido en los ajustes, para saberlo sin volver arriba. */
 function viendo() {
+  if (!$(".ajustes")) return; // el buscador escribe su propio resumen de filtros
   const txt = [...document.querySelectorAll(".ajustes select")]
     .filter((s) => !s.closest("[hidden]") && !s.disabled && s.selectedIndex >= 0)
     .map((s) => (s.dataset.viendo || "{v}").replace("{v}", s.options[s.selectedIndex].text)).join(" · ");
@@ -1358,6 +1856,7 @@ document.addEventListener("input", (ev) => { if (ev.target.matches("input[data-u
   if (pagina === "comunidades") run(() => (d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog, d.poblacion) : fail("#ch-ea", "comunidades")), "#ch-ea", "comunidades");
   if (pagina === "subvenciones") run(() => (d.subvenciones ? renderSubvenciones(d.subvenciones) : fail("#sub-kpis", "subvenciones")), "#sub-kpis", "subvenciones");
   if (pagina === "fuentes") renderInforme(d.informe);
+  if (pagina === "buscar") await renderBuscar().catch((e) => { console.error(e); fail("#bus-res", "el buscador"); });
   renderMeta(d.meta || {}, d.estado);
   aplicarUrl();
   viendo();

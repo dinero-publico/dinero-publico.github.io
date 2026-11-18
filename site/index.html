@@ -41,6 +41,7 @@
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
       <li><a href="subvenciones.html">Subvenciones</a></li>
+      <li><a href="buscar.html">Buscar</a></li>
       <li><a href="fuentes.html">Fuentes</a></li>
       </ul>
     </nav>
@@ -59,6 +60,25 @@
     <div class="kpis" id="home-kpis"><p class="muted">Cargando datos…</p></div>
   </section>
 
+  <section aria-labelledby="h-buscar">
+    <h2 id="h-buscar">Busca en los datos</h2>
+    <form class="bus-form bus-inicio" role="search" action="buscar.html">
+      <label for="ini-q">¿Buscas una empresa, un ayuntamiento, un programa o una partida?</label>
+      <p class="note" id="ini-ayuda">Elige dónde buscar y escribe un nombre, un NIF o una palabra.</p>
+      <div class="bus-caja">
+        <select name="d" aria-label="Dónde buscar">
+          <option value="beneficiarios">Beneficiarios de subvenciones</option>
+          <option value="convocatorias">Convocatorias de subvenciones</option>
+          <option value="partidos">Subvenciones a partidos</option>
+          <option value="programas">Programas del Presupuesto del Estado</option>
+          <option value="comunidades">Gasto de las comunidades</option>
+        </select>
+        <input type="search" id="ini-q" name="q" autocomplete="off" aria-describedby="ini-ayuda" placeholder="p. ej. universidad, becas, sanidad…">
+        <button class="btn" type="submit">Buscar</button>
+      </div>
+    </form>
+  </section>
+
   <section aria-labelledby="h-explora">
     <h2 id="h-explora">Explora</h2>
     <div class="cardgrid">
@@ -67,6 +87,7 @@
       <a class="card card-link" href="quien-gasta.html"><h3>¿Quién gasta en qué?</h3><p>Estado, comunidades, ayuntamientos y Seguridad Social: quién paga la sanidad, la educación y la protección social.</p></a>
       <a class="card card-link" href="comunidades.html"><h3>Comunidades autónomas</h3><p>Lo que recibe cada comunidad, en qué lo gasta partida a partida y cómo se compara, también por habitante.</p></a>
       <a class="card card-link" href="subvenciones.html"><h3>Subvenciones</h3><p>Quién recibe ayudas públicas de 100.000 € o más, para qué se dan y cuánto reciben los partidos políticos.</p></a>
+      <a class="card card-link" href="buscar.html"><h3>Buscar en los datos</h3><p>Cada beneficiario, convocatoria, programa y partida, fila a fila: busca, filtra, ordena y descarga en CSV.</p></a>
       <a class="card card-link" href="fuentes.html"><h3>Fuentes y metodología</h3><p>De dónde sale cada dato, cómo se procesa, glosario, marco legal y descarga de los datos.</p></a>
     </div>
   </section>
@@ -81,6 +102,7 @@
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
       <li><a href="subvenciones.html">Subvenciones</a></li>
+      <li><a href="buscar.html">Buscar</a></li>
       <li><a href="fuentes.html">Fuentes</a></li>
     </ul></nav>
     <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local, Base de Datos Nacional de Subvenciones) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
