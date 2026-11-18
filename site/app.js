@@ -941,6 +941,11 @@ function renderSubvenciones(sub) {
   const curso = (a) => (sub.en_curso || []).includes(a);
   const tipoNom = (k) => sub.tipos[k] || k;
   const tipoDe = (nif) => { if (!nif) return "fisica"; const c = nif[0]; return sub.tipos[c] && !/\d/.test(c) ? c : "otro"; };
+  // Algunos organismos internacionales figuran en la BDNS con un NIF ficticio («NO»): no se pueden consultar por NIF.
+  const nifReal = (nif) => !!nif && nif.length >= 8 && /\d/.test(nif);
+  // El desglose «¿De dónde?» existe para los primeros puestos de la lista de cada año (los 1.000 mayores).
+  const corte = (g) => (g.motivos ? g.motivos.puestos || 1000 : 0);
+  const conDesglose = (g, nif, puesto) => nifReal(nif) && puesto <= corte(g);
   // Por defecto, el último año completo; el año en curso sigue disponible en el selector.
   const state = { anio: anios.find((a) => !curso(a)) || anios[0], q: "", tipo: "", motivo: "por_finalidad", abierto: null, porPag: 25 };
   const listas = {}, motivos = {};
@@ -983,9 +988,9 @@ function renderSubvenciones(sub) {
 
     barras("#ch-sub-top", g.top.slice(0, 25).map((b, i) => ({
       key: b[0] + i, nif: b[0], label: corto("#ch-sub-top", b[1]), v: b[2] / 1e6, color: css(b[0] ? "--c1" : "--muted"),
-      tip: [b[1], `${fmt0.format(b[2])} €`, `${tipoNom(tipoDe(b[0]))}${b[0] ? " · NIF " + b[0] : ""}`, ...(b[0] && g.motivos ? ["Pulsa para ver de dónde viene"] : [])],
+      tip: [b[1], `${fmt0.format(b[2])} €`, `${tipoNom(tipoDe(b[0]))}${b[0] ? " · NIF " + b[0] : ""}`, ...(conDesglose(g, b[0], i + 1) ? ["Pulsa para ver de dónde viene"] : [])],
     })), { aria: `Los 25 mayores beneficiarios de subvenciones en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€",
-      onClick: (r) => { if (r.nif) verBeneficiario(r.nif); } });
+      onClick: (r) => { if (nifReal(r.nif)) verBeneficiario(r.nif); } });
     drawMotivos();
 
     if (pa) {
@@ -1016,7 +1021,7 @@ function renderSubvenciones(sub) {
     const a = state.anio, m = sub.grandes[a].motivos, sec = $("#sub-motivos");
     sec.hidden = !m;
     if (!m) return;
-    $("#sub-motivos-lead").textContent = `Para saber para qué son, se han consultado una a una las concesiones de los ${fmt0.format(m.beneficiarios)} mayores beneficiarios de ${a}: ` +
+    $("#sub-motivos-lead").textContent = `Para saber para qué son, se han consultado una a una las concesiones de los ${fmt0.format(corte(sub.grandes[a]))} mayores beneficiarios de ${a}: ` +
       `${eurM(m.importe)}, el ${pf(100 * m.cobertura)} de lo que recibieron todos los grandes beneficiarios.` +
       (m.mrr ? ` De ellos, ${eurM(m.mrr)} (${pf((100 * m.mrr) / m.importe)}) son fondos europeos de recuperación (MRR).` : "");
     const k = state.motivo, nom = (x) => (k === "por_administracion" ? NIVELES[x] || x : k === "por_instrumento" ? instrCorto(x) : x);
@@ -1051,7 +1056,7 @@ function renderSubvenciones(sub) {
     let m;
     try { m = await motivosDe(state.anio); } catch (e) { td.replaceChildren(el("p", { class: "err" }, "No se pudo cargar el desglose.")); return; }
     const x = m && m.beneficiarios[b[0]];
-    if (!x) { td.replaceChildren(el("p", { class: "muted" }, `Solo se ha consultado el desglose de los ${fmt0.format(sub.grandes[state.anio].motivos.beneficiarios)} mayores beneficiarios del año.`)); return; }
+    if (!x || !x.c.length) { td.replaceChildren(el("p", { class: "muted" }, "La BDNS no devuelve concesiones de este beneficiario para este año, así que no hay desglose.")); return; }
     const suma = d3.sum(x.c, (c) => c[2]);
     td.replaceChildren(
       el("p", { class: "note" }, `${fmt0.format(d3.sum(x.c, (c) => c[3]))} concesiones en ${fmt0.format(x.c.length)} ${x.c.length === 1 ? "convocatoria" : "convocatorias"}, que suman ${fmt0.format(suma)} €` +
@@ -1099,12 +1104,13 @@ function renderSubvenciones(sub) {
     if (paginas > 1) res.textContent += ` Se muestran del ${fmt0.format(ini + 1)} al ${fmt0.format(Math.min(ini + n, filas.length))}.`;
     paginador(paginas, pag, filas.length);
     filas = filas.slice(ini, ini + n);
-    const conMotivo = !!g.motivos;
+    if (g.motivos && filas.some((b) => b[3] > corte(g)))
+      res.textContent += ` «¿De dónde?» solo está en los ${fmt0.format(corte(g))} mayores del año: son los únicos cuyas concesiones se consultan una a una.`;
     tb.replaceChildren(...filas.map((b) => {
       const tr = el("tr", {},
         el("td", { class: "num muted" }, fmt0.format(b[3])), el("td", { class: "wrap-cell" }, b[1]), el("td", {}, b[0] || "—"),
         el("td", { class: "muted" }, tipoNom(tipoDe(b[0]))), el("td", { class: "num" }, fmt0.format(b[2])), el("td", {}));
-      if (conMotivo && b[0]) {
+      if (g.motivos && conDesglose(g, b[0], b[3])) {
         const bt = el("button", { class: "btn-link", type: "button", "aria-expanded": "false", onclick: () => detalle(tr, b) }, "¿De dónde?");
         bt.title = `Ver de qué convocatorias viene el dinero de ${b[1]}`;
         tr.lastChild.append(bt);
