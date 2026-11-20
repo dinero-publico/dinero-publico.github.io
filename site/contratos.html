@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contratos públicos: quién los adjudica y quién los gana · Dinero Público</title>
+<meta name="description" content="Contratos adjudicados por el Estado, las comunidades, los ayuntamientos y las universidades en la Plataforma de Contratación del Sector Público: importes, adjudicatarios, órganos, procedimientos y número de ofertas.">
+<link rel="canonical" href="https://dinero-publico.github.io/contratos.html">
+<meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161614" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="Dinero Público">
+<meta property="og:title" content="Contratos públicos: quién los adjudica y quién los gana · Dinero Público">
+<meta property="og:description" content="Contratos adjudicados por el Estado, las comunidades, los ayuntamientos y las universidades en la Plataforma de Contratación del Sector Público: importes, adjudicatarios, órganos, procedimientos y número de ofertas.">
+<meta property="og:url" content="https://dinero-publico.github.io/contratos.html">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect x=%221%22 y=%229%22 width=%223%22 height=%226%22 fill=%22%232f6db5%22/%3E%3Crect x=%226%22 y=%225%22 width=%223%22 height=%2210%22 fill=%22%232f6db5%22/%3E%3Crect x=%2211%22 y=%221%22 width=%223%22 height=%2214%22 fill=%22%23d1803a%22/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-page="contratos">
+<a class="skip" href="#main">Saltar al contenido</a>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="./">Dinero Público</a>
+    <nav aria-label="Secciones">
+      <ul>
+      <li><a href="./">Inicio</a></li>
+      <li><a href="estado.html">Estado</a></li>
+      <li><a href="presupuesto.html">Presupuesto</a></li>
+      <li><a href="quien-gasta.html">Quién gasta</a></li>
+      <li><a href="comunidades.html">Comunidades</a></li>
+      <li><a href="subvenciones.html">Subvenciones</a></li>
+      <li><a href="contratos.html" aria-current="page">Contratos</a></li>
+      <li><a href="buscar.html">Buscar</a></li>
+      <li><a href="fuentes.html">Fuentes</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap con-lado">
+<aside class="lado" aria-label="Índice y ajustes de la página">
+  <button type="button" class="lado-btn" aria-expanded="false" aria-controls="lado-panel">
+    <span class="lado-ico" aria-hidden="true"></span>
+    <span class="lado-btn-txt"><span class="lado-actual">Índice y ajustes</span><span class="viendo-mini"></span></span>
+  </button>
+  <div class="lado-panel" id="lado-panel">
+    <nav class="indice" aria-labelledby="indice-tit">
+      <p class="lado-tit" id="indice-tit">En esta página</p>
+      <ol>
+        <li><a href="#h-con-quien">Quién contrata</a></li>
+        <li><a href="#h-con-que">Qué se contrata</a></li>
+        <li><a href="#h-con-como">Cómo se adjudica</a></li>
+        <li><a href="#h-con-top">Los mayores adjudicatarios</a></li>
+        <li><a href="#h-con-organos">Los órganos que más adjudican</a></li>
+        <li><a href="#h-con-mes">Mes a mes</a></li>
+        <li><a href="#h-con-buscar">Buscar un contrato</a></li>
+      </ol>
+    </nav>
+      <div class="ajustes" role="group" aria-labelledby="ajustes-tit">
+        <p class="lado-tit" id="ajustes-tit">Ajustes</p>
+        <label>Año de adjudicación <select id="sel-con-anio" data-viendo="{v}" data-url="anio"></select></label>
+        <p class="viendo" id="viendo"></p>
+      </div>
+    <p class="lado-ayuda"><a href="fuentes.html">Fuentes y metodología</a><br><a href="fuentes.html#glosario">Glosario</a> · <a href="fuentes.html#accesibilidad">Accesibilidad</a></p>
+  </div>
+</aside>
+<main id="main">
+  <div class="pagehead">
+    <h1>Contratos públicos <span class="muted" id="con-tit-anio"></span></h1>
+    <p class="lead">Lo que el Estado, las comunidades, los ayuntamientos, las universidades y sus empresas públicas pagan por obras, servicios y suministros, a quién lo adjudican y cómo, según la Plataforma de Contratación del Sector Público.</p>
+    <p class="badges"><span class="badge" id="badge-act"></span></p>
+  </div>
+  <noscript><p class="err">Esta página necesita JavaScript para dibujar los gráficos. Los datos en bruto están en la página de <a href="fuentes.html#descargas">fuentes</a>.</p></noscript>
+  <p class="note" id="con-curso" hidden></p>
+  <div class="kpis" id="con-kpis"></div>
+  <p class="note" id="con-ambito"></p>
+  <p class="note" id="con-vmax"></p>
+
+  <section aria-labelledby="h-con-quien">
+    <h2 id="h-con-quien">Quién contrata</h2>
+    <div class="ctrl"><label>Agrupar por <select id="sel-con-quien" data-url="quien">
+      <option value="por_administracion">Administración</option>
+      <option value="por_comunidad">Comunidad donde se ejecuta</option>
+    </select></label></div>
+    <div class="chart" id="ch-con-quien"></div>
+    <p class="note" id="con-quien-nota"></p>
+  </section>
+
+  <section aria-labelledby="h-con-que">
+    <h2 id="h-con-que">Qué se contrata</h2>
+    <div class="chart" id="ch-con-tipo"></div>
+    <p class="note">Tipo de contrato según la Ley de Contratos del Sector Público: obras (construir o reformar), servicios (limpieza, mantenimiento, consultoría…), suministros (comprar o alquilar bienes) y concesiones, en las que el adjudicatario cobra sobre todo de los usuarios.</p>
+  </section>
+
+  <section aria-labelledby="h-con-como">
+    <h2 id="h-con-como">Cómo se adjudica</h2>
+    <div class="chart" id="ch-con-proc"></div>
+    <p class="note">Procedimiento abierto: cualquier empresa puede presentar oferta. Abierto simplificado: igual, con plazos y trámites más cortos para contratos pequeños. Negociado sin publicidad: el órgano invita a una o varias empresas sin anunciarlo, solo en los casos tasados por la ley (urgencia, exclusividad…). Derivado de acuerdo marco: se adjudica entre las empresas seleccionadas antes en un acuerdo marco.</p>
+    <h3>Número de ofertas</h3>
+    <p id="con-ofertas"></p>
+  </section>
+
+  <section aria-labelledby="h-con-top">
+    <h2 id="h-con-top">Los mayores adjudicatarios</h2>
+    <p class="note">Suma de lo adjudicado a cada NIF en el año. Pulsa en uno para ver sus contratos en el buscador. Las uniones temporales de empresas (UTE) figuran con su propio NIF, aparte de las empresas que las forman.</p>
+    <div class="chart" id="ch-con-top"></div>
+  </section>
+
+  <section aria-labelledby="h-con-organos">
+    <h2 id="h-con-organos">Los órganos que más adjudican</h2>
+    <p class="note">Órgano de contratación: el ministerio, consejería, ayuntamiento o empresa pública que adjudica. Pulsa en uno para ver sus contratos.</p>
+    <div class="chart" id="ch-con-organos"></div>
+  </section>
+
+  <section aria-labelledby="h-con-mes">
+    <h2 id="h-con-mes">Mes a mes</h2>
+    <div class="chart" id="ch-con-mes"></div>
+    <p class="note">Por fecha de adjudicación. Los últimos meses crecen durante unas semanas, mientras los órganos publican sus adjudicaciones.</p>
+  </section>
+
+  <section aria-labelledby="h-con-buscar">
+    <h2 id="h-con-buscar">Buscar un contrato</h2>
+    <p class="note">Esta página resume las adjudicaciones. Para consultarlas una a una (buscar por empresa, NIF, órgano u objeto, filtrar, ordenar, descargarlas y ver si el adjudicatario también recibe subvenciones) está el buscador.</p>
+    <form class="bus-form bus-mini" role="search" action="buscar.html">
+      <input type="hidden" name="d" value="contratos">
+      <input type="hidden" name="anio" id="con-buscar-anio">
+      <label for="con-q">Empresa, NIF, órgano u objeto del contrato</label>
+      <div class="bus-caja">
+        <input type="search" id="con-q" name="q" autocomplete="off" placeholder="p. ej. limpieza, ayuntamiento de soria, B12345678…">
+        <button class="btn" type="submit">Buscar</button>
+      </div>
+    </form>
+    <ul class="bus-enlaces" id="con-buscar-enlaces"></ul>
+    <p class="note"><a href="fuentes.html#f-contratos">Sobre esta fuente</a>.</p>
+  </section>
+</main>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <nav aria-label="Pie de página"><ul class="foot-nav">
+      <li><a href="./">Inicio</a></li>
+      <li><a href="estado.html">Estado</a></li>
+      <li><a href="presupuesto.html">Presupuesto</a></li>
+      <li><a href="quien-gasta.html">Quién gasta</a></li>
+      <li><a href="comunidades.html">Comunidades</a></li>
+      <li><a href="subvenciones.html">Subvenciones</a></li>
+      <li><a href="contratos.html">Contratos</a></li>
+      <li><a href="buscar.html">Buscar</a></li>
+      <li><a href="fuentes.html">Fuentes</a></li>
+    </ul></nav>
+    <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local, Base de Datos Nacional de Subvenciones, Plataforma de Contratación del Sector Público) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
+    <p>Proyecto independiente, sin relación con ninguna administración. <a href="https://github.com/dinero-publico/dinero-publico.github.io">Código abierto</a> con licencia MIT.</p>
+  </div>
+</footer>
+
+<div class="tip" id="tip" hidden></div>
+<script src="vendor/d3.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>

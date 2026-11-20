@@ -1050,6 +1050,88 @@ function renderSubvenciones(sub) {
   onResize(draw);
 }
 
+/* ---------- Contratos públicos (Plataforma de Contratación del Sector Público) ---------- */
+const PLACSP_LIC = "https://contrataciondelestado.es/wps/poc?uri=deeplink:detalle_licitacion&idEvl=";
+const MESES_LARGOS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+const MESES_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+const ambitoContratos = (con) => `Cubre los contratos que se publican en la Plataforma de Contratación del Sector Público desde ${fecha(con.cobertura.desde)}: ` +
+  "los del Estado y buena parte de los de ayuntamientos, diputaciones, universidades y algunas comunidades. No incluye los de las plataformas autonómicas propias " +
+  "(Cataluña, Madrid, Andalucía, País Vasco, Galicia, Navarra, La Rioja…) ni los contratos menores. Importes de adjudicación sin IVA: es el valor total de cada contrato, que puede durar varios años, no lo pagado en el año.";
+function renderContratos(con) {
+  const anios = Object.keys(con.anios).sort().reverse();
+  const curso = (a) => (con.en_curso || []).includes(a);
+  const state = { anio: anios.find((a) => !curso(a)) || anios[0], quien: "por_administracion" };
+  const sel = $("#sel-con-anio");
+  sel.replaceChildren(...anios.map((a) => el("option", { value: a }, a + (curso(a) ? " (en curso)" : ""))));
+  sel.value = state.anio;
+  sel.addEventListener("change", () => { state.anio = sel.value; draw(); });
+  const selQ = $("#sel-con-quien");
+  selQ.addEventListener("change", () => { state.quien = selQ.value; drawQuien(); });
+  $("#con-ambito").textContent = ambitoContratos(con);
+  const corto = (s, t) => { const w = $(s).clientWidth; return w < 560 ? trunc(t, Math.max(20, Math.floor(w / 7.4))) : t; };
+  const grupo = (g, sel, aria, k, extra = {}) => barras(sel, Object.entries(g[k]).map(([x, [n, v]]) => ({
+    key: x, label: x, v: v / 1e6, color: /^(Sin |Varias|Otr)/.test(x) ? css("--muted") : null,
+    tip: [x, `${eurM(v)} · ${fmt0.format(n)} adjudicaciones`, `${pf((100 * v) / g.importe)} del importe`], ...extra,
+  })), { aria, valFmt: (v) => fmt0.format(v) + " M€", labW: 300, ...extra });
+
+  function drawQuien() {
+    const a = state.anio, g = con.anios[a], k = state.quien;
+    grupo(g, "#ch-con-quien", `Importe adjudicado en ${a} ${k === "por_comunidad" ? "por comunidad donde se ejecuta el contrato" : "por administración"}`, k);
+    $("#con-quien-nota").textContent = k === "por_comunidad"
+      ? "Lugar de ejecución que declara cada contrato. «Varias o sin especificar» son los que se ejecutan en varias comunidades, en toda España o fuera, y los que no lo indican."
+      : "El Estado incluye sus organismos, empresas públicas y fundaciones (ADIF, Aena, Correos…); igual las comunidades y las entidades locales. Las universidades públicas van aparte.";
+  }
+
+  function draw() {
+    const a = state.anio, g = con.anios[a];
+    $("#con-tit-anio").textContent = `(${a})`;
+    const nc = $("#con-curso");
+    nc.hidden = !curso(a);
+    nc.textContent = curso(a) ? `${a} está en curso: los órganos siguen publicando adjudicaciones, así que las cifras aún crecerán.` : "";
+    const kpi = (t, v, s) => el("div", { class: "kpi" }, el("h4", {}, t), el("div", { class: "big" }, v), el("div", { class: "sub muted" }, s));
+    $("#con-kpis").replaceChildren(
+      kpi(`Importe adjudicado (${a})`, eurM(g.importe), `${eurM(g.con_iva)} con IVA`),
+      kpi("Adjudicaciones", fmt0.format(g.adjudicaciones), `de ${fmt0.format(g.organos)} órganos de contratación`),
+      kpi("Adjudicatarios distintos", fmt0.format(g.adjudicatarios), "empresas y entidades con NIF"),
+      kpi("Con una sola oferta", pf((100 * g.una_oferta[0]) / g.adjudicaciones), `de las adjudicaciones; ${eurM(g.una_oferta[1])}`));
+    drawQuien();
+    grupo(g, "#ch-con-tipo", `Importe adjudicado en ${a} por tipo de contrato`, "por_tipo");
+    grupo(g, "#ch-con-proc", `Importe adjudicado en ${a} por procedimiento`, "por_procedimiento");
+    const vm = g.valor_maximo || [0, 0];
+    $("#con-vmax").textContent = vm[0] ? `Aparte hubo ${fmt0.format(vm[0])} adjudicaciones de acuerdos marco y sistemas dinámicos de adquisición, con un valor máximo de ${eurM(vm[1])}. ` +
+      "Ese valor no se suma: es el máximo que se podrá contratar con ellos, a menudo en varios años y con varias empresas; lo que se gasta de verdad son los contratos basados en ellos, que sí cuentan." : "";
+    $("#con-ofertas").textContent = `En ${fmt0.format(g.una_oferta[0])} de las ${fmt0.format(g.adjudicaciones)} adjudicaciones de ${a} (${pf((100 * g.una_oferta[0]) / g.adjudicaciones)}) se presentó una sola oferta; ` +
+      `suman ${eurM(g.una_oferta[1])}, el ${pf((100 * g.una_oferta[1]) / g.importe)} del importe. ` +
+      `Las pymes ganaron ${fmt0.format(g.pyme[0])} adjudicaciones (${eurM(g.pyme[1])}) y ${fmt0.format(g.fondos_ue[0])} se financian con fondos europeos (${eurM(g.fondos_ue[1])}).`;
+    barras("#ch-con-top", g.mayores.slice(0, 25).map((b, i) => ({
+      key: b[0] + i, nif: b[0], label: corto("#ch-con-top", b[1]), v: b[2] / 1e6,
+      tip: [b[1], `${fmt0.format(b[2])} € sin IVA`, `${fmt0.format(b[3])} adjudicaciones · NIF ${b[0]}`, "Pulsa para ver sus contratos"],
+    })), { aria: `Los 25 mayores adjudicatarios de contratos en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€",
+      onClick: (r) => (location.href = enlaceBuscar({ d: "contratos", anio: a, q: r.nif })) });
+    barras("#ch-con-organos", g.mayores_organos.slice(0, 25).map((o, i) => ({
+      key: o[0] + i, nombre: o[0], label: corto("#ch-con-organos", o[0]), v: o[2] / 1e6,
+      tip: [o[0], `${fmt0.format(o[2])} € sin IVA`, `${fmt0.format(o[3])} adjudicaciones · ${o[1]}`, "Pulsa para ver sus contratos"],
+    })), { aria: `Los 25 órganos que más importe adjudicaron en ${a}`, labW: 320, valFmt: (v) => fmt1.format(v) + " M€",
+      onClick: (r) => (location.href = enlaceBuscar({ d: "contratos", anio: a, q: r.nombre })) });
+    barras("#ch-con-mes", Object.entries(g.por_mes).map(([m, [n, v]]) => ({
+      key: m, label: `${MESES_CORTOS[+m.slice(5) - 1]} ${m.slice(0, 4)}`, v: v / 1e6,
+      tip: [`${MESES_CORTOS[+m.slice(5) - 1]} ${m.slice(0, 4)}`, `${eurM(v)} · ${fmt0.format(n)} adjudicaciones`],
+    })), { aria: `Importe adjudicado cada mes de ${a}`, valFmt: (v) => fmt0.format(v) + " M€" });
+
+    $("#con-buscar-anio").value = a;
+    const li = (href, txt) => el("li", {}, el("a", { href }, txt));
+    $("#con-buscar-enlaces").replaceChildren(
+      li(enlaceBuscar({ d: "contratos", anio: a }), `Ver las ${fmt0.format(g.adjudicaciones)} adjudicaciones de ${a}, de mayor a menor`),
+      li(enlaceBuscar({ d: "contratos", anio: a, ofertas: "1" }), "Solo las que tuvieron una sola oferta"),
+      li(enlaceBuscar({ d: "contratos", anio: a, proc: "Negociado sin publicidad" }), "Solo las de procedimiento negociado sin publicidad"),
+      li(enlaceBuscar({ d: "contratos", anio: a, min: "1000000" }), "Solo las de un millón de € o más"),
+      li(enlaceBuscar({ d: "contratos", anio: a, sistema: "Acuerdo marco" }), "Solo los acuerdos marco (con su valor máximo)"),
+      li("fuentes.html#descargas", `Descargar las adjudicaciones de ${a}, mes a mes (JSON)`));
+  }
+  draw();
+  onResize(draw);
+}
+
 /* ---------- Buscador: los datos fila a fila, separados de los resúmenes ----------
    Cada «conjunto» dice cómo cargar sus filas, qué filtros tiene, qué columnas muestra y qué detalle abre.
    El motor común (renderBuscar) busca, filtra con recuentos, ordena, pagina, descarga en CSV y guarda todo en la dirección. */
@@ -1080,26 +1162,33 @@ function conjuntosBusqueda(cargar) {
       nombre: "Beneficiarios de subvenciones", uno: "beneficiario", varios: "beneficiarios",
       ayuda: "Nombre o NIF, entero o en parte: «universidad», «ayuntamiento de soria», «B12345678»… Da igual las tildes y las mayúsculas.",
       resumen: ["subvenciones.html", "Resumen de las subvenciones"],
-      base: async () => ({ sub: await subv() }),
-      filtros: ({ sub }) => [
+      base: async () => { const [sub, con] = await Promise.all([subv(), cargar("contratos.json").catch(() => null)]); return { sub, con }; },
+      filtros: ({ sub, con }) => [
         { k: "anio", tit: "Año", carga: true, def: ultimoCompleto(sub), opciones: [...aniosSub(sub).map((a) => [a, etqAnio(sub, a)]), ["todos", "Todos los años"]] },
         { k: "tipo", tit: "Tipo de entidad", faceta: (r) => r.tipo, nombre: (v) => sub.tipos[v] || v },
         { k: "min", tit: "Importe en el año", opciones: [["", "Cualquiera (desde 100.000 €)"], ["1000000", "1 millón de € o más"], ["10000000", "10 millones de € o más"], ["100000000", "100 millones de € o más"]], test: (r, v) => r.importe >= +v },
+        ...(con ? [{ k: "contratos", tit: "Contratos públicos ese año", opciones: [["", "Con y sin contratos"], ["si", "Solo quienes también ganaron contratos"]], test: (r) => r.contratos != null }] : []),
       ],
-      async filas({ sub }, e) {
+      async filas({ sub, con }, e) {
         const anios = e.anio === "todos" ? aniosSub(sub) : [e.anio];
-        const listas = await Promise.all(anios.map((a) => cargar(sub.grandes[a].lista)));
-        return listas.flatMap((l, j) => l.beneficiarios.map(([nif, nom, imp], i) => ({
-          _id: `${anios[j]}:${nif || nom}`, anio: anios[j], puesto: i + 1, nombre: nom, nif: nif || "", tipo: tipoNif(sub.tipos, nif), importe: imp, _t: sinTildes(`${nif} ${nom}`),
-        })));
+        const [listas, adj] = await Promise.all([Promise.all(anios.map((a) => cargar(sub.grandes[a].lista))),
+          Promise.all(anios.map((a) => (con && con.anios[a] ? cargar(con.anios[a].fichero_adjudicatarios).catch(() => null) : null)))]);
+        return listas.flatMap((l, j) => l.beneficiarios.map(([nif, nom, imp], i) => {
+          const c = nif && adj[j] ? adj[j].adjudicatarios[nif] : null;
+          return { _id: `${anios[j]}:${nif || nom}`, anio: anios[j], puesto: i + 1, nombre: nom, nif: nif || "", tipo: tipoNif(sub.tipos, nif), importe: imp,
+            contratos: c ? c[1] : null, _ncon: c ? c[0] : 0, _hayCon: !!adj[j], _t: sinTildes(`${nif} ${nom}`) };
+        }));
       },
-      columnas: ({ sub }, e) => [
+      columnas: ({ sub, con }, e) => [
         ...(e.anio === "todos" ? [{ k: "anio", tit: "Año", orden: -1 }] : []),
         { k: "puesto", tit: "Puesto", num: true, orden: 1, fmt: eur, muted: true, title: "Puesto en la lista de su año, de mayor a menor importe" },
         { k: "nombre", tit: "Beneficiario", wrap: true, orden: 1, resalta: true },
         { k: "nif", tit: "NIF", resalta: true },
         { k: "tipo", tit: "Tipo", muted: true, fmt: (v) => sub.tipos[v] || v },
-        { k: "importe", tit: "Importe (€)", num: true, orden: -1, fmt: eur },
+        { k: "importe", tit: "Subvenciones (€)", num: true, orden: -1, fmt: eur },
+        ...(con && (e.anio === "todos" ? aniosSub(sub).some((a) => con.anios[a]) : con.anios[e.anio])
+          ? [{ k: "contratos", tit: "Contratos (€)", num: true, orden: -1, fmt: eur, muted: true, title: "Importe sin IVA de los contratos que ganó ese año en la Plataforma de Contratación del Sector Público",
+              enlace: (r) => (r.contratos != null ? enlaceBuscar({ d: "contratos", anio: r.anio, q: r.nif }) : null) }] : []),
       ],
       orden: "importe:-1",
       donde,
@@ -1109,8 +1198,9 @@ function conjuntosBusqueda(cargar) {
         return sin ? `«¿De dónde?» solo está en los ${fmt0.format(sub.grandes[sin.anio].motivos.puestos || 1000)} mayores de cada año: son los únicos cuyas concesiones se consultan una a una.` : "";
       },
       sinResultados: (ctx, e) => (e.anio !== "todos" ? [["Buscar en todos los años", { anio: "todos" }]] : []),
-      notas: ({ sub }, e) => [
+      notas: ({ sub, con }, e) => [
         el("p", {}, "Solo figuran quienes recibieron 100.000 € o más en el año sumando todas las administraciones; las personas físicas no aparecen (la BDNS las anonimiza). Importe: ayuda equivalente; en préstamos y garantías es solo su parte de ayuda, no el capital prestado."),
+        ...(con ? [el("p", {}, "«Contratos»: lo que el mismo NIF ganó ese año en contratos publicados en la Plataforma de Contratación del Sector Público (sin IVA; desde ", fecha(con.cobertura.desde), "). «—» quiere decir que no consta ninguno o que no hay datos de contratos de ese año.")] : []),
         el("p", {}, "Lista completa en JSON: ", ...aniosSub(sub).flatMap((a, i) => [i ? ", " : "", el("a", { href: DATA + sub.grandes[a].lista }, a)]), ". Fuente: ", fuenteSub.cloneNode(true), "."),
       ],
       detalle: {
@@ -1199,6 +1289,106 @@ function conjuntosBusqueda(cargar) {
           const out = el("div", {}, el("p", { class: "note" }, datos.join(" · ")), caja);
           verMas(tb, 10);
           return [out];
+        },
+      },
+    },
+
+    contratos: {
+      nombre: "Contratos públicos adjudicados", uno: "adjudicación", varios: "adjudicaciones",
+      ayuda: "Empresa, NIF, órgano, objeto o expediente, entero o en parte: «limpieza», «ayuntamiento de soria», «B12345678»…",
+      resumen: ["contratos.html", "Resumen de los contratos"],
+      base: async () => { const [con, sub] = await Promise.all([cargar("contratos.json"), subv().catch(() => null)]); return { con, sub }; },
+      filtros: ({ con }) => {
+        const anios = Object.keys(con.anios).sort().reverse();
+        return [
+          { k: "anio", tit: "Año de adjudicación", carga: true, def: anios.find((a) => !(con.en_curso || []).includes(a)) || anios[0], opciones: anios.map((a) => [a, a + ((con.en_curso || []).includes(a) ? " (en curso)" : "")]), reinicia: ["mes"] },
+          // Cada mes es un fichero de unos 5 MB: elegir uno carga mucho menos que el año entero.
+          { k: "mes", tit: "Mes", carga: true, def: "todos", opciones: (e) => [["todos", "Todo el año"],
+            ...(con.anios[e.anio] || { ficheros: [] }).ficheros.map((f) => f.slice(10, 17)).map((m) => [m, `${MESES_CORTOS[+m.slice(5) - 1]} ${m.slice(0, 4)}`])] },
+          { k: "adm", tit: "Administración", faceta: (r) => r.adm },
+          { k: "tipo", tit: "Tipo de contrato", faceta: (r) => r.tipo },
+          { k: "proc", tit: "Procedimiento", faceta: (r) => r.proc },
+          { k: "sistema", tit: "Contrato o acuerdo marco", faceta: (r) => r.sistema },
+          { k: "com", tit: "Comunidad donde se ejecuta", faceta: (r) => r.com, alfa: true },
+          { k: "min", tit: "Importe sin IVA", opciones: [["", "Cualquiera"], ["15000", "15.000 € o más"], ["100000", "100.000 € o más"], ["1000000", "1 millón de € o más"], ["10000000", "10 millones de € o más"]], test: (r, v) => (r.importe ?? r.vmax ?? 0) >= +v },
+          { k: "ofertas", tit: "Ofertas recibidas", opciones: [["", "Cualquier número"], ["1", "Una sola oferta"], ["2", "Dos o más"]], test: (r, v) => (v === "1" ? r.ofertas === 1 : r.ofertas >= 2) },
+          { k: "ue", tit: "Fondos europeos", opciones: [["", "Con y sin fondos de la UE"], ["si", "Solo con fondos de la UE"], ["no", "Sin fondos de la UE"]], test: (r, v) => (v === "si") === r.ue },
+          { k: "subv", tit: "El adjudicatario recibe subvenciones", opciones: [["", "Da igual"], ["si", "Sí, 100.000 € o más ese año"]], test: (r) => r.subv != null },
+        ];
+      },
+      async filas({ con, sub }, e) {
+        const g = con.anios[e.anio], nombres = e.mes && e.mes !== "todos" ? g.ficheros.filter((n) => n.includes(e.mes)) : g.ficheros;
+        // Los meses se piden de cuatro en cuatro: el año entero son una docena de ficheros de ~5 MB.
+        const porTandas = async () => { const out = []; for (let i = 0; i < nombres.length; i += 4) out.push(...(await Promise.all(nombres.slice(i, i + 4).map((n) => cargar(n))))); return out; };
+        const [fs, lista] = await Promise.all([porTandas(), sub && sub.grandes[e.anio] ? cargar(sub.grandes[e.anio].lista).catch(() => null) : null]);
+        const subv = new Map(lista ? lista.beneficiarios.filter((b) => b[0]).map((b, i) => [b[0], [b[2], i + 1]]) : []);
+        return fs.flatMap((f) => { const C = Object.fromEntries(f.campos.map((k, i) => [k, i])); return f.adjudicaciones.map((x, i) => {
+          const o = f.organos[x[C.organo]], [nif, nombre] = f.adjudicatarios[x[C.adjudicatario]], vmax = ["1", "2"].includes(x[C.sistema]);
+          return {
+            _id: `${x[C.id]}-${x[C.lote] || ""}-${nif || f.mes + i}`, fecha: x[C.fecha], titulo: x[C.titulo], organo: o[0], adm: o[2], nif, nombre,
+            importe: vmax ? null : x[C.sin_iva], vmax: vmax ? x[C.sin_iva] : null, comparte: !!x[C.comparte], sistema: (con.sistemas || {})[x[C.sistema]] || "Contrato",
+            con_iva: x[C.con_iva], ofertas: x[C.ofertas], pyme: x[C.pyme], tipo: con.tipos[x[C.tipo]] || "Sin información",
+            proc: con.procedimientos[x[C.procedimiento]] || "Sin información", com: con.comunidades[(x[C.nuts] || "").slice(0, 4)] || "Varias o sin especificar",
+            ue: !!x[C.ue] && x[C.ue] !== "NO-EU", cpv: x[C.cpv], expediente: x[C.expediente], lote: x[C.lote], enlace: x[C.enlace], subv: subv.get(nif) || null, _anio: e.anio,
+            _t: sinTildes(`${x[C.titulo]} ${o[0]} ${nif} ${nombre} ${x[C.expediente]}`),
+          };
+        }); });
+      },
+      columnas: () => [
+        { k: "fecha", tit: "Fecha", orden: -1, fmt: (v) => (v ? `${v.slice(8, 10)}/${v.slice(5, 7)}/${v.slice(0, 4)}` : "—"), muted: true },
+        { k: "titulo", tit: "Objeto del contrato", wrap: true, orden: 1, resalta: true, enlace: (r) => (r.enlace ? PLACSP_LIC + r.enlace : null) },
+        { k: "organo", tit: "Órgano de contratación", wrap: true, orden: 1, resalta: true },
+        { k: "nombre", tit: "Adjudicatario", wrap: true, orden: 1, resalta: true },
+        { k: "nif", tit: "NIF", resalta: true },
+        { k: "ofertas", tit: "Ofertas", num: true, orden: -1, fmt: (v) => (v == null ? "—" : fmt0.format(v)), title: "Ofertas recibidas en el lote" },
+        { k: "importe", tit: "Importe sin IVA (€)", num: true, orden: -1,
+          fmt: (v, r) => (r.vmax != null ? `máx. ${eur(r.vmax)}` : r.comparte && v == null ? "compartido" : eur(v)),
+          title: "Importe de adjudicación sin IVA. «máx.»: valor máximo de un acuerdo marco o sistema dinámico, que no suma. «compartido»: el importe del lote ya figura en otro adjudicatario" },
+      ],
+      orden: "importe:-1",
+      donde: (e) => (e.mes && e.mes !== "todos" ? ` en ${MESES_LARGOS[+e.mes.slice(5) - 1]} de ${e.mes.slice(0, 4)}` : donde(e)),
+      suma: (rs) => {
+        const vm = d3.sum(rs, (r) => r.vmax || 0), imp = d3.sum(rs, (r) => r.importe || 0);
+        if (vm && !imp) return `un valor máximo de ${eurM(vm)} sin IVA (acuerdos marco y sistemas dinámicos: es un tope, no un gasto)`;
+        return `${eurM(imp)} sin IVA en total` + (vm ? ` (más ${eurM(vm)} de valor máximo de acuerdos marco, que no se suma)` : "");
+      },
+      notas: ({ con }) => [
+        el("p", {}, ambitoContratos(con), " El objeto enlaza a la ficha del contrato en la Plataforma, con sus pliegos y resoluciones. Los adjudicatarios que son personas físicas no se nombran."),
+        el("p", {}, "Todas las adjudicaciones en JSON, un fichero por mes: ", ...Object.keys(con.anios).sort().reverse().flatMap((a, i) => [i ? "; " : "", `${a}: `,
+          ...con.anios[a].ficheros.flatMap((n, j) => [j ? ", " : "", el("a", { href: DATA + n }, MESES_CORTOS[+n.slice(15, 17) - 1])])]),
+          ". Fuente: ", el("a", { href: "fuentes.html#f-contratos" }, "Plataforma de Contratación del Sector Público"), "."),
+      ],
+      detalle: {
+        etiqueta: "Ficha",
+        titulo: (r) => `Ver la ficha del contrato ${r.titulo}`,
+        tiene: () => true,
+        pinta: ({ con }, r) => {
+          const fila = (k, v) => (v == null || v === "" ? null : el("tr", {}, el("th", { scope: "row" }, k), el("td", {}, v)));
+          const tabla = el("table", { class: "tbl ficha" }, el("tbody", {}, ...[
+            fila("Expediente", r.expediente + (r.lote ? ` · lote ${r.lote}` : "")),
+            fila("Órgano de contratación", `${r.organo} (${r.adm})`),
+            fila("Adjudicatario", r.nif ? `${r.nombre} · NIF ${r.nif}` : r.nombre),
+            fila("Fecha de adjudicación", r.fecha.split("-").reverse().join("/")),
+            fila("Importe", r.vmax != null ? `Valor máximo del ${r.sistema.toLowerCase()}: ${eur(r.vmax)} € sin IVA. No es un gasto: fija el máximo que se podrá contratar, para varios años y a menudo varias empresas, así que no se suma.`
+              : r.importe == null ? (r.comparte ? "Compartido: el importe del lote figura en otro adjudicatario" : "No consta")
+              : `${eur(r.importe)} € sin IVA` + (r.con_iva != null ? ` · ${eur(r.con_iva)} € con IVA` : "") + (r.comparte ? " (lote con varios adjudicatarios: el importe es del conjunto)" : "")),
+            fila("Tipo y procedimiento", `${r.tipo} · ${r.proc} · ${r.sistema}`),
+            fila("Ofertas recibidas", r.ofertas == null ? null : fmt0.format(r.ofertas)),
+            fila("Adjudicatario pyme", r.pyme == null ? null : r.pyme ? "Sí" : "No"),
+            fila("Lugar de ejecución", r.com),
+            fila("Código CPV", r.cpv),
+            fila("Fondos europeos", r.ue ? "Sí" : "No"),
+          ].filter(Boolean)));
+          const enl = [
+            r.enlace && el("a", { href: PLACSP_LIC + r.enlace, rel: "noopener", target: "_blank" }, "Ficha completa en la Plataforma de Contratación (pliegos, actas y resoluciones)"),
+            r.nif && el("a", { href: enlaceBuscar({ d: "contratos", anio: r._anio, q: r.nif }) }, `Todos los contratos de ${r.nombre} en ${r._anio}`),
+            el("a", { href: enlaceBuscar({ d: "contratos", anio: r._anio, q: r.organo }) }, `Todos los contratos de ${r.organo} en ${r._anio}`),
+          ].filter(Boolean);
+          const subvTxt = r.subv
+            ? el("p", { class: "note" }, `Este adjudicatario también recibió ${eur(r.subv[0])} € en subvenciones en ${r._anio} (puesto ${fmt0.format(r.subv[1])} entre los grandes beneficiarios). `,
+              el("a", { href: enlaceBuscar({ d: "beneficiarios", anio: r._anio, q: r.nif, abrir: `${r._anio}:${r.nif}` }) }, "Ver sus subvenciones"), ".")
+            : null;
+          return [el("div", { class: "scroll" }, tabla), ...(subvTxt ? [subvTxt] : []), el("ul", { class: "bus-enlaces" }, ...enl.map((a) => el("li", {}, a)))];
         },
       },
     },
@@ -1541,7 +1731,8 @@ function renderBuscar() {
     const td = el("td", { class: [c.num && "num", c.wrap && "wrap-cell", c.muted && "muted", c.cls && c.cls(r)].filter(Boolean).join(" ") });
     const cont = c.resalta ? resaltar(txt, words) : [txt];
     const href = c.enlace && c.enlace(r);
-    td.append(href ? el("a", { href, rel: "noopener", target: "_blank" }, ...cont) : el("span", {}, ...cont));
+    // Los enlaces a otras webs se abren aparte; los del propio buscador, en la misma pestaña.
+    td.append(href ? el("a", /^https?:/.test(href) ? { href, rel: "noopener", target: "_blank" } : { href }, ...cont) : el("span", {}, ...cont));
     return td;
   }
 
@@ -1652,7 +1843,7 @@ function resaltar(txt, words) {
 }
 
 /* ---------- Informe de comprobaciones de la herramienta de datos (página de fuentes) ---------- */
-const NOMBRE_FUENTE = { estado: "Ejecución del Estado", pge: "Presupuestos del Estado", entregas: "Entregas a cuenta", ccaa: "Presupuestos autonómicos", cofog: "Gasto por función (COFOG)", poblacion: "Población", subvenciones: "Subvenciones (BDNS)" };
+const NOMBRE_FUENTE = { estado: "Ejecución del Estado", pge: "Presupuestos del Estado", entregas: "Entregas a cuenta", ccaa: "Presupuestos autonómicos", cofog: "Gasto por función (COFOG)", poblacion: "Población", subvenciones: "Subvenciones (BDNS)", contratos: "Contratos (Plataforma de Contratación)" };
 function renderInforme(inf) {
   const res = $("#informe-resumen"), ul = $("#informe-lista");
   if (!res) return;
@@ -1841,6 +2032,7 @@ document.addEventListener("input", (ev) => { if (ev.target.matches("input[data-u
     "quien-gasta": ["cofog"],
     comunidades: ["entregas", "ccaa", "cofog", "poblacion"],
     subvenciones: ["subvenciones"],
+    contratos: ["contratos"],
     fuentes: ["estado", "informe"],
   };
   const pagina = document.body.dataset.page;
@@ -1855,8 +2047,9 @@ document.addEventListener("input", (ev) => { if (ev.target.matches("input[data-u
   if (pagina === "quien-gasta") run(() => (d.cofog ? renderFunciones(d.cofog) : fail("#ch-fun", "gasto por función")), "#ch-fun", "gasto por función");
   if (pagina === "comunidades") run(() => (d.entregas && d.ccaa ? renderCcaa(d.entregas, d.ccaa, d.cofog, d.poblacion) : fail("#ch-ea", "comunidades")), "#ch-ea", "comunidades");
   if (pagina === "subvenciones") run(() => (d.subvenciones ? renderSubvenciones(d.subvenciones) : fail("#sub-kpis", "subvenciones")), "#sub-kpis", "subvenciones");
+  if (pagina === "contratos") run(() => (d.contratos ? renderContratos(d.contratos) : fail("#con-kpis", "contratos")), "#con-kpis", "contratos");
   if (pagina === "fuentes") renderInforme(d.informe);
-  if (pagina === "buscar") await renderBuscar().catch((e) => { console.error(e); fail("#bus-res", "el buscador"); });
+  if (pagina === "buscar") await renderBuscar().catch((e) => { console.error(e); fail("#bus-res", "la búsqueda"); });
   renderMeta(d.meta || {}, d.estado);
   aplicarUrl();
   viendo();

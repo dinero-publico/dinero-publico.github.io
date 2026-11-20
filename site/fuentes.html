@@ -100,6 +100,7 @@
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
       <li><a href="subvenciones.html">Subvenciones</a></li>
+      <li><a href="contratos.html">Contratos</a></li>
       <li><a href="buscar.html">Buscar</a></li>
       <li><a href="fuentes.html" aria-current="page">Fuentes</a></li>
       </ul>
@@ -118,7 +119,7 @@
       <p class="lado-tit" id="indice-tit">En esta página</p>
       <ol>
         <li><a href="#fuentes-oficiales">Fuentes oficiales</a>
-          <ol><li><a href="#f-estado">Ejecución del Estado</a></li><li><a href="#f-pge">Presupuestos del Estado</a></li><li><a href="#f-entregas">Entregas a cuenta</a></li><li><a href="#f-ccaa">Presupuestos autonómicos</a></li><li><a href="#f-cofog">Gasto por función</a></li><li><a href="#f-poblacion">Población</a></li><li><a href="#f-subvenciones">Subvenciones</a></li></ol>
+          <ol><li><a href="#f-estado">Ejecución del Estado</a></li><li><a href="#f-pge">Presupuestos del Estado</a></li><li><a href="#f-entregas">Entregas a cuenta</a></li><li><a href="#f-ccaa">Presupuestos autonómicos</a></li><li><a href="#f-cofog">Gasto por función</a></li><li><a href="#f-poblacion">Población</a></li><li><a href="#f-subvenciones">Subvenciones</a></li><li><a href="#f-contratos">Contratos</a></li></ol>
         </li>
         <li><a href="#proceso">Cómo se procesan</a></li>
         <li><a href="#comprobaciones">Comprobaciones</a></li>
@@ -230,6 +231,21 @@
       </dl>
       <p><a href="https://www.infosubvenciones.es/bdnstrans/GE/es/grandesbeneficiarios" rel="noopener">Ir a la fuente oficial</a> · <a href="https://www.infosubvenciones.es/bdnstrans/GE/es/avisolegal" rel="noopener">aviso legal</a></p>
     </article>
+    <article class="card fuente" id="f-contratos">
+      <h3>Contratos públicos</h3>
+      <p class="org">Ministerio de Hacienda (Plataforma de Contratación del Sector Público)</p>
+      <p>Cada adjudicación de los contratos publicados en la Plataforma: objeto, órgano de contratación, adjudicatario y su NIF, fecha, importe con y sin IVA, tipo de contrato, procedimiento, número de ofertas, si el adjudicatario es pyme, lugar de ejecución, código CPV y si hay fondos europeos. Cada fila enlaza a la ficha oficial, con los pliegos y las resoluciones.</p>
+      <dl>
+        <dt>Qué cubre</dt><dd>Los perfiles del contratante alojados en la Plataforma: el Estado y sus organismos y empresas, y buena parte de los ayuntamientos, diputaciones, universidades y algunas comunidades. <strong>No incluye</strong> las plataformas autonómicas propias (Cataluña, Madrid, Andalucía, País Vasco, Galicia, Navarra, La Rioja…) ni los contratos menores, que se publican aparte.</dd>
+        <dt>Periodicidad</dt><dd>Mensual: la Plataforma publica cada mes las licitaciones que han cambiado. El año en curso está incompleto.</dd>
+        <dt>Años en la web</dt><dd>Adjudicaciones desde enero de 2025.</dd>
+        <dt>Cómo se obtiene</dt><dd>Ficheros de datos abiertos (formato CODICE) de la Plataforma. De cada licitación vale su última versión y se descartan las anuladas. Solo cuentan los lotes adjudicados o formalizados, no los desiertos ni los desistidos. Como el servidor limita mucho la velocidad de descarga, esta fuente se actualiza desde un ordenador en España y no a diario.</dd>
+        <dt>Acuerdos marco</dt><dd>Al adjudicar un acuerdo marco o un sistema dinámico de adquisición se fija el <em>valor máximo</em> que se podrá contratar, a menudo para varios años y varias empresas: no es un gasto y no se suma al importe adjudicado; se muestra aparte. Los contratos basados en ellos sí cuentan. Cuando un lote tiene varios adjudicatarios con el mismo importe, se cuenta una sola vez.</dd>
+        <dt>Datos personales</dt><dd>Los adjudicatarios que son personas físicas (autónomos) no se nombran: figuran como «persona física» y solo cuentan en los totales.</dd>
+        <dt>Estado</dt><dd data-fuente="contratos">—</dd>
+      </dl>
+      <p><a href="https://www.hacienda.gob.es/es-ES/GobiernoAbierto/Datos%20Abiertos/Paginas/LicitacionesContratante.aspx" rel="noopener">Ir a la fuente oficial</a> · <a href="https://contrataciondelestado.es/" rel="noopener">Plataforma de Contratación</a></p>
+    </article>
     </div>
   </section>
 
@@ -237,7 +253,7 @@
     <h2 id="proceso">Cómo se procesan los datos</h2>
     <p>La obtención de los datos y la web están separadas: los datos los prepara una <a href="https://github.com/dinero-publico/datos">herramienta propia de código abierto</a> y se publican en <a href="https://dinero-publico.github.io/datos/">dinero-publico.github.io/datos</a>. Esta web solo los lee.</p>
     <ol class="pasos">
-      <li><strong>Descarga.</strong> Cada día a las 07:17 UTC, un proceso automático (GitHub Actions) descarga los mismos Excel y datos que cualquier persona puede bajar de las páginas oficiales, y guarda una copia de los originales. Hacienda no ofrece una API pública salvo para las subvenciones (la de la BDNS), que es la que se usa para ellas.</li>
+      <li><strong>Descarga.</strong> Cada día a las 07:17 UTC, un proceso automático (GitHub Actions) descarga los mismos Excel y datos que cualquier persona puede bajar de las páginas oficiales, y guarda una copia de los originales. Hacienda no ofrece una API pública salvo para las subvenciones (la de la BDNS), que es la que se usa para ellas. Las entregas a cuenta y los contratos se actualizan desde un ordenador en España, porque sus servidores no responden o limitan la velocidad a los de GitHub.</li>
       <li><strong>Transformación.</strong> Cada fichero se lee y se convierte a JSON con una estructura común (importes en millones de euros). Si una fuente cambia de formato o no responde, se conservan sus últimos datos válidos y se avisa en esta página.</li>
       <li><strong>Análisis.</strong> Se calculan datos que no vienen tal cual en las fuentes (el año en que rige cada presupuesto del Estado y qué presupuestos autonómicos están prorrogados) y se comprueba la coherencia de cada fuente: que las partidas sumen sus totales, que estén todas las comunidades y años… El resultado se publica en el <a href="#comprobaciones">informe de comprobaciones</a>.</li>
       <li><strong>Publicación.</strong> Si hay datos nuevos se guardan en el repositorio de datos, de modo que su historial de cambios es también el historial de los datos.</li>
@@ -264,6 +280,7 @@
       <li>El gasto por función (COFOG) es gasto ejecutado en contabilidad nacional. Sumar administraciones duplicaría las transferencias entre ellas; por eso se muestran aparte.</li>
       <li>Los <strong>euros por habitante</strong> usan la población residente a 1 de enero de cada año (el último año es provisional). Si un año aún no tiene población publicada, se usa la del último año disponible.</li>
       <li>Las <strong>subvenciones</strong> de la BDNS son las que registra cada administración concedente; la IGAE no garantiza que estén todas ni que no cambien. El importe de los grandes beneficiarios es la <em>ayuda equivalente</em>: en préstamos, avales o ventajas fiscales es solo el valor de la ayuda, no el dinero prestado o avalado. Una misma entidad puede recibir dinero que luego reparte a otros (por ejemplo, una comunidad autónoma que gestiona fondos europeos), así que los beneficiarios no se pueden sumar como si fueran destinatarios finales.</li>
+      <li>Los <strong>contratos</strong> son importes de adjudicación sin IVA, no lo pagado finalmente (puede haber modificaciones, prórrogas o anulaciones posteriores). Solo incluyen lo publicado en la Plataforma de Contratación del Sector Público: en las comunidades con plataforma propia faltan la mayoría de sus contratos y los de sus ayuntamientos, así que las comparaciones entre comunidades están sesgadas. Un adjudicatario y un beneficiario de subvenciones se cruzan solo por el NIF.</li>
       <li>Navarra y País Vasco (<strong>régimen foral</strong>) recaudan casi todos sus impuestos y asumen competencias que en el resto paga el Estado, así que su presupuesto por habitante es mucho mayor y no es directamente comparable con el de las comunidades de régimen común.</li>
     </ul>
   </section>
@@ -286,6 +303,11 @@
       <dt>Concurrencia competitiva / concesión directa</dt><dd>En concurrencia competitiva, quienes solicitan la ayuda compiten según criterios publicados. En la concesión directa, una ley, un real decreto o un convenio fija a quién se da (art. 22 de la Ley General de Subvenciones).</dd>
       <dt>Fondos MRR</dt><dd>Mecanismo de Recuperación y Resiliencia: fondos europeos Next Generation EU que España reparte con el Plan de Recuperación, Transformación y Resiliencia.</dd>
       <dt>Ayuda equivalente</dt><dd>Valor de la ayuda en euros. En una subvención es su importe; en un préstamo o un aval, la ventaja que supone frente a las condiciones de mercado.</dd>
+      <dt>Órgano de contratación</dt><dd>Quien adjudica un contrato en nombre de una administración: un ministerio, una consejería, un ayuntamiento, una empresa pública…</dd>
+      <dt>Procedimiento abierto / negociado sin publicidad</dt><dd>En el abierto cualquier empresa puede presentar oferta. En el negociado sin publicidad el órgano invita directamente a una o varias empresas; la ley solo lo permite en casos tasados (urgencia imperiosa, exclusividad técnica, licitación anterior desierta…).</dd>
+      <dt>Acuerdo marco</dt><dd>Acuerdo con una o varias empresas que fija las condiciones y el importe máximo de los contratos que se harán con ellas durante un periodo. Los contratos «basados en el acuerdo marco» son los encargos concretos.</dd>
+      <dt>UTE</dt><dd>Unión temporal de empresas: varias empresas que se presentan juntas a un contrato. Tiene su propio NIF (empieza por U).</dd>
+      <dt>CPV</dt><dd>Vocabulario común de contratos públicos de la UE: un código de 8 cifras que dice qué se contrata (45 obras de construcción, 79 servicios a empresas, 33 equipos médicos…).</dd>
       <dt>Régimen foral</dt><dd>Sistema propio de País Vasco (Concierto Económico) y Navarra (Convenio Económico): recaudan sus impuestos y pagan al Estado un cupo o aportación por los servicios que este presta.</dd>
     </dl>
   </section>
@@ -318,6 +340,7 @@
       <li><a href="/datos/v1/cofog.json" download>cofog.json</a> — Gasto por función (COFOG)</li>
       <li><a href="/datos/v1/poblacion.json" download>poblacion.json</a> — Población a 1 de enero</li>
       <li><a href="/datos/v1/subvenciones.json" download>subvenciones.json</a> — Grandes beneficiarios de subvenciones (resumen y mayores beneficiarios por año) y subvenciones a partidos; la lista completa de cada año está en <code>subvenciones-AAAA.json</code> y el motivo de las ayudas de los mayores beneficiarios, en <code>subvenciones-motivos-AAAA.json</code></li>
+      <li><a href="/datos/v1/contratos.json" download>contratos.json</a> — Contratos públicos adjudicados: resúmenes por año; cada adjudicación, un fichero por mes, en <code>contratos-AAAA-MM.json</code> y lo de cada adjudicatario por NIF, en <code>contratos-adjudicatarios-AAAA.json</code></li>
       <li><a href="/datos/v1/meta.json" download>meta.json</a> — Fechas de actualización de cada fuente</li>
       <li><a href="/datos/v1/informe.json" download>informe.json</a> — Resultado de las comprobaciones</li>
     </ul>
@@ -353,10 +376,11 @@
       <li><a href="quien-gasta.html">Quién gasta</a></li>
       <li><a href="comunidades.html">Comunidades</a></li>
       <li><a href="subvenciones.html">Subvenciones</a></li>
+      <li><a href="contratos.html">Contratos</a></li>
       <li><a href="buscar.html">Buscar</a></li>
       <li><a href="fuentes.html">Fuentes</a></li>
     </ul></nav>
-    <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local, Base de Datos Nacional de Subvenciones) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
+    <p>Datos oficiales del Ministerio de Hacienda (IGAE, SEPG, Secretaría General de Financiación Autonómica y Local, Base de Datos Nacional de Subvenciones, Plataforma de Contratación del Sector Público) y del INE, reutilizados según sus avisos legales. Detalle de cada fuente en <a href="fuentes.html">Fuentes y metodología</a>.</p>
     <p>Proyecto independiente, sin relación con ninguna administración. <a href="https://github.com/dinero-publico/dinero-publico.github.io">Código abierto</a> con licencia MIT.</p>
   </div>
 </footer>
